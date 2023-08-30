@@ -13,6 +13,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
+        fontFamily: "Brand Bold",
         primarySwatch: Colors.blue,//The banner color
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),

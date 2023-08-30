@@ -1,6 +1,7 @@
-package com.phamthily.rider_app
+package com.phamthily.riderapp
 
 import io.flutter.embedding.android.FlutterActivity
 
-class MainActivity: FlutterActivity() {
+class MainActivity : FlutterActivity(){
+
 }

@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "928542052831",
+    "firebase_url": "https://flutter-uber-clone-63fd7-default-rtdb.firebaseio.com",
+    "project_id": "flutter-uber-clone-63fd7",
+    "storage_bucket": "flutter-uber-clone-63fd7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:928542052831:android:140e081cdb45e14f81746a",
+        "android_client_info": {
+          "package_name": "com.phamthily.riderapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "928542052831-2df9v2casnbpba2pkq92mq0bd1rbo1il.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_1sHOAGI52bSK0bMYvSGT6lwE48D41Tg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "928542052831-2df9v2casnbpba2pkq92mq0bd1rbo1il.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

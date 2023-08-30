@@ -1,11 +1,17 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:rider_app/AllScreens/loginScreen.dart';
 import 'package:rider_app/AllScreens/mainscreen.dart';
 import 'package:rider_app/AllScreens/registerationScreen.dart';
 
-void main() {
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();//Khoi tao flutter framework
+  await Firebase.initializeApp();//Khoi tao firebase
   runApp(const MyApp());
 }
+
+DatabaseReference usersRef = FirebaseDatabase.instance.reference().child("users");
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

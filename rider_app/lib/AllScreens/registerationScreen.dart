@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:rider_app/AllScreens/loginScreen.dart';
 
-class registerationScreen extends StatefulWidget {
-  const registerationScreen({Key? key}) : super(key: key);
+class RegisterationScreen extends StatefulWidget {
+  static const String idScreen = "register";
+  const RegisterationScreen({Key? key}) : super(key: key);
 
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<registerationScreen> {
+class _LoginScreenState extends State<RegisterationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -132,7 +134,7 @@ class _LoginScreenState extends State<registerationScreen> {
               TextButton(
                 onPressed:()
                 {
-                  print("clicked");
+                  Navigator.pushNamedAndRemoveUntil(context, LoginScreen.idScreen, (route) => false);
                 },
                 child: Text(
                   "Already an Account?  Login here.",

@@ -19,7 +19,13 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,//The banner color
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: registerationScreen(),
+      initialRoute: LoginScreen.idScreen,
+      routes:
+      {
+        RegisterationScreen.idScreen: (context) => RegisterationScreen(),
+        LoginScreen.idScreen: (context) => LoginScreen(),
+        MainScreen.idScreen: (context) => MainScreen(),
+      },
       debugShowCheckedModeBanner: false,//Remove the banner
     );
   }

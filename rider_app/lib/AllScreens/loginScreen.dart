@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:rider_app/AllScreens/registerationScreen.dart';
+import 'package:rider_app/AllWidgets/progressDialog.dart';
 import '../main.dart';
 import 'mainscreen.dart';
 
@@ -132,28 +133,39 @@ class _LoginScreenState extends State<LoginScreen> {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   void loginAndAuthenticatedUser(BuildContext context) async {
 
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context)
+        {
+          return ProgressDialog(message: "Authenticating, Please wait,...", );
+        }
+    );
+
     final User? firebaseUser = (await _firebaseAuth// "?" is mean that user can be null
         .signInWithEmailAndPassword(
         email: emailTextEdittingController.text,
         password: passwordTextEdittingController.text,
     ).catchError((errMsg){
+      Navigator.pop(context);
       displayToastMessage(" Error: " + errMsg.toString(), context);
     })).user;
     if (firebaseUser != null)
     {
-
       final snapshot = await usersRef.child('users/'+firebaseUser.uid).get();
       if (snapshot.exists) {
             Navigator.pushNamedAndRemoveUntil(context, MainScreen.idScreen, (route) => false);
             displayToastMessage("You are logged-in now.", context);
       } else {
-            _firebaseAuth.signOut();
-            displayToastMessage("No record exists for this user. Please create a new account", context);
+        Navigator.pop(context);
+        _firebaseAuth.signOut();
+        displayToastMessage("No record exists for this user. Please create a new account", context);
       }
 
 
     }
     else {
+      Navigator.pop(context);
       displayToastMessage("Error Occured. Can not be Sign-in", context);
     }
   }

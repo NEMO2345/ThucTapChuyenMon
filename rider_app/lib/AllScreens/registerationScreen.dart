@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:rider_app/AllScreens/loginScreen.dart';
@@ -178,13 +177,15 @@ class _LoginScreenState extends State<RegisterationScreen> {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   void registerNewUser(BuildContext context) async {
-      final User? firebaseUser = (await _firebaseAuth
-          .createUserWithEmailAndPassword(
+
+      final User? firebaseUser = (await _firebaseAuth// "?" is mean that user can be null
+          .createUserWithEmailAndPassword(//This function is used for create user
         email: emailTextEdittingController.text,
         password: passwordTextEdittingController.text,
       ).catchError((errMsg){
         displayToastMessage("Error: " + errMsg.toString(), context);
       })).user;
+
       if (firebaseUser != null) {
         // Xử lý thành công, ví dụ: chuyển hướng tới màn hình tiếp theo
         usersRef.child(firebaseUser.uid);

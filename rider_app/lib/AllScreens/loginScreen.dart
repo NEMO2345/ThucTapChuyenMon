@@ -1,8 +1,16 @@
+
+import 'dart:async';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:rider_app/AllScreens/registerationScreen.dart';
+import '../main.dart';
+import 'mainscreen.dart';
 
 class LoginScreen extends StatefulWidget {
   static const String idScreen = "login";
+
   const LoginScreen({Key? key}) : super(key: key);
 
   @override
@@ -10,6 +18,10 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+
+  TextEditingController emailTextEdittingController = TextEditingController();
+  TextEditingController passwordTextEdittingController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,6 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     SizedBox(height: 1.0),
                     TextField(
+                      controller: emailTextEdittingController,
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
                         labelText: "Email",
@@ -55,6 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     SizedBox(height: 1.0),
                     TextField(
+                      controller: passwordTextEdittingController,
                       obscureText: true,
                       decoration: InputDecoration(
                         labelText: "Password",
@@ -67,9 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       style: TextStyle(fontSize: 14.0),
-
                     ),
-
                     SizedBox(height: 10.0,),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
@@ -81,7 +93,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         minimumSize: Size(200.0, 50.0),
                       ),
                       onPressed:(){
-                        print("Loggedin button clicked");
+                        if(!emailTextEdittingController.text.contains("@")){
+                          displayToastMessage("Email address is not Valid.", context);
+                        }else if(passwordTextEdittingController.text.isEmpty){
+                          displayToastMessage("Password is mandatory.", context);
+                        }else{
+                         loginAndAuthenticatedUser(context);
+                        }
                       },
                       child: Text(
                         "Login",
@@ -102,11 +120,89 @@ class _LoginScreenState extends State<LoginScreen> {
                   "Do not have an Account?  Register here.",
                 ),
               ),
-
             ],
           ),
         ),
       ),
     );
   }
+  final DatabaseReference usersRef = FirebaseDatabase.instance.ref();
+// Usage:
+// Replace with the desired name
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  void loginAndAuthenticatedUser(BuildContext context) async {
+
+    final User? firebaseUser = (await _firebaseAuth// "?" is mean that user can be null
+        .signInWithEmailAndPassword(
+        email: emailTextEdittingController.text,
+        password: passwordTextEdittingController.text,
+    ).catchError((errMsg){
+      displayToastMessage(" Error: " + errMsg.toString(), context);
+    })).user;
+    if (firebaseUser != null)
+    {
+
+      final snapshot = await usersRef.child('users/'+firebaseUser.uid).get();
+      if (snapshot.exists) {
+            Navigator.pushNamedAndRemoveUntil(context, MainScreen.idScreen, (route) => false);
+            displayToastMessage("You are logged-in now.", context);
+      } else {
+            _firebaseAuth.signOut();
+            displayToastMessage("No record exists for this user. Please create a new account", context);
+      }
+
+
+    }
+    else {
+      displayToastMessage("Error Occured. Can not be Sign-in", context);
+    }
+  }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

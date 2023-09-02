@@ -1,11 +1,12 @@
-// ignore_for_file: prefer_const_constructors, unnecessary_import, library_private_types_in_public_api, prefer_final_fields, unnecessary_new, sized_box_for_whitespace, prefer_const_literals_to_create_immutables, sort_child_properties_last
+// ignore_for_file: prefer_const_constructors, unnecessary_import, library_private_types_in_public_api, prefer_final_fields, unnecessary_new, sized_box_for_whitespace, prefer_const_literals_to_create_immutables, sort_child_properties_last, prefer_interpolation_to_compose_strings, use_build_context_synchronously, avoid_print
 
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:rider_app/AllWidgets/Divider.dart';
 
 class MainScreen extends StatefulWidget {
@@ -29,6 +30,24 @@ class _MainScreenState extends State<MainScreen> {
   var geoLocator = Geolocator();
   double bottomPaddingOfMap = 0;
 
+
+// Kiểm tra và yêu cầu quyền truy cập vị trí
+  void checkLocationPermission() async {
+    PermissionStatus status = await Permission.locationWhenInUse.status;
+
+    if (status.isDenied) {
+      // Hiển thị thông báo yêu cầu quyền
+      await Permission.locationWhenInUse.request();
+    }
+
+    if (status.isGranted) {
+      // Quyền truy cập vị trí đã được cấp, tiếp tục xử lý vị trí
+      locatePositon();
+    } else {
+      // Quyền truy cập vị trí bị từ chối, xử lý trường hợp này
+      // Hiển thị thông báo cho người dùng hoặc chuyển hướng đến cài đặt thiết bị
+    }
+  }
   void locatePositon() async{
     Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     currentPosition = position;
@@ -37,7 +56,7 @@ class _MainScreenState extends State<MainScreen> {
 
     CameraPosition cameraPosition = new CameraPosition(target: latLngPosition,zoom: 14);
     newGoogleMapController.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
-
+    print("Địa chỉ: ${position.toString()}");
   }
 
   static final CameraPosition _kGooglePlex = CameraPosition(
@@ -45,7 +64,6 @@ class _MainScreenState extends State<MainScreen> {
       zoom: 14.4745,
   );
   //Googlemap
-  get initialCameraPosition => null;
 
   @override
   Widget build(BuildContext context) {
@@ -127,7 +145,7 @@ class _MainScreenState extends State<MainScreen> {
                 bottomPaddingOfMap = 265.0;
               });
 
-              locatePositon();
+              checkLocationPermission();
             },
           ), //HambugarButton for Drawer
           Positioned(

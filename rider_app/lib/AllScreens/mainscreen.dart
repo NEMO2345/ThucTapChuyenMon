@@ -8,6 +8,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rider_app/AllWidgets/Divider.dart';
+import 'package:rider_app/Assistants/assistantMethods.dart';
 
 class MainScreen extends StatefulWidget {
   static const String idScreen = "mainScreen";
@@ -53,10 +54,14 @@ class _MainScreenState extends State<MainScreen> {
     currentPosition = position;
 
     LatLng latLngPosition = LatLng(position.latitude, position.longitude);
-
+    //Geocoding : Chuyen doi toa do dia ly thanh v tri cu the
     CameraPosition cameraPosition = new CameraPosition(target: latLngPosition,zoom: 14);
     newGoogleMapController.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
-    print("Địa chỉ: ${position.toString()}");
+
+    String address = await AssistantMethods.searchCoordinateAddress(position);
+    print("This is your Address :: " + address);
+
+    //print("Địa chỉ: ${position.toString()}");
   }
 
   static final CameraPosition _kGooglePlex = CameraPosition(

@@ -1,8 +1,10 @@
-// ignore_for_file: library_private_types_in_public_api, prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: library_private_types_in_public_api, prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_print
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:rider_app/Assistants/requestAssistant.dart';
 import 'package:rider_app/DataHandle/appData.dart';
+import 'package:rider_app/configMaps.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({Key? key}) : super(key: key);
@@ -113,6 +115,9 @@ class _SearchScreenState extends State<SearchScreen> {
                             child: Padding(
                               padding: EdgeInsets.all(3.0),
                               child: TextField(
+                                onChanged: (val){
+                                  findPlace(val);
+                                },
                                 //controller: dropOffTextEdittingController,
                                 //TextUse
                                 decoration: InputDecoration(
@@ -138,5 +143,18 @@ class _SearchScreenState extends State<SearchScreen> {
       ),
 
     );
+  }
+
+  void findPlace(String placeName) async{
+    if(placeName.length > 1){
+      String autoCompleteUrl = "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$placeName&key=$mapKey&sessiontoken=1234567890&components=country:US";
+      var res = await RequestAssistant.getRequest(autoCompleteUrl);
+      
+      if(res == "failed"){
+        return;
+      }
+      print("Place Predictions Response :: ");
+      print(res);
+    }
   }
 }

@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_constructors, deprecated_member_use
 
+import 'dart:io';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -7,11 +9,12 @@ import 'package:provider/provider.dart';
 import 'package:rider_app/AllScreens/loginScreen.dart';
 import 'package:rider_app/AllScreens/mainscreen.dart';
 import 'package:rider_app/AllScreens/registerationScreen.dart';
-import 'package:rider_app/DataHandle/appData.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();//Khoi tao flutter framework
   await Firebase.initializeApp();//Khoi tao firebase
+  // Add this line to ignore certificate validation
+  HttpOverrides.global = MyHttpOverrides();
   runApp(const MyApp());
 }
 
@@ -23,7 +26,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => AppData(),
+
+      create: (BuildContext context) {  },
       child: MaterialApp(
         title: 'Taxi Rider App',
         theme: ThemeData(
@@ -44,3 +48,12 @@ class MyApp extends StatelessWidget {
   }
 }
 
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback = (X509Certificate cert, String host,
+          int port) => true;
+  }
+
+}

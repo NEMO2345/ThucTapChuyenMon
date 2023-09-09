@@ -1,160 +1,40 @@
 // ignore_for_file: library_private_types_in_public_api, prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_print
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:rider_app/Assistants/requestAssistant.dart';
-import 'package:rider_app/DataHandle/appData.dart';
-import 'package:rider_app/configMaps.dart';
-
+import 'package:flutter/widgets.dart';
+import 'package:open_street_map_search_and_pick/open_street_map_search_and_pick.dart';
+import 'package:rider_app/Models/address.dart';
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({Key? key}) : super(key: key);
-
+  const SearchScreen({Key? key, required this.Latitude, required this.Longitude} ) : super(key: key);
+  final double Latitude;
+  final double Longitude;
   @override
   _SearchScreenState createState() => _SearchScreenState();
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-
-  TextEditingController pickUpTextEdittingController = TextEditingController();
-  TextEditingController dropOffTextEdittingController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    
-    //String placeAddress = Provider.of<AppData>(context).pickUpLocation?.placeName ?? "";
-    //pickUpTextEdittingController.text = placeAddress;
-    //TextUse
-
+    // Access the Latitude and Longitude properties from the widget
+    final double latitude = widget.Latitude;
+    final double longitude = widget.Longitude;
     return Scaffold(
-      body: Column(
-        children: [
-          Container(
-            height: 215.0,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black,
-                  blurRadius: 6.0,
-                  spreadRadius: 0.5,
-                  offset: Offset(0.7,0.7),
-                ),
-              ],
-            ) ,
-            child: Padding(
-              padding: EdgeInsets.only(left: 25.0,top: 25.0,right: 25.0,bottom: 20.0),
-              child: Column(
-                children: [
-
-                  SizedBox(height: 5.0),
-                  Stack(
-                    children: [
-                      GestureDetector(
-                        onTap:(){
-                       Navigator.pop(context);
-                      },
-                        child: Icon(
-                            Icons.arrow_back
-                        ),
-                      ),
-                      Center(
-                        child: Text("Set Drop Off",style: TextStyle(fontSize: 18.0, fontFamily: "Brand-Bold"),),
-                      ),
-                    ],
-                  ),
-
-                  SizedBox(height: 16.0),
-
-                  Row(
-                    children: [
-                      Image.asset("images/pickicon.png",height: 16.0,width: 16.0,),
-                      
-                      SizedBox(width: 18.0,),
-                      
-                      Expanded(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.grey[400],
-                              borderRadius: BorderRadius.circular(5.0),
-
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.all(3.0),
-                              child: TextField(
-                                //controller: pickUpTextEdittingController,
-                                //TextUse
-                                decoration: InputDecoration(
-                                  hintText: "Pickup Location",
-                                  fillColor: Colors.grey[400],
-                                  filled: true,
-                                  border: InputBorder.none,
-                                  isDense: true,
-                                  contentPadding: EdgeInsets.only(left : 11.0,top:8.0,bottom: 8.0),
-                                ),
-                              ),
-                            ),
-                          )
-                      ),
-                    ],
-                  ),
-
-                  SizedBox(height: 10.0),
-
-                  Row(
-                    children: [
-                      Image.asset("images/desticon.png",height: 16.0,width: 16.0,),
-
-                      SizedBox(width: 18.0,),
-
-                      Expanded(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.grey[400],
-                              borderRadius: BorderRadius.circular(5.0),
-
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.all(3.0),
-                              child: TextField(
-                                onChanged: (val){
-                                  findPlace(val);
-                                },
-                                //controller: dropOffTextEdittingController,
-                                //TextUse
-                                decoration: InputDecoration(
-                                  hintText: "Where to ?",
-                                  fillColor: Colors.grey[400],
-                                  filled: true,
-                                  border: InputBorder.none,
-                                  isDense: true,
-                                  contentPadding: EdgeInsets.only(left : 11.0,top:8.0,bottom: 8.0),
-                                ),
-                              ),
-                            ),
-                          )
-                      ),
-                    ],
-                  ),
-
-                ],
-              ),
-            ),
-          ),
-        ],
+      appBar: AppBar(
+        title: const Text("Search"),
       ),
-
+      body: OpenStreetMapSearchAndPick(
+          center: LatLong(latitude, longitude),
+          buttonColor: Colors.blue,
+          buttonText: 'Set Location',
+          onPicked: (pickedData) {
+            Address address = Address();
+            address.placeName = pickedData.addressName;
+            address.latitude = pickedData.latLong.latitude;
+            address.longitude = pickedData.latLong.longitude;
+            Navigator.pop(context, address);
+          }),
     );
   }
 
-  void findPlace(String placeName) async{
-    if(placeName.length > 1){
-      String autoCompleteUrl = "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$placeName&key=$mapKey&sessiontoken=1234567890&components=country:US";
-      var res = await RequestAssistant.getRequest(autoCompleteUrl);
-      
-      if(res == "failed"){
-        return;
-      }
-      print("Place Predictions Response :: ");
-      print(res);
-    }
-  }
+
 }

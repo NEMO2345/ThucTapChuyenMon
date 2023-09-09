@@ -2,16 +2,23 @@
 
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
+
+
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:provider/provider.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:rider_app/AllScreens/searchScreen.dart';
 import 'package:rider_app/AllWidgets/Divider.dart';
-import 'package:rider_app/Assistants/assistantMethods.dart';
-import 'package:rider_app/DataHandle/appData.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
+import '../Models/address.dart';
+import 'api.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:location/location.dart' as Loc;
+
+
+
 
 class MainScreen extends StatefulWidget {
   static const String idScreen = "mainScreen";
@@ -22,56 +29,112 @@ class MainScreen extends StatefulWidget {
   _MainScreenState createState() => _MainScreenState();
 }
 
+Loc.Location location = new Loc.Location();
+bool _serviceEnabled = false;
+Loc.PermissionStatus _permissionGranted = Loc.PermissionStatus.denied;
+Loc.LocationData _locationData = null as Loc.LocationData;
+
+
+
 class _MainScreenState extends State<MainScreen> {
 
-  //GoogleMap
-  Completer<GoogleMapController> _controllerGoogleMap = Completer();
-  late GoogleMapController newGoogleMapController;
+  // Raw coordinates got from  OpenRouteService
+  List listOfPoints = [];
+
+  // Conversion of listOfPoints into LatLng(Latitude, Longitude) list of points
+  List<LatLng> points = [];
+
+  double sourLatitude = 0;
+  double sourLongitude = 0;
+
+  double desLatitude = 0;
+  double desLongitude = 0;
+
+  double zoomSize = 15;
+  double Latitude = 6.131015;
+  double Longitude = 1.223898;
+  String display_name_Location = "You address";
+
+  MapController _mapController = MapController();
+///vi tri hien tai
+  Future<dynamic> getLocation() async{
+    _serviceEnabled = await location.serviceEnabled();
+    if(!_serviceEnabled) _serviceEnabled = await location.requestService();
+
+    _permissionGranted = await location.hasPermission();
+    if(_permissionGranted == Loc.PermissionStatus.denied){
+      _permissionGranted = await location.requestPermission();
+    }
+    _locationData = await location.getLocation();
+
+
+    var response = await http.get(getinfoLocationUrl(Latitude.toString(),Longitude.toString()));
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+
+      display_name_Location = data['display_name'];
+      print(data['display_name']);
+    }
+
+
+    print(_locationData);
+    setState(() {
+      _mapController.move(LatLng(_locationData.latitude!, _locationData.longitude!), zoomSize);
+      Latitude = _locationData.latitude!;
+      Longitude = _locationData.longitude!;
+      display_name_Location ;
+    });
+
+    return _locationData;
+  }
+  // Method to consume the OpenRouteService API
+
+  getCoordinates(double sour_lat, double sour_lon, double des_lat, double des_lon) async {
+
+    var response = await http.get(getRouteUrl("$sour_lon,$sour_lat",
+        '$des_lon,$des_lat'));
+    // Requesting for openrouteservice api
+    // var response = await http.get(getRouteUrl("1.243344,6.145332",
+    //     '1.2160116523406839,6.125231015668568'));
+    // var distance = jsonDecode(response.body)['features'][0]['summary']['distance'];
+    print(response.statusCode);
+
+    setState(() {
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        listOfPoints = data['features'][0]['geometry']['coordinates'];
+        points = listOfPoints
+            .map((p) => LatLng(p[1].toDouble(), p[0].toDouble()))
+            .toList();
+      }
+    });
+  }
+
 
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
-  late Position currentPosition;
-  var geoLocator = Geolocator();
+
   double bottomPaddingOfMap = 0;
 
-
-// Kiểm tra và yêu cầu quyền truy cập vị trí
-  void checkLocationPermission() async {
-    PermissionStatus status = await Permission.locationWhenInUse.status;
-
-    if (status.isDenied) {
-      // Hiển thị thông báo yêu cầu quyền
-      await Permission.locationWhenInUse.request();
-    }
-
-    if (status.isGranted) {
-      // Quyền truy cập vị trí đã được cấp, tiếp tục xử lý vị trí
-      locatePositon();
-    } else {
-      // Quyền truy cập vị trí bị từ chối, xử lý trường hợp này
-      // Hiển thị thông báo cho người dùng hoặc chuyển hướng đến cài đặt thiết bị
-    }
+  void updateZoomSizePlus() {
+    setState(() {
+      zoomSize = zoomSize +1;
+      _mapController.move(LatLng(Latitude, Longitude), zoomSize);
+    });
+    print(zoomSize);
   }
-  void locatePositon() async{
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    currentPosition = position;
-
-    LatLng latLngPosition = LatLng(position.latitude, position.longitude);
-    //Geocoding : Chuyen doi toa do dia ly thanh v tri cu the
-    CameraPosition cameraPosition = new CameraPosition(target: latLngPosition,zoom: 14);
-    newGoogleMapController.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
-
-    String address = await AssistantMethods.searchCoordinateAddress(position,context);
-    print("This is your Address :: " + address);
-
-    //print("Địa chỉ: ${position.toString()}");
+  void updateZoomSizeMinus(){
+    setState(() {
+      zoomSize = zoomSize -1;
+      _mapController.move(LatLng(Latitude, Longitude), zoomSize);
+    });
+    print(zoomSize);
   }
 
-  static final CameraPosition _kGooglePlex = CameraPosition(
-      target: LatLng(37.4279613380664, - 122.08574955962),
-      zoom: 14.4745,
-  );
-  //Googlemap
+  @override
+  void initState() {
+     getLocation();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -136,25 +199,71 @@ class _MainScreenState extends State<MainScreen> {
       ),
       body:Stack(
         children: [
-          GoogleMap(
-            padding: EdgeInsets.only(bottom: bottomPaddingOfMap),
-            mapType: MapType.normal,
-            myLocationButtonEnabled: true,
-            initialCameraPosition: _kGooglePlex,
-            myLocationEnabled: true,
-            zoomGesturesEnabled: true,
-            zoomControlsEnabled: true,
-            onMapCreated: (GoogleMapController controller)
-            {
-              _controllerGoogleMap.complete(controller);
-              newGoogleMapController = controller;
+          Scaffold(
+            body: FlutterMap(
+              options: MapOptions(
+                  zoom: zoomSize,
+                  center: LatLng(Latitude, Longitude)
+              ),
+              mapController: _mapController,
+              children: [
+                // Layer that adds the map
+                TileLayer(
+                  urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                  userAgentPackageName: 'dev.fleaflet.flutter_map.example',
+                ),
+                // Layer that adds points the map
+                MarkerLayer(
+                  markers: [
+                    // First Marker
+                    Marker(
+                      point: LatLng(sourLatitude == 0 ? Latitude: sourLatitude, sourLongitude == 0 ? Longitude : sourLongitude),
+                      width: 80,
+                      height: 80,
+                      builder: (context) => IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.location_on),
+                        color: Colors.green,
+                        iconSize: 45,
+                      ),
+                    ),
+                    Marker(
+                      point: LatLng(Latitude, Longitude),
+                      width: 80,
+                      height: 80,
+                      builder: (context) => IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.location_on),
+                        color: Colors.blue,
+                        iconSize: 45,
+                      ),
+                    ),
+                    // Second Marker
+                    Marker(
+                      point: LatLng(desLatitude == 0 ? Latitude: desLatitude, desLongitude == 0 ? Longitude : desLongitude),
+                      width: 80,
+                      height: 80,
+                      builder: (context) => IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.location_on),
+                        color: Colors.red,
+                        iconSize: 45,
+                      ),
+                    ),
+                  ],
+                ),
 
-              setState(() {
-                bottomPaddingOfMap = 265.0;
-              });
+                // Polylines layer
+                PolylineLayer(
+                  polylineCulling: false,
+                  polylines: [
+                    Polyline(
+                        points: points, color: Colors.black, strokeWidth: 5),
+                  ],
+                ),
+              ],
+            ),
 
-              checkLocationPermission();
-            },
           ), //HambugarButton for Drawer
           Positioned(
             top:45.0,
@@ -191,6 +300,102 @@ class _MainScreenState extends State<MainScreen> {
             ),
           ),
           Positioned(
+            top:45.0,
+            right: 22.0,
+            child: GestureDetector(
+              onTap: () {
+               getLocation();
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(22.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.transparent,
+                      blurRadius: 6.0,
+                      spreadRadius: 0.5,
+                      offset: Offset(
+                        0.7,
+                        0.7,
+                      ),
+                    ),
+                  ],
+                ),
+
+                child: CircleAvatar(
+                  backgroundColor: Colors.transparent,
+                  child: Icon(Icons.control_point,color: Colors.white,size: 50,),
+                  radius: 20.0,
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom:400.0,
+            right: 22.0,
+            child: GestureDetector(
+              onTap: () {
+                updateZoomSizeMinus();
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(22.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.transparent,
+                      blurRadius: 6.0,
+                      spreadRadius: 0.5,
+                      offset: Offset(
+                        0.7,
+                        0.7,
+                      ),
+                    ),
+                  ],
+                ),
+
+                child: CircleAvatar(
+                  backgroundColor: Colors.transparent,
+                  child: Icon(Icons.indeterminate_check_box_rounded,color: Colors.white,size: 50,),
+                  radius: 20.0,
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom:350.0,
+            right: 22.0,
+            child: GestureDetector(
+              onTap: () {
+                updateZoomSizePlus();
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(22.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.transparent,
+                      blurRadius: 6.0,
+                      spreadRadius: 0.5,
+                      offset: Offset(
+                        0.7,
+                        0.7,
+                      ),
+                    ),
+                  ],
+                ),
+
+                child: CircleAvatar(
+                  backgroundColor: Colors.transparent,
+                  child: Icon(Icons.add_box,color: Colors.white,size: 50,),
+                  radius: 20.0,
+                ),
+              ),
+            ),
+          ),
+          Positioned(
             left: 0.0,
             right: 0.0,
             bottom: 0.0,
@@ -221,8 +426,21 @@ class _MainScreenState extends State<MainScreen> {
                     Text("Where to? ",style: TextStyle(fontSize: 20.0,fontFamily: "Brand-Bold"),),
                     SizedBox(height:20.0 ),
                     GestureDetector(
-                      onTap:(){
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => SearchScreen()));
+                      onTap:() async {
+                        final  Address address = await  Navigator.push(context, MaterialPageRoute(builder: (context) => SearchScreen(Latitude: Latitude,Longitude: Longitude,)));
+                       if(address != null){
+                         setState(() {
+                           sourLatitude = address.latitude;
+                           sourLongitude = address.longitude;
+                         });
+                         if (desLatitude != 0 && desLongitude != 0){
+
+                         }
+                         print('$sourLatitude, $sourLongitude');
+
+                         _mapController.move(LatLng(sourLatitude, sourLongitude), zoomSize);
+                       }
+
                      },
                       child: Container(
                         decoration: BoxDecoration(
@@ -245,7 +463,50 @@ class _MainScreenState extends State<MainScreen> {
                             children: [
                               Icon(Icons.search,color: Colors.blueAccent,),
                               SizedBox(width: 10.0,),
-                              Text("Search Drop off"),
+                              Text("Sour"),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 16.0,),
+                    GestureDetector(
+                      onTap:() async {
+                        final  Address address = await  Navigator.push(context, MaterialPageRoute(builder: (context) => SearchScreen(Latitude: Latitude,Longitude: Longitude,)));
+                       if(address != null){
+                         setState(() {
+                           desLatitude =address.latitude;
+                           desLongitude = address.longitude;
+                           if (sourLatitude != 0 && sourLongitude != 0){
+                             getCoordinates(sourLatitude,sourLongitude,desLatitude,desLongitude);
+                           }
+                         });
+                         print('$desLatitude, $desLongitude');
+                       }
+
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(
+                              5.0
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black54,
+                              blurRadius: 6.0,
+                              spreadRadius: 0.5,
+                              offset: Offset(0.7, 0.7),
+                            )
+                          ],
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Row(
+                            children: [
+                              Icon(Icons.search,color: Colors.blueAccent,),
+                              SizedBox(width: 10.0,),
+                              Text("Destination"),
                             ],
                           ),
                         ),
@@ -260,8 +521,16 @@ class _MainScreenState extends State<MainScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                                //Provider.of<AppData>(context)?.pickUpLocation?.placeName ?? "Add Home"
-                              "449, Tang Nhon Phu A, Thu Duc city"
+                              display_name_Location.length <= 45
+                                  ? display_name_Location
+                                  : display_name_Location.substring(0, 45),
+
+                            ),
+                            Text(
+                              display_name_Location.length > 45
+                                  ? display_name_Location.substring(45)
+                                  : " ",
+
                             ),
                             SizedBox(height: 4.0,),
                             Text(
@@ -275,23 +544,8 @@ class _MainScreenState extends State<MainScreen> {
 
                     SizedBox(height: 10.0,),
                     DividerWidget(),
-                    SizedBox(height: 16.0,),
 
-                    Row(
-                      children: [
-                        Icon(Icons.work,color: Colors.grey,),
-                        SizedBox(width: 12.0,),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text("Add Work"),
-                            SizedBox(height: 4.0,),
-                            Text("Your office address",style: TextStyle(color: Colors.grey[200],fontSize:12.0 ),),
 
-                          ],
-                        ),
-                      ],
-                    ),
                   ],
                 ),
               ),

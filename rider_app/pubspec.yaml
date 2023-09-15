@@ -48,6 +48,7 @@ dependencies:
   location: ^5.0.0
   geocoding: ^2.1.0
   open_street_map_search_and_pick: ^0.1.0
+  font_awesome_flutter: ^10.5.0
 
 dev_dependencies:
   flutter_test:

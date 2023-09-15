@@ -5,12 +5,15 @@ import 'dart:async';
 
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:rider_app/AllScreens/searchScreen.dart';
 import 'package:rider_app/AllWidgets/Divider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:rider_app/AllWidgets/progressDialog.dart';
 import '../Models/address.dart';
 import 'api.dart';
 import 'package:http/http.dart' as http;
@@ -40,6 +43,9 @@ class _MainScreenState extends State<MainScreen> {
 
   // Raw coordinates got from  OpenRouteService
   List listOfPoints = [];
+
+  String PickUpPoint = "";
+  String Destination = "";
 
   // Conversion of listOfPoints into LatLng(Latitude, Longitude) list of points
   List<LatLng> points = [];
@@ -258,7 +264,8 @@ class _MainScreenState extends State<MainScreen> {
                   polylineCulling: false,
                   polylines: [
                     Polyline(
-                        points: points, color: Colors.black, strokeWidth: 5),
+                      //Line chi duong
+                        points: points, color: Colors.red, strokeWidth: 5),
                   ],
                 ),
               ],
@@ -400,7 +407,7 @@ class _MainScreenState extends State<MainScreen> {
             right: 0.0,
             bottom: 0.0,
             child: Container(
-              height: 300.0,
+              height: 310.0,
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
@@ -424,17 +431,27 @@ class _MainScreenState extends State<MainScreen> {
                     SizedBox(height: 6.0),
                     Text("Hi There, ",style: TextStyle(fontSize: 12.0),),
                     Text("Where to? ",style: TextStyle(fontSize: 20.0,fontFamily: "Brand-Bold"),),
+                    //Diem Dau
                     SizedBox(height:20.0 ),
                     GestureDetector(
                       onTap:() async {
+                        showProgressDialog() {
+                          Future.delayed(Duration(seconds: 3), () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) => ProgressDialog(message: "Please wait..."),
+                            );
+                          });
+                        }
                         final  Address address = await  Navigator.push(context, MaterialPageRoute(builder: (context) => SearchScreen(Latitude: Latitude,Longitude: Longitude,)));
                        if(address != null){
                          setState(() {
                            sourLatitude = address.latitude;
                            sourLongitude = address.longitude;
+                           PickUpPoint = address.placeName;
                          });
                          if (desLatitude != 0 && desLongitude != 0){
-
+                           getCoordinates(sourLatitude,sourLongitude,desLatitude,desLongitude);
                          }
                          print('$sourLatitude, $sourLongitude');
 
@@ -463,20 +480,45 @@ class _MainScreenState extends State<MainScreen> {
                             children: [
                               Icon(Icons.search,color: Colors.blueAccent,),
                               SizedBox(width: 10.0,),
-                              Text("Sour"),
+                              Column(
+                                children: [
+
+                                  Text(
+                                    PickUpPoint.length <= 45
+                                       ? PickUpPoint
+                                       : PickUpPoint.substring(0, 45),
+
+                                  ),
+                                  Text(
+                                    PickUpPoint.length > 45
+                                        ? PickUpPoint.substring(45)
+                                        : "",
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
                         ),
                       ),
                     ),
-                    SizedBox(height: 16.0,),
+                    //Diem cuoi
+                    SizedBox(height: 5.0,),
                     GestureDetector(
                       onTap:() async {
+                        showProgressDialog() {
+                          Future.delayed(Duration(seconds: 3), () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) => ProgressDialog(message: "Please wait..."),
+                            );
+                          });
+                        }
                         final  Address address = await  Navigator.push(context, MaterialPageRoute(builder: (context) => SearchScreen(Latitude: Latitude,Longitude: Longitude,)));
                        if(address != null){
                          setState(() {
                            desLatitude =address.latitude;
                            desLongitude = address.longitude;
+                           Destination = address.placeName;
                            if (sourLatitude != 0 && sourLongitude != 0){
                              getCoordinates(sourLatitude,sourLongitude,desLatitude,desLongitude);
                            }
@@ -506,7 +548,21 @@ class _MainScreenState extends State<MainScreen> {
                             children: [
                               Icon(Icons.search,color: Colors.blueAccent,),
                               SizedBox(width: 10.0,),
-                              Text("Destination"),
+                              Column(
+                                children: [
+                                  Text(
+                                    Destination.length <= 45
+                                        ? Destination
+                                        : Destination.substring(0, 45),
+
+                                  ),
+                                  Text(
+                                    Destination.length > 45
+                                        ? Destination.substring(45)
+                                        : " ",
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
                         ),
@@ -529,8 +585,7 @@ class _MainScreenState extends State<MainScreen> {
                             Text(
                               display_name_Location.length > 45
                                   ? display_name_Location.substring(45)
-                                  : " ",
-
+                                  :"",
                             ),
                             SizedBox(height: 4.0,),
                             Text(
@@ -544,8 +599,103 @@ class _MainScreenState extends State<MainScreen> {
 
                     SizedBox(height: 10.0,),
                     DividerWidget(),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 0.0,
+            left: 0.0,
+            right: 0.0,
+            child: Container(
+              height: 230.0,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(topLeft: Radius.circular(16.0), topRight:Radius.circular(16.0),),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black,
+                    blurRadius: 16.0,
+                    spreadRadius: 0.5,
+                    offset: Offset(0.7,0.7),
+                  ),
+                ],
+              ),
 
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 17.0),
+                child: Column(
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      color: Colors.tealAccent[100],
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Row(
+                           children: [
+                             Image.asset("images/taxi.png",height: 70.0,width: 80.0,),
+                             SizedBox(width: 16.0,),
+                             Column(
+                               crossAxisAlignment: CrossAxisAlignment.start,
+                               children: [
+                                 Text(
+                                   "Car", style: TextStyle(fontSize: 18.0, fontFamily: "Brand-Bold",),
+                                 ),
+                                 Text(
+                                   "13Km", style: TextStyle(fontSize: 16.0,color: Colors.grey,),
+                                 ),
+                               ],
+                             ),
+                           ],
+                        ),
+                      ),
+                    ),
 
+                    SizedBox(height: 20.0,),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20.0),
+                      child: Row(
+                        children: [
+                          Icon(FontAwesomeIcons.moneyCheckDollar, size: 18.0, color: Colors.black54,),
+                          SizedBox(width: 16.0,),
+                          Text("Cash"),
+                          SizedBox(width: 6.0,),
+                          Icon(Icons.keyboard_arrow_down, color: Colors.black54, size: 16.0,),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 24.0,),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          print("clicked");
+                        },
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.blue, // Thay thế màu này bằng màu khác
+                          padding: EdgeInsets.all(17.0),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "Request",
+                              style: TextStyle(
+                                fontSize: 20.0,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            Icon(
+                              FontAwesomeIcons.taxi,
+                              color: Colors.white,
+                              size: 26.0,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),

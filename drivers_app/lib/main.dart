@@ -2,6 +2,7 @@
 
 import 'dart:io';
 
+import 'package:drivers_app/AllScreens/carInfoScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -20,6 +21,7 @@ void main() async{
 }
 
 DatabaseReference usersRef = FirebaseDatabase.instance.reference().child("users");
+DatabaseReference driversRef = FirebaseDatabase.instance.reference().child("drivers");
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -36,12 +38,13 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,//The banner color
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
-        initialRoute: FirebaseAuth.instance.currentUser == null ? LoginScreen.idScreen : MainScreen.idScreen,
+        initialRoute: RegisterationScreen.idScreen,
         routes:
         {
           RegisterationScreen.idScreen: (context) => RegisterationScreen(),
           LoginScreen.idScreen: (context) => LoginScreen(),
           MainScreen.idScreen: (context) => MainScreen(),
+          CarInfoScreen.idScreen: (context) => CarInfoScreen(),
         },
         debugShowCheckedModeBanner: false,//Remove the banner
       ),

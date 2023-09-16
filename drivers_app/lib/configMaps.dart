@@ -5,3 +5,4 @@ String mapKey = "AIzaSyC_1sHOAGI52bSK0bMYvSGT6lwE48D41Tg";
 
 User? firebaseUser;
 Users? userCurrentInfo;
+User? currentfirebaseUser;

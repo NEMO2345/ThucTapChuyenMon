@@ -63,6 +63,25 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
   double rideDetailContainerHeigth = 0;
   double searchContainerHeight = 310.0;
 
+  bool drawerOpen = true;
+
+  resetApp(){
+    setState(() {
+      drawerOpen = true;
+
+      searchContainerHeight = 300.0;
+      rideDetailContainerHeigth = 0;
+      bottomPaddingOfMap = 230.0;
+
+    //  FlutterMap.null;
+      // polylineSet.clear();
+      // markersSet.clear();
+      // circlesSetclear();
+      // plineCoordinatesclear();
+    });
+    getLocation();
+  }
+
   MapController _mapController = MapController();
 //vi tri hien tai
   Future<dynamic> getLocation() async{
@@ -104,6 +123,7 @@ void displayRideDetailContainer() async{
         searchContainerHeight = 0;
         rideDetailContainerHeigth = 300.0;
         bottomPaddingOfMap = 300.0;
+        drawerOpen = false;
     });
 
 }
@@ -151,7 +171,6 @@ void displayRideDetailContainer() async{
   double _degreesToRadians(double degrees) {
     return degrees * (pi / 180);
   }
-
   // double calculateDistanceBetweenPoints(List<LatLng> points, int index1, int index2) {
   //   if (points.length <= index1 || points.length <= index2) {
   //     throw ArgumentError('Invalid index');
@@ -247,9 +266,7 @@ void displayRideDetailContainer() async{
               ),
 
               DividerWidget(),
-
               SizedBox(height: 12.0,),
-
 
               //Drawer controller
               ListTile(
@@ -340,14 +357,21 @@ void displayRideDetailContainer() async{
               ],
             ),
 
-          ), //HambugarButton for Drawer
+          ),
+          //HambugarButton for Drawer
+
           Positioned(
-            top:45.0,
+            top: 38.0,
             left: 22.0,
             child: GestureDetector(
               onTap: () {
-                if (scaffoldKey.currentState != null) {
-                  scaffoldKey.currentState!.openDrawer();
+                if (scaffoldKey.currentState != null)
+                {
+                  if(drawerOpen){
+                    scaffoldKey.currentState!.openDrawer();
+                  }else{
+                    resetApp();
+                  }
                 }
               },
               child: Container(
@@ -366,10 +390,9 @@ void displayRideDetailContainer() async{
                     ),
                   ],
                 ),
-
                 child: CircleAvatar(
                   backgroundColor: Colors.white,
-                  child: Icon(Icons.menu,color: Colors.black,),
+                  child: Icon((drawerOpen) ? Icons.menu : Icons.close,color: Colors.black,),
                   radius: 20.0,
                 ),
               ),

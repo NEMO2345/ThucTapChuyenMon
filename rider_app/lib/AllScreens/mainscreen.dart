@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, unnecessary_import, library_private_types_in_public_api, prefer_final_fields, unnecessary_new, sized_box_for_whitespace, prefer_const_literals_to_create_immutables, sort_child_properties_last, prefer_interpolation_to_compose_strings, use_build_context_synchronously, avoid_print, non_constant_identifier_names, library_prefixes, unused_label
+// ignore_for_file: prefer_const_constructors, unnecessary_import, library_private_types_in_public_api, prefer_final_fields, unnecessary_new, sized_box_for_whitespace, prefer_const_literals_to_create_immutables, sort_child_properties_last, prefer_interpolation_to_compose_strings, use_build_context_synchronously, avoid_print, non_constant_identifier_names, library_prefixes, unused_label, cast_from_null_always_fails, unnecessary_null_comparison, unused_element
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -149,6 +149,7 @@ void displayRideDetailContainer() async{
 
   @override
   void initState() {
+    super.initState();
      getLocation();
     //  vsync: this;
     // duration: Duration(milliseconds: 500);
@@ -418,208 +419,219 @@ void displayRideDetailContainer() async{
             left: 0.0,
             right: 0.0,
             bottom: 0.0,
-            child: AnimatedSize(
-              //vsync: this, (if not ) khong dong bo duoc to do
-              curve: Curves.bounceIn,
-              duration: new Duration(
-                milliseconds: 160,
-              ),
-              child: Container(
-                height: searchContainerHeight,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(15.0),
-                    topRight: Radius.circular((18.0)),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black,
-                      blurRadius: 16.0,
-                      spreadRadius: 0.5,
-                      offset: Offset(0.7, 0.7),
-                    )
-                  ],
+            child: SingleChildScrollView(
+              child: AnimatedSize(
+                //vsync: this, (if not ) khong dong bo duoc to do
+                curve: Curves.bounceIn,
+                duration: new Duration(
+                  milliseconds: 160,
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0,vertical: 18.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 6.0),
-                      Text("Hi There, ",style: TextStyle(fontSize: 12.0),),
-                      Text("Where to? ",style: TextStyle(fontSize: 20.0,fontFamily: "Brand-Bold"),),
-                      //Diem Dau
-                      SizedBox(height:20.0 ),
-                      GestureDetector(
-                        onTap:() async {
-                          showProgressDialog() {
-                            Future.delayed(Duration(seconds: 3), () {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) => ProgressDialog(message: "Please wait..."),
-                              );
-                            });
-                          }
-                          final  Address address = await  Navigator.push(context, MaterialPageRoute(builder: (context) => SearchScreen(Latitude: Latitude,Longitude: Longitude,)));
-                         if(address != null){
-
-                           setState(() {
-                             sourLatitude = address.latitude;
-                             sourLongitude = address.longitude;
-                             PickUpPoint = address.placeName;
-                           });
-                           if (desLatitude != 0 && desLongitude != 0){
-                             getCoordinates(sourLatitude,sourLongitude,desLatitude,desLongitude);
-                           }
-                           print('$sourLatitude, $sourLongitude');
-
-                           _mapController.move(LatLng(sourLatitude, sourLongitude), zoomSize);
-                         }
-                          displayRideDetailContainer();
-
-                       },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(
-                             5.0
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black54,
-                                blurRadius: 6.0,
-                                spreadRadius: 0.5,
-                                offset: Offset(0.7, 0.7),
-                              )
-                            ],
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Row(
-                              children: [
-                                Icon(Icons.search,color: Colors.blueAccent,),
-                                SizedBox(width: 10.0,),
-                                Column(
-                                  children: [
-
-                                    Text(
-                                      PickUpPoint.length <= 45
-                                         ? PickUpPoint
-                                         : PickUpPoint.substring(0, 45),
-
-                                    ),
-                                    Text(
-                                      PickUpPoint.length > 45
-                                          ? PickUpPoint.substring(45)
-                                          : "",
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      //Diem cuoi
-                      SizedBox(height: 5.0,),
-                      GestureDetector(
-                        onTap:() async {
-                          showProgressDialog() {
-                            Future.delayed(Duration(seconds: 3), () {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) => ProgressDialog(message: "Please wait..."),
-                              );
-                            });
-                          }
-                          final  Address address = await  Navigator.push(context, MaterialPageRoute(builder: (context) => SearchScreen(Latitude: Latitude,Longitude: Longitude,)));
-                         if(address != null){
-                           setState(() {
-                             desLatitude =address.latitude;
-                             desLongitude = address.longitude;
-                             Destination = address.placeName;
-                             if (sourLatitude != 0 && sourLongitude != 0){
-                               getCoordinates(sourLatitude,sourLongitude,desLatitude,desLongitude);
-                             }
-                           });
-                           print('$desLatitude, $desLongitude');
-                         }
-
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(
-                                5.0
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black54,
-                                blurRadius: 6.0,
-                                spreadRadius: 0.5,
-                                offset: Offset(0.7, 0.7),
-                              )
-                            ],
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Row(
-                              children: [
-                                Icon(Icons.search,color: Colors.blueAccent,),
-                                SizedBox(width: 10.0,),
-                                Column(
-                                  children: [
-                                    Text(
-                                      Destination.length <= 45
-                                          ? Destination
-                                          : Destination.substring(0, 45),
-
-                                    ),
-                                    Text(
-                                      Destination.length > 45
-                                          ? Destination.substring(45)
-                                          : " ",
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 24.0,),
-                      Row(
-                        children: [
-                          Icon(Icons.home,color: Colors.grey,),
-                          SizedBox(width: 12.0,),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                display_name_Location.length <= 45
-                                    ? display_name_Location
-                                    : display_name_Location.substring(0, 45),
-
-                              ),
-                              Text(
-                                display_name_Location.length > 45
-                                    ? display_name_Location.substring(45)
-                                    :"",
-                              ),
-                              SizedBox(height: 4.0,),
-                              Text(
-                                "Your living home address",
-                                style: TextStyle(color: Colors.grey[200], fontSize: 12.0),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-
-                      SizedBox(height: 10.0,),
-                      DividerWidget(),
+                child: Container(
+                  height: searchContainerHeight,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(15.0),
+                      topRight: Radius.circular((18.0)),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black,
+                        blurRadius: 16.0,
+                        spreadRadius: 0.5,
+                        offset: Offset(0.7, 0.7),
+                      )
                     ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 22.0,vertical: 18.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: 6.0),
+                        Text("Hi There, ",style: TextStyle(fontSize: 12.0),),
+                        Text("Where to? ",style: TextStyle(fontSize: 20.0,fontFamily: "Brand-Bold"),),
+                        //Diem Dau
+                        SizedBox(height:20.0 ),
+                        GestureDetector(
+                          onTap:() async {
+                            showProgressDialog() {
+                              Future.delayed(Duration(seconds: 3), () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) => ProgressDialog(message: "Please wait..."),
+                                );
+                              });
+                            }
+                            final  Address address = await  Navigator.push(context, MaterialPageRoute(builder: (context) => SearchScreen(Latitude: Latitude,Longitude: Longitude,)));
+                            if(address != null){
+
+                              setState(() {
+                                sourLatitude = address.latitude;
+                                sourLongitude = address.longitude;
+                                PickUpPoint = address.placeName;
+                              });
+                              if (desLatitude != 0 && desLongitude != 0){
+                                getCoordinates(sourLatitude,sourLongitude,desLatitude,desLongitude);
+                              }
+                              print('$sourLatitude, $sourLongitude');
+
+                              _mapController.move(LatLng(sourLatitude, sourLongitude), zoomSize);
+                            }
+                           // displayRideDetailContainer();
+
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(
+                                  5.0
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black54,
+                                  blurRadius: 6.0,
+                                  spreadRadius: 0.5,
+                                  offset: Offset(0.7, 0.7),
+                                )
+                              ],
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.search,color: Colors.blueAccent,),
+                                  SizedBox(width: 10.0,),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        // TextFormField(
+                                        //   // decoration: InputDecoration(
+                                        //   //  // hintText: "Pickup Point", // Gợi ý cho trường Pickup Point
+                                        //   //   //border: InputBorder.none,
+                                        //   // ),
+                                        // ),
+                                        Text(
+                                          PickUpPoint.length <= 45
+                                              ? PickUpPoint
+                                              : PickUpPoint.substring(0, 45),
+                                        ),
+                                        Text(
+                                          PickUpPoint.length > 45
+                                              ? PickUpPoint.substring(45)
+                                              : "",
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        //Diem cuoi
+                        // ]
+                        // ].0,),
+                        GestureDetector(
+                          onTap:() async {
+                            showProgressDialog() {
+                              Future.delayed(Duration(seconds: 3), () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) => ProgressDialog(message: "Please wait..."),
+                                );
+                              });
+                            }
+                            final  Address address = await  Navigator.push(context, MaterialPageRoute(builder: (context) => SearchScreen(Latitude: Latitude,Longitude: Longitude,)));
+                            if(address != null){
+                              setState(() {
+                                desLatitude =address.latitude;
+                                desLongitude = address.longitude;
+                                Destination = address.placeName;
+                                if (sourLatitude != 0 && sourLongitude != 0){
+                                  getCoordinates(sourLatitude,sourLongitude,desLatitude,desLongitude);
+                                }
+                              });
+                              print('$desLatitude, $desLongitude');
+                              displayRideDetailContainer();
+                            }
+
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(
+                                  5.0
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black54,
+                                  blurRadius: 6.0,
+                                  spreadRadius: 0.5,
+                                  offset: Offset(0.7, 0.7),
+                                )
+                              ],
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.search,color: Colors.blueAccent,),
+                                  SizedBox(width: 10.0,),
+                                  Column(
+                                    children: [
+                                      Text(
+                                        Destination.length <= 45
+                                            ? Destination
+                                            : Destination.substring(0, 45),
+
+                                      ),
+                                      Text(
+                                        Destination.length > 45
+                                            ? Destination.substring(45)
+                                            : " ",
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 24.0,),
+                        Row(
+                          children: [
+                            Icon(Icons.home,color: Colors.grey,),
+                            SizedBox(width: 12.0,),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  display_name_Location.length <= 45
+                                      ? display_name_Location
+                                      : display_name_Location.substring(0, 45),
+
+                                ),
+                                Text(
+                                  display_name_Location.length > 45
+                                      ? display_name_Location.substring(45)
+                                      :"",
+                                ),
+                                SizedBox(height: 4.0,),
+                                Text(
+                                  "Your living home address",
+                                  style: TextStyle(color: Colors.grey[200], fontSize: 12.0),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+
+                        SizedBox(height: 10.0,),
+                        DividerWidget(),
+                      ],
+                    ),
                   ),
                 ),
               ),

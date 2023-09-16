@@ -160,7 +160,6 @@ class _LoginScreenState extends State<LoginScreen> {
         displayToastMessage("No record exists for this user. Please create a new account", context);
       }
 
-
     }
     else {
       Navigator.pop(context);

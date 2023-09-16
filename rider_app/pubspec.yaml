@@ -50,6 +50,7 @@ dependencies:
   open_street_map_search_and_pick: ^0.1.0
   font_awesome_flutter: ^10.5.0
   schedulers: ^1.0.1
+  intl: ^0.17.0
 
 dev_dependencies:
   flutter_test:

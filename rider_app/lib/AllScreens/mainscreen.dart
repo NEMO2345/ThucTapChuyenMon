@@ -1,5 +1,6 @@
-// ignore_for_file: prefer_const_constructors, unnecessary_import, library_private_types_in_public_api, prefer_final_fields, unnecessary_new, sized_box_for_whitespace, prefer_const_literals_to_create_immutables, sort_child_properties_last, prefer_interpolation_to_compose_strings, use_build_context_synchronously, avoid_print, non_constant_identifier_names, library_prefixes, unused_label, cast_from_null_always_fails, unnecessary_null_comparison, unused_element
+// ignore_for_file: prefer_const_constructors, unnecessary_import, library_private_types_in_public_api, prefer_final_fields, unnecessary_new, sized_box_for_whitespace, prefer_const_literals_to_create_immutables, sort_child_properties_last, prefer_interpolation_to_compose_strings, use_build_context_synchronously, avoid_print, non_constant_identifier_names, library_prefixes, unused_label, cast_from_null_always_fails, unnecessary_null_comparison, unused_element, unnecessary_cast
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -13,6 +14,7 @@ import 'api.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:location/location.dart' as Loc;
+import 'package:intl/intl.dart';
 
 
 
@@ -40,6 +42,9 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
 
   String PickUpPoint = "";
   String Destination = "";
+  double tripDirectionDetails = 0;
+  double totalcalculateCost = 0;
+  String formattedCost = '';
 
   // Conversion of listOfPoints into LatLng(Latitude, Longitude) list of points
   List<LatLng> points = [];
@@ -125,7 +130,58 @@ void displayRideDetailContainer() async{
       }
     });
   }
+//Tinh khoang cach giua 2 diem
+  double calculateDistance(double point1_latitude,double point1_longitude,double point2_latitude,double point2_longitude){
+    const double earthRadius = 6371; // Đường kính trái đất (đơn vị kilômét)
 
+    double dLat = _degreesToRadians(point2_latitude - point1_latitude);
+    double dLon = _degreesToRadians(point2_longitude - point1_longitude);
+
+    double a = pow(sin(dLat / 2), 2) +
+        cos(_degreesToRadians(point1_latitude)) *
+            cos(_degreesToRadians(point2_latitude)) *
+            pow(sin(dLon / 2), 2);
+
+    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+    double distance = earthRadius * c;
+
+    return distance;
+  }
+
+  double _degreesToRadians(double degrees) {
+    return degrees * (pi / 180);
+  }
+
+  // double calculateDistanceBetweenPoints(List<LatLng> points, int index1, int index2) {
+  //   if (points.length <= index1 || points.length <= index2) {
+  //     throw ArgumentError('Invalid index');
+  //   }
+  //
+  //   LatLng point1 = points[index1];
+  //   LatLng point2 = points[index2];
+  //
+  //   return calculateDistance(
+  //       point1.latitude, point1.longitude, point2.latitude, point2.longitude);
+  // }
+  double calculateTotalDistance(List<LatLng> points) {
+    double totalDistance = 0;
+
+    for (int i = 0; i < points.length - 1; i++) {
+      LatLng point1 = points[i];
+      LatLng point2 = points[i + 1];
+      double distance = calculateDistance(
+          point1.latitude, point1.longitude, point2.latitude, point2.longitude);
+      totalDistance += distance;
+    }
+
+    return totalDistance;
+  }
+//e
+  //Tinh tien
+  double calculateCost(double distance) {
+    double cost = distance * 100.0;
+    return cost;
+  }
 
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -350,7 +406,7 @@ void displayRideDetailContainer() async{
                 ),
               ),
             ),
-          ),
+          ),//Get position
           Positioned(
             bottom:400.0,
             right: 22.0,
@@ -444,7 +500,7 @@ void displayRideDetailContainer() async{
                     ],
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 22.0,vertical: 18.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 22.0,vertical: 17.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -551,9 +607,21 @@ void displayRideDetailContainer() async{
                                 Destination = address.placeName;
                                 if (sourLatitude != 0 && sourLongitude != 0){
                                   getCoordinates(sourLatitude,sourLongitude,desLatitude,desLongitude);
+                                  List<LatLng> points = [
+                                    LatLng(sourLatitude, sourLongitude),
+                                    LatLng(desLatitude, desLongitude),
+                                  ];
+                                  tripDirectionDetails = calculateTotalDistance(points);
+                                  totalcalculateCost = calculateCost(tripDirectionDetails);
+                                  if (totalcalculateCost != null) {
+                                    formattedCost = NumberFormat.currency(locale: 'en_US', symbol: '\$').format(totalcalculateCost);
+                                  } else {
+                                    formattedCost = '0 \$';
+                                  }
                                 }
                               });
                               print('$desLatitude, $desLongitude');
+                             // tripDirectionDetails = calculateTotalDistance(points) as double;
                               displayRideDetailContainer();
                             }
 
@@ -574,11 +642,11 @@ void displayRideDetailContainer() async{
                               ],
                             ),
                             child: Padding(
-                              padding: const EdgeInsets.all(12.0),
+                              padding: const EdgeInsets.all(6.0),
                               child: Row(
                                 children: [
                                   Icon(Icons.search,color: Colors.blueAccent,),
-                                  SizedBox(width: 10.0,),
+                                  SizedBox(width: 12.0,),
                                   Column(
                                     children: [
                                       Text(
@@ -637,6 +705,7 @@ void displayRideDetailContainer() async{
               ),
             ),
           ),
+
           Positioned(
             bottom: 0.0,
             left: 0.0,
@@ -682,9 +751,14 @@ void displayRideDetailContainer() async{
                                      "Car", style: TextStyle(fontSize: 18.0, fontFamily: "Brand-Bold",),
                                    ),
                                    Text(
-                                     "13Km", style: TextStyle(fontSize: 16.0,color: Colors.grey,),
+                                     ((tripDirectionDetails != null) ? tripDirectionDetails.toStringAsFixed(2) + " Km" : " 0 Km"), style: TextStyle(fontSize: 16.0,color: Colors.grey,),
                                    ),
                                  ],
+                               ),
+                               Expanded(child: Container()),
+
+                               Text(
+                                 formattedCost, style: TextStyle(fontFamily: "Brand-Bold",),
                                ),
                              ],
                           ),

@@ -1,16 +1,20 @@
-// ignore_for_file: prefer_const_constructors, unnecessary_import, library_private_types_in_public_api, prefer_final_fields, unnecessary_new, sized_box_for_whitespace, prefer_const_literals_to_create_immutables, sort_child_properties_last, prefer_interpolation_to_compose_strings, use_build_context_synchronously, avoid_print, non_constant_identifier_names, library_prefixes, unused_label, cast_from_null_always_fails, unnecessary_null_comparison, unused_element, unnecessary_cast
+// ignore_for_file: prefer_const_constructors, unnecessary_import, library_private_types_in_public_api, prefer_final_fields, unnecessary_new, sized_box_for_whitespace, prefer_const_literals_to_create_immutables, sort_child_properties_last, prefer_interpolation_to_compose_strings, use_build_context_synchronously, avoid_print, non_constant_identifier_names, library_prefixes, unused_label, cast_from_null_always_fails, unnecessary_null_comparison, unused_element, unnecessary_cast, unused_local_variable
 import 'dart:async';
 import 'dart:math';
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:rider_app/AllScreens/searchScreen.dart';
 import 'package:rider_app/AllWidgets/Divider.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:rider_app/AllWidgets/progressDialog.dart';
+import 'package:rider_app/Assistants/AssistantMethods.dart';
+import 'package:rider_app/configMaps.dart';
 import '../Models/address.dart';
 import 'api.dart';
 import 'package:http/http.dart' as http;
@@ -68,32 +72,26 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
 
   bool drawerOpen = true;
 
+  late DatabaseReference rideRequestRef;
+
   //function adjust requestRideContainerHeight
-  void displayRequestContainer(){
+  void displayRequestRideContainer(){
     setState(() {
       requestRideContainerHeigth = 250.0;
       rideDetailContainerHeigth = 0;
       bottomPaddingOfMap = 230.0;
       drawerOpen = true;
     });
+    saveRideRequest();
   }
-
-
-
 
   resetApp(){
     setState(() {
       drawerOpen = true;
-
       searchContainerHeight = 300.0;
       rideDetailContainerHeigth = 0;
+      requestRideContainerHeigth = 0;
       bottomPaddingOfMap = 230.0;
-
-    //  FlutterMap.null;
-      // polylineSet.clear();
-      // markersSet.clear();
-      // circlesSetclear();
-      // plineCoordinatesclear();
     });
     getLocation();
   }
@@ -145,7 +143,6 @@ void displayRideDetailContainer() async{
 }
 
   // Method to consume the OpenRouteService API
-
   getCoordinates(double sour_lat, double sour_lon, double des_lat, double des_lon) async {
 
     var response = await http.get(getRouteUrl("$sour_lon,$sour_lat",
@@ -155,7 +152,6 @@ void displayRideDetailContainer() async{
     //     '1.2160116523406839,6.125231015668568'));
     // var distance = jsonDecode(response.body)['features'][0]['summary']['distance'];
     print(response.statusCode);
-
     setState(() {
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
@@ -211,7 +207,7 @@ void displayRideDetailContainer() async{
 
     return totalDistance;
   }
-//e
+//end
   //Tinh tien
   double calculateCost(double distance) {
     double cost = distance * 100.0;
@@ -244,6 +240,40 @@ void displayRideDetailContainer() async{
      getLocation();
     //  vsync: this;
     // duration: Duration(milliseconds: 500);
+    AssistantMethods.getCurrentOnlineUserInfo();
+  }
+
+  void saveRideRequest(){
+      rideRequestRef = FirebaseDatabase.instance.ref().child("Ride Requests").push();
+
+      Map pickUpLocMap = {
+        "latitude": sourLatitude.toString(),
+        "longitude": sourLongitude.toString(),
+
+      };
+      Map dropOffLocMap = {
+        "latitude": desLatitude.toString(),
+        "longitude": desLongitude.toString(),
+      };
+
+      Map rideInfoMap = {
+        "driver_id" : "waiting",
+        "payment_method" : "cash",
+        "pickup" : pickUpLocMap,
+        "dropoff" : dropOffLocMap,
+        "created_at": DateTime.now().toString(),
+        "rider_name": userCurrentInfo?.name,
+        "rider_phone": userCurrentInfo?.phone,
+        "pickup_address": PickUpPoint.toString(),
+        "dropoff_address": Destination.toString(),
+      };
+      rideRequestRef.set(rideInfoMap);
+
+  }
+
+  void cancelRideRequest(){
+    rideRequestRef.remove();
+
   }
 
   @override
@@ -823,7 +853,7 @@ void displayRideDetailContainer() async{
                         padding: EdgeInsets.symmetric(horizontal: 16.0),
                         child: ElevatedButton(
                           onPressed: () {
-                            displayRequestContainer();
+                            displayRequestRideContainer();
                           },
                           style: ElevatedButton.styleFrom(
                             primary: Colors.blue, // Thay thế màu này bằng màu khác
@@ -908,16 +938,22 @@ void displayRideDetailContainer() async{
                     ),
 
                     SizedBox(height: 22.0),
-                    Container(
-                      height: 60.0,
-                      width: 60.0,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(26.0),
-                        border: Border.all(width: 2.0, color: Colors.grey),
-                      ),
-                      child: Icon(Icons.close,size: 26.0,),
+                    GestureDetector(
+                      onTap:(){
+                        cancelRideRequest();
+                        resetApp();
+                     },
+                      child: Container(
+                        height: 60.0,
+                        width: 60.0,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(26.0),
+                          border: Border.all(width: 2.0, color: Colors.grey),
+                        ),
+                        child: Icon(Icons.close,size: 26.0,),
 
+                      ),
                     ),
 
                     SizedBox(height: 10.0),
@@ -935,4 +971,5 @@ void displayRideDetailContainer() async{
     );
   }
 }
+
 

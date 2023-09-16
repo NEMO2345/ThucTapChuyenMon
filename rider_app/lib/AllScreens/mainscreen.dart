@@ -1,6 +1,8 @@
 // ignore_for_file: prefer_const_constructors, unnecessary_import, library_private_types_in_public_api, prefer_final_fields, unnecessary_new, sized_box_for_whitespace, prefer_const_literals_to_create_immutables, sort_child_properties_last, prefer_interpolation_to_compose_strings, use_build_context_synchronously, avoid_print, non_constant_identifier_names, library_prefixes, unused_label, cast_from_null_always_fails, unnecessary_null_comparison, unused_element, unnecessary_cast
 import 'dart:async';
 import 'dart:math';
+import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -61,9 +63,23 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
   String display_name_Location = "You address";
 
   double rideDetailContainerHeigth = 0;
+  double requestRideContainerHeigth = 0;
   double searchContainerHeight = 310.0;
 
   bool drawerOpen = true;
+
+  //function adjust requestRideContainerHeight
+  void displayRequestContainer(){
+    setState(() {
+      requestRideContainerHeigth = 250.0;
+      rideDetailContainerHeigth = 0;
+      bottomPaddingOfMap = 230.0;
+      drawerOpen = true;
+    });
+  }
+
+
+
 
   resetApp(){
     setState(() {
@@ -122,7 +138,7 @@ void displayRideDetailContainer() async{
     setState(() {
         searchContainerHeight = 0;
         rideDetailContainerHeigth = 300.0;
-        bottomPaddingOfMap = 300.0;
+        bottomPaddingOfMap = 230.0;
         drawerOpen = false;
     });
 
@@ -462,6 +478,7 @@ void displayRideDetailContainer() async{
               ),
             ),
           ),
+
           Positioned(
             bottom:350.0,
             right: 22.0,
@@ -806,7 +823,7 @@ void displayRideDetailContainer() async{
                         padding: EdgeInsets.symmetric(horizontal: 16.0),
                         child: ElevatedButton(
                           onPressed: () {
-                            print("clicked");
+                            displayRequestContainer();
                           },
                           style: ElevatedButton.styleFrom(
                             primary: Colors.blue, // Thay thế màu này bằng màu khác
@@ -834,6 +851,81 @@ void displayRideDetailContainer() async{
                       ),
                     ],
                   ),
+                ),
+              ),
+            ),
+          ),
+
+          Positioned(
+            bottom: 0.0,
+            left: 0.0,
+            right: 0.0,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(topLeft: Radius.circular(16.0),topRight: Radius.circular(16.0),),
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    spreadRadius: 0.5,
+                    blurRadius: 16.0,
+                    color: Colors.black54,
+                    offset: Offset(0.7,0.7),
+                  ),
+                ],
+              ),
+              height: requestRideContainerHeigth,
+              child: Padding(
+                padding: const EdgeInsets.all(30.0),
+                child: Column(
+                  children: [
+                    SizedBox(height: 12.0),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ColorizeAnimatedTextKit(
+                        onTap: () {
+                          print("Tap Event");
+                        },
+                        text: [
+                          'Requesting a Ride...',
+                          'Please wait...',
+                          'Finding a Driver...',
+                        ],
+                        textStyle: TextStyle(
+                          fontSize: 55.0,
+                          fontFamily: 'Signatra',
+                        ),
+                        colors: [
+                          Colors.green,
+                          Colors.purple,
+                          Colors.pink,
+                          Colors.blue,
+                          Colors.yellow,
+                          Colors.red,
+                        ],
+                        textAlign: TextAlign.center,
+                        //alignment: AlignmentDirectional.topStart,
+                      ),
+                    ),
+
+                    SizedBox(height: 22.0),
+                    Container(
+                      height: 60.0,
+                      width: 60.0,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(26.0),
+                        border: Border.all(width: 2.0, color: Colors.grey),
+                      ),
+                      child: Icon(Icons.close,size: 26.0,),
+
+                    ),
+
+                    SizedBox(height: 10.0),
+                    Container(
+                      width: double.infinity,
+                      child: Text("Cancel Ride",textAlign: TextAlign.center, style: TextStyle(fontSize: 12.0),),
+                    ),
+                  ],
                 ),
               ),
             ),

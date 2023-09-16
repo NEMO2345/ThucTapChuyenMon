@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "761984572919",
+    "firebase_url": "https://flutter-thu2-default-rtdb.firebaseio.com",
+    "project_id": "flutter-thu2",
+    "storage_bucket": "flutter-thu2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:761984572919:android:0a1a4443a4d8d5a4d5e2f2",
+        "android_client_info": {
+          "package_name": "com.phamthily.drivers_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDt8MsNqag-V75oHhuxDRbKe4FZ9-X_XLw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:761984572919:android:4db78c4f61c3ef3ed5e2f2",
+        "android_client_info": {
+          "package_name": "com.phamthily.riderapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDt8MsNqag-V75oHhuxDRbKe4FZ9-X_XLw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

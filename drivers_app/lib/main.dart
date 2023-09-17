@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,//The banner color
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
-        initialRoute: RegisterationScreen.idScreen,
+        initialRoute: MainScreen.idScreen,
         routes:
         {
           RegisterationScreen.idScreen: (context) => RegisterationScreen(),

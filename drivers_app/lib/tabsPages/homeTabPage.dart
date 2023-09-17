@@ -95,10 +95,6 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin{
 
     var response = await http.get(getRouteUrl("$sour_lon,$sour_lat",
         '$des_lon,$des_lat'));
-    // Requesting for openrouteservice api
-    // var response = await http.get(getRouteUrl("1.243344,6.145332",
-    //     '1.2160116523406839,6.125231015668568'));
-    // var distance = jsonDecode(response.body)['features'][0]['summary']['distance'];
     print(response.statusCode);
     setState(() {
       if (response.statusCode == 200) {
@@ -301,6 +297,55 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin{
               ),
             ),
           ),
+          Container(
+            height: 140.0,
+            width: double.infinity,
+            color: Colors.black54,
+          ),
+
+          Positioned(
+            top: 60.0,
+            left: 0.0,
+            right: 0.0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+             children: [
+               Padding(
+                 padding: EdgeInsets.symmetric(horizontal: 16.0),
+                 child: ElevatedButton(
+                   onPressed: () {
+                     // Xử lý sự kiện khi nút được nhấn
+
+                   },
+                   style: ElevatedButton.styleFrom(
+                     primary: Colors.green, // Đặt màu xanh lá cho nút
+                     padding: EdgeInsets.all(17.0),
+                   ),
+                   child: Row(
+                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                     children: [
+                       Text(
+                         "Online Now ",
+                         style: TextStyle(
+                           fontSize: 28.0,
+                           fontWeight: FontWeight.bold,
+                           color: Colors.white,
+                         ),
+                       ),
+                       Icon(
+                         Icons.phone_android,
+                         color: Colors.white,
+                         size: 26.0,
+                       ),
+                     ],
+                   ),
+                 ),
+               ),
+             ],
+            ),
+          ),
+
+          
         ],
     );
   }

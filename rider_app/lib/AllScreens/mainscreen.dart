@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, unnecessary_import, library_private_types_in_public_api, prefer_final_fields, unnecessary_new, sized_box_for_whitespace, prefer_const_literals_to_create_immutables, sort_child_properties_last, prefer_interpolation_to_compose_strings, use_build_context_synchronously, avoid_print, non_constant_identifier_names, library_prefixes, unused_label, cast_from_null_always_fails, unnecessary_null_comparison, unused_element, unnecessary_cast, unused_local_variable
+// ignore_for_file: prefer_const_constructors, unnecessary_import, library_private_types_in_public_api, prefer_final_fields, unnecessary_new, sized_box_for_whitespace, prefer_const_literals_to_create_immutables, sort_child_properties_last, prefer_interpolation_to_compose_strings, use_build_context_synchronously, avoid_print, non_constant_identifier_names, library_prefixes, unused_label, cast_from_null_always_fails, unnecessary_null_comparison, unused_element, unnecessary_cast, unused_local_variable, no_leading_underscores_for_local_identifiers, constant_pattern_never_matches_value_type
 import 'dart:async';
 import 'dart:math';
 import 'package:animated_text_kit/animated_text_kit.dart';
@@ -7,6 +7,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:rider_app/AllScreens/loginScreen.dart';
@@ -16,6 +17,8 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:rider_app/AllWidgets/progressDialog.dart';
 import 'package:rider_app/Assistants/AssistantMethods.dart';
+import 'package:rider_app/Assistants/geoFireAssistant.dart';
+import 'package:rider_app/Models/nearbyAvailableDrivers.dart';
 import 'package:rider_app/configMaps.dart';
 import '../Models/address.dart';
 import 'api.dart';
@@ -982,6 +985,54 @@ void displayRideDetailContainer() async{
         ],
       ),
     );
+  }
+
+  void initGeoFireListener() {
+    Geofire.initialize("availableDrivers");
+    // Lắng nghe và cập nhật tọa độ từ Firebase
+    DatabaseReference _locationRef = FirebaseDatabase.instance.ref().child('availableDrivers');
+    _locationRef.onValue.listen((event) {
+      var snapshotValue = event.snapshot.value;
+      if (snapshotValue != null) {
+        var latitude = (snapshotValue as Map<String, dynamic>)['latitude'] as double?;
+        var longitude = (snapshotValue as Map<String, dynamic>)['longitude'] as double?;
+
+        if (latitude != null && longitude != null) {
+          Geofire.queryAtLocation(latitude, longitude, 15)?.listen((map) {//in 5km
+            print(map);
+            if (map != null) {
+              var callBack = (map as Map<String, dynamic>)['callBack'] as int?;
+
+              if (callBack != null) {
+                switch (callBack) {
+                  case Geofire.onKeyEntered:
+                    NearbyAvailableDrivers nearbyAvailableDrivers = NearbyAvailableDrivers();
+                    nearbyAvailableDrivers.key = map['key'];
+                    nearbyAvailableDrivers.latitude = map['latitude'];
+                    nearbyAvailableDrivers.longitude = map['longitude'];
+                    GeoFireAssistant.nearByAvailableDriversList.add(nearbyAvailableDrivers);
+                    break;
+
+                  case Geofire.onKeyExited:
+                    GeoFireAssistant.removeDriverFromList(map['key']);
+                    break;
+                  case Geofire.onKeyMoved:
+                    NearbyAvailableDrivers nearbyAvailableDrivers = NearbyAvailableDrivers();
+                    nearbyAvailableDrivers.key = map['key'];
+                    nearbyAvailableDrivers.latitude = map['latitude'];
+                    nearbyAvailableDrivers.longitude = map['longitude'];
+                    GeoFireAssistant.updateDriverNearByLocation(nearbyAvailableDrivers);
+                    break;
+                  case Geofire.onGeoQueryReady:
+                    break;
+                }
+              }
+            }
+            setState(() {});
+          });
+        }
+      }
+    });
   }
 }
 

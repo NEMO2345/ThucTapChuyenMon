@@ -2,6 +2,7 @@
 
 import 'dart:async';
 
+import 'package:drivers_app/AllScreens/registerationScreen.dart';
 import 'package:drivers_app/configMaps.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
@@ -18,11 +19,12 @@ import 'package:location/location.dart' as Loc;
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_map/flutter_map.dart';
 
+import '../main.dart';
+
 
 class HomeTabPage extends StatefulWidget {
 
   late TapUpDetails details;
-
   HomeTabPage({Key? key}) : super(key: key);
 
   @override
@@ -67,6 +69,10 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
 
 
   MapController _mapController = MapController();
+
+  String diverStatusText = "Offline Now - Go Online";
+  Color diverStatusColor = Colors.black;
+  bool isDriverAvailable = false;
 
 //vi tri hien tai
   Future<dynamic> getLocation() async {
@@ -340,23 +346,34 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
                 padding: EdgeInsets.symmetric(horizontal: 16.0),
                 child: ElevatedButton(
                   onPressed: () {
-                    // RenderBox box = context.findRenderObject() as RenderBox;
-                    // var details;
-                    // var localPosition = box.globalToLocal(details.globalPosition);
-                    // var tapPosition = _mapController.center;
-                    makerDriverOnlineNow();
-                    getLocationLiveUpdates();
-                    // saveLocationToFirebase(tapPosition);
+                    if(isDriverAvailable != true){
+                      makerDriverOnlineNow();
+                      getLocationLiveUpdates();
+                      setState(() {
+                        diverStatusColor = Colors.green;
+                        diverStatusText = "Online Now";
+                        isDriverAvailable = true;
+                      });
+                      displayToastMessage("you are Online Now", context);
+                    }
+                    else {
+                      setState(() {
+                        diverStatusColor = Colors.black;
+                        diverStatusText = "Offline Now - Go Online";
+                        isDriverAvailable = false;
+                      });
+                        makeDriverOfflineNow();
+                    }
                   },
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.green, // Đặt màu xanh lá cho nút
+                    primary: diverStatusColor, // Đặt màu xanh lá cho nút
                     padding: EdgeInsets.all(17.0),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "Offline Now - Go Online",
+                        diverStatusText,
                         style: TextStyle(
                           fontSize: 28.0,
                           fontWeight: FontWeight.bold,
@@ -378,6 +395,42 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
       ],
     );
   }
+  // void makerDriverOnlineNow() async {
+  //   Geolocator geolocator = Geolocator();
+  //
+  //   Position position = await Geolocator.getCurrentPosition(
+  //     desiredAccuracy: LocationAccuracy.best,
+  //   );
+  //
+  //   double latitude = position.latitude;
+  //   double longitude = position.longitude;
+  //
+  //   Map<String, dynamic> myLocation = {
+  //     "latitude": latitude,
+  //     "longitude": longitude,
+  //   };
+  //
+  //   DatabaseReference driversRef = FirebaseDatabase.instance.reference().child(
+  //       "availableDrivers");
+  //   await driversRef.child(currentfirebaseUser!.uid).set(myLocation);
+  // }
+  // void getLocationLiveUpdates() {
+  //   homeTabPageStreamSubscription = Geolocator.getPositionStream().listen(
+  //         (Position position) {
+  //       if (currentfirebaseUser != null) {
+  //         Geofire.setLocation(
+  //           currentfirebaseUser!.uid,
+  //           position.latitude,
+  //           position.longitude,
+  //         );
+  //       }
+  //       LatLng latLng = LatLng(position.latitude, position.longitude);
+  //       if (_mapController != null) {
+  //         _mapController.move(latLng, zoomSize);
+  //       }
+  //     },
+  //   );
+  // }
   void makerDriverOnlineNow() async {
     Geolocator geolocator = Geolocator();
 
@@ -393,64 +446,39 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
       "longitude": longitude,
     };
 
-    DatabaseReference driversRef = FirebaseDatabase.instance.reference().child(
-        "availableDrivers");
-    await driversRef.child(currentfirebaseUser!.uid).set(myLocation);
-  }
-  void getLocationLiveUpdates() {
-    homeTabPageStreamSubscription = Geolocator.getPositionStream().listen(
-          (Position position) {
-        if (currentfirebaseUser != null) {
-          Geofire.setLocation(
-            currentfirebaseUser!.uid,
-            position.latitude,
-            position.longitude,
-          );
-        }
-        LatLng latLng = LatLng(position.latitude, position.longitude);
-        if (_mapController != null) {
-          _mapController.move(latLng, zoomSize);
-        }
-      },
-    );
+    DatabaseReference driversRef =
+    FirebaseDatabase.instance.reference().child("availableDrivers");
+    await driversRef.child(currentfirebaseUser!.uid).update(myLocation);
   }
 
-// void getLocationLiveUpdates() {
-  //   StreamSubscription<Position> homeTabPageStreamSubscription;
-  //   homeTabPageStreamSubscription =
-  //       Geolocator.getPositionStream().listen((Position position) {
-  //         var currentPosition = position;
-  //         Geofire.setLocation(
-  //             currentfirebaseUser!.uid, position.latitude, position.longitude);
-  //         LatLng latLng = LatLng(position.latitude, position.longitude);
-  //         _mapController.move(latLng, zoomSize);
-  //       });
-  // }
-  //
-  // void getLocationLiveUpdates() {
-  //   StreamSubscription<Position> homeTabPageStreamSubscription;
-  //   homeTabPageStreamSubscription =
-  //       Geolocator.getPositionStream().listen((Position position) {
-  //         var currentPosition = position;
-  //         Geofire.setLocation(
-  //             currentfirebaseUser!.uid, position.latitude, position.longitude);
-  //         LatLng latLng = LatLng(position.latitude, position.longitude);
-  //         _mapController.move(latLng, zoomSize);
-  //       });
-  // }
-  //
-  // void saveLocationToFirebase(LatLng tapPosition) async {
-  //   double latitude = tapPosition.latitude;
-  //   double longitude = tapPosition.longitude;
-  //
-  //   Map<String, dynamic> myLocation = {
-  //     "latitude": latitude,
-  //     "longitude": longitude,
-  //   };
-  //
-  //   DatabaseReference driversRef = FirebaseDatabase.instance.reference().child("availableDrivers");
-  //   await driversRef.child(currentfirebaseUser!.uid).set(myLocation);
-  // }
+  void getLocationLiveUpdates() {
+    Geolocator.getPositionStream().listen((Position position) {
+     if(isDriverAvailable == true){
+       if (currentfirebaseUser != null) {
+         Geofire.setLocation(
+           currentfirebaseUser!.uid,
+           position.latitude,
+           position.longitude,
+         );
+       }
+     }
+      LatLng latLng = LatLng(position.latitude, position.longitude);
+      if (_mapController != null) {
+        _mapController.move(latLng, _mapController.zoom);
+      }
+    });
+  }
+  void makeDriverOfflineNow() {
+    DatabaseReference databaseRef = FirebaseDatabase.instance.reference();
+    DatabaseReference driverRef = databaseRef.child('availableDrivers/'+ currentfirebaseUser!.uid);
+
+    driverRef.remove().then((_) {
+      print('Dữ liệu đã được xóa thành công.');
+    }).catchError((error) {
+      print('Có lỗi xảy ra khi xóa dữ liệu: $error');
+    });
+    displayToastMessage("you are Offline Now", context);
+  }
 }
 
 

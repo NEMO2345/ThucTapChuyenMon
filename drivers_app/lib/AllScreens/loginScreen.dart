@@ -150,7 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
     })).user;
     if (firebaseUser != null)
     {
-      final snapshot = await usersRef.child('users/'+firebaseUser.uid).get();
+      final snapshot = await usersRef.child('drivers/'+firebaseUser.uid).get();
       if (snapshot.exists) {
             Navigator.pushNamedAndRemoveUntil(context, MainScreen.idScreen, (route) => false);
             displayToastMessage("You are logged-in now.", context);

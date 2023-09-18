@@ -3,6 +3,7 @@
 import 'dart:io';
 
 import 'package:drivers_app/AllScreens/carInfoScreen.dart';
+import 'package:drivers_app/configMaps.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -17,11 +18,15 @@ void main() async{
   await Firebase.initializeApp();//Khoi tao firebase
   // Add this line to ignore certificate validation
   HttpOverrides.global = MyHttpOverrides();
+
+  currentfirebaseUser = FirebaseAuth.instance.currentUser;
+
   runApp(const MyApp());
 }
 
 DatabaseReference usersRef = FirebaseDatabase.instance.reference().child("users");
 DatabaseReference driversRef = FirebaseDatabase.instance.reference().child("drivers");
+DatabaseReference rideRequestRef = FirebaseDatabase.instance.reference().child("drivers").child(currentfirebaseUser!.uid).child("newRide");
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -38,7 +43,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,//The banner color
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
-        initialRoute: MainScreen.idScreen,
+        initialRoute: FirebaseAuth.instance.currentUser == null ?LoginScreen.idScreen : MainScreen.idScreen,
         routes:
         {
           RegisterationScreen.idScreen: (context) => RegisterationScreen(),

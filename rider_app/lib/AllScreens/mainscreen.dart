@@ -1,4 +1,5 @@
-// ignore_for_file: prefer_const_constructors, unnecessary_import, library_private_types_in_public_api, prefer_final_fields, unnecessary_new, sized_box_for_whitespace, prefer_const_literals_to_create_immutables, sort_child_properties_last, prefer_interpolation_to_compose_strings, use_build_context_synchronously, avoid_print, non_constant_identifier_names, library_prefixes, unused_label, cast_from_null_always_fails, unnecessary_null_comparison, unused_element, unnecessary_cast, unused_local_variable, no_leading_underscores_for_local_identifiers, constant_pattern_never_matches_value_type
+// ignore_for_file: prefer_const_constructors, unnecessary_import, library_private_types_in_public_api, prefer_final_fields, unnecessary_new, sized_box_for_whitespace, prefer_const_literals_to_create_immutables, sort_child_properties_last, prefer_interpolation_to_compose_strings, use_build_context_synchronously, avoid_print, non_constant_identifier_names, library_prefixes, unused_label, cast_from_null_always_fails, unnecessary_null_comparison, unused_element, unnecessary_cast, unused_local_variable, no_leading_underscores_for_local_identifiers, constant_pattern_never_matches_value_type, prefer_collection_literals, deprecated_member_use, avoid_unnecessary_containers, prefer_conditional_assignment
+import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'dart:async';
 import 'dart:math';
 import 'package:animated_text_kit/animated_text_kit.dart';
@@ -9,11 +10,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:provider/provider.dart';
 import 'package:rider_app/AllScreens/loginScreen.dart';
 import 'package:rider_app/AllScreens/searchScreen.dart';
 import 'package:rider_app/AllWidgets/Divider.dart';
-import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map/flutter_map.dart' show BitmapDescriptor, FlutterMap, MapController, MapOptions, Marker, MarkerLayer, Polyline, PolylineLayer, TileLayer;
 import 'package:latlong2/latlong.dart';
 import 'package:rider_app/AllWidgets/progressDialog.dart';
 import 'package:rider_app/Assistants/AssistantMethods.dart';
@@ -26,9 +26,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:location/location.dart' as Loc;
 import 'package:intl/intl.dart';
-
-
-
 
 class MainScreen extends StatefulWidget {
   static const String idScreen = "mainScreen";
@@ -76,8 +73,12 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
   double searchContainerHeight = 310.0;
 
   bool drawerOpen = true;
+  bool nearbyAvailableDriverKeysLoaded = false;
 
   late DatabaseReference rideRequestRef;
+
+
+
 
   //function adjust requestRideContainerHeight
   void displayRequestRideContainer(){
@@ -120,6 +121,8 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
 
       display_name_Location = data['display_name'];
       print(data['display_name']);
+
+      initGeoFireListener();
     }
 
 
@@ -188,17 +191,6 @@ void displayRideDetailContainer() async{
   double _degreesToRadians(double degrees) {
     return degrees * (pi / 180);
   }
-  // double calculateDistanceBetweenPoints(List<LatLng> points, int index1, int index2) {
-  //   if (points.length <= index1 || points.length <= index2) {
-  //     throw ArgumentError('Invalid index');
-  //   }
-  //
-  //   LatLng point1 = points[index1];
-  //   LatLng point2 = points[index2];
-  //
-  //   return calculateDistance(
-  //       point1.latitude, point1.longitude, point2.latitude, point2.longitude);
-  // }
   double calculateTotalDistance(List<LatLng> points) {
     double totalDistance = 0;
 
@@ -283,6 +275,7 @@ void displayRideDetailContainer() async{
 
   @override
   Widget build(BuildContext context) {
+    createIconMarker();
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
@@ -994,14 +987,14 @@ void displayRideDetailContainer() async{
     _locationRef.onValue.listen((event) {
       var snapshotValue = event.snapshot.value;
       if (snapshotValue != null) {
-        var latitude = (snapshotValue as Map<String, dynamic>)['latitude'] as double?;
-        var longitude = (snapshotValue as Map<String, dynamic>)['longitude'] as double?;
+        var latitude = (snapshotValue as Map<dynamic, dynamic>)['latitude'] as double?;
+        var longitude = (snapshotValue as Map<dynamic, dynamic>)['longitude'] as double?;
 
         if (latitude != null && longitude != null) {
           Geofire.queryAtLocation(latitude, longitude, 15)?.listen((map) {//in 5km
             print(map);
             if (map != null) {
-              var callBack = (map as Map<String, dynamic>)['callBack'] as int?;
+              var callBack = (map as Map<dynamic, dynamic>)['callBack'] as int?;
 
               if (callBack != null) {
                 switch (callBack) {
@@ -1011,19 +1004,27 @@ void displayRideDetailContainer() async{
                     nearbyAvailableDrivers.latitude = map['latitude'];
                     nearbyAvailableDrivers.longitude = map['longitude'];
                     GeoFireAssistant.nearByAvailableDriversList.add(nearbyAvailableDrivers);
+                    if(nearbyAvailableDriverKeysLoaded == true){
+                      updateAvailableDriversOnMap();
+                    }
                     break;
 
                   case Geofire.onKeyExited:
                     GeoFireAssistant.removeDriverFromList(map['key']);
+                    updateAvailableDriversOnMap();
                     break;
+
                   case Geofire.onKeyMoved:
                     NearbyAvailableDrivers nearbyAvailableDrivers = NearbyAvailableDrivers();
                     nearbyAvailableDrivers.key = map['key'];
                     nearbyAvailableDrivers.latitude = map['latitude'];
                     nearbyAvailableDrivers.longitude = map['longitude'];
                     GeoFireAssistant.updateDriverNearByLocation(nearbyAvailableDrivers);
+                    updateAvailableDriversOnMap();
                     break;
+
                   case Geofire.onGeoQueryReady:
+                    updateAvailableDriversOnMap();
                     break;
                 }
               }
@@ -1032,6 +1033,58 @@ void displayRideDetailContainer() async{
           });
         }
       }
+    });
+  }
+
+  List<Marker> markers = [];
+
+  void updateAvailableDriversOnMap() {
+    setState(() {
+      markers.clear();
+    });
+
+    List<Marker> tMarkers = [];
+    for (NearbyAvailableDrivers driver in GeoFireAssistant.nearByAvailableDriversList) {
+      LatLng driverAvailablePosition = LatLng(driver.latitude, driver.longitude);
+      Marker marker = Marker(
+        point: driverAvailablePosition,
+        builder: (BuildContext context) => Icon(Icons.person_pin_circle, color: Colors.yellow),
+        width: 40,
+        height: 40,
+      );
+      tMarkers.add(marker);
+    }
+
+    setState(() {
+      markers = tMarkers;
+    });
+  }
+  LatLng markerPosition = LatLng(10.123, 20.456);
+  Marker? customMarker; // Khởi tạo customMarker với giá trị null
+  void createIconMarker() {
+    Marker newMarker = Marker(
+      width: 40,
+      height: 40,
+      point: markerPosition,
+      builder: (ctx) => Container(
+        child: Image.asset('images/car_ios.png', width: 40, height: 40),
+      ),
+    );
+
+    if (customMarker == null) {
+      customMarker = newMarker;
+    } else {
+      setState(() {
+        customMarker = newMarker;
+      });
+    }
+  }
+
+// Hàm để cập nhật vị trí mới cho marker
+  void updateMarkerPosition(double latitude, double longitude) {
+    setState(() {
+      markerPosition = LatLng(latitude, longitude);
+      createIconMarker();
     });
   }
 }

@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, unnecessary_import, library_private_types_in_public_api, prefer_final_fields, unnecessary_new, sized_box_for_whitespace, prefer_const_literals_to_create_immutables, sort_child_properties_last, prefer_interpolation_to_compose_strings, use_build_context_synchronously, avoid_print, non_constant_identifier_names, library_prefixes, unused_label, cast_from_null_always_fails, unnecessary_null_comparison, unused_element, unnecessary_cast, unused_local_variable, deprecated_member_use, depend_on_referenced_packages
+// ignore_for_file: prefer_const_constructors, unnecessary_import, library_private_types_in_public_api, prefer_final_fields, unnecessary_new, sized_box_for_whitespace, prefer_const_literals_to_create_immutables, sort_child_properties_last, prefer_interpolation_to_compose_strings, use_build_context_synchronously, avoid_print, non_constant_identifier_names, library_prefixes, unused_label, cast_from_null_always_fails, unnecessary_null_comparison, unused_element, unnecessary_cast, unused_local_variable, deprecated_member_use, depend_on_referenced_packages, must_be_immutable
 
 import 'dart:async';
 
@@ -16,30 +16,22 @@ import 'package:drivers_app/AllScreens/api.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:location/location.dart' as Loc;
-import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter_map/flutter_map.dart';
-
-import '../main.dart';
 
 
 class HomeTabPage extends StatefulWidget {
 
   late TapUpDetails details;
   HomeTabPage({Key? key}) : super(key: key);
-
   @override
   _HomeTabPage createState() => _HomeTabPage();
 }
-
 Loc.Location location = new Loc.Location();
 bool _serviceEnabled = false;
 Loc.PermissionStatus _permissionGranted = Loc.PermissionStatus.denied;
 Loc.LocationData _locationData = null as Loc.LocationData;
-
 class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
   // Raw coordinates got from  OpenRouteService
   List listOfPoints = [];
-
   String PickUpPoint = "";
   String Destination = "";
   double tripDirectionDetails = 0;
@@ -50,10 +42,8 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
   List<LatLng> points = [];
   double sourLatitude = 0;
   double sourLongitude = 0;
-
   double desLatitude = 0;
   double desLongitude = 0;
-
   double zoomSize = 15;
   double Latitude = 6.131015;
   double Longitude = 1.223898;
@@ -62,12 +52,9 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
   double rideDetailContainerHeigth = 0;
   double requestRideContainerHeigth = 0;
   double searchContainerHeight = 310.0;
-
   bool drawerOpen = true;
 
   late DatabaseReference rideRequestRef;
-
-
   MapController _mapController = MapController();
 
   String diverStatusText = "Offline Now - Go Online";
@@ -433,19 +420,15 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
   // }
   void makerDriverOnlineNow() async {
     Geolocator geolocator = Geolocator();
-
     Position position = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.best,
     );
-
     double latitude = position.latitude;
     double longitude = position.longitude;
-
     Map<String, dynamic> myLocation = {
       "latitude": latitude,
       "longitude": longitude,
     };
-
     DatabaseReference driversRef =
     FirebaseDatabase.instance.reference().child("availableDrivers");
     await driversRef.child(currentfirebaseUser!.uid).update(myLocation);

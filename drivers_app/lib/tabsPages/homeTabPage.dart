@@ -1,9 +1,11 @@
-// ignore_for_file: prefer_const_constructors, unnecessary_import, library_private_types_in_public_api, prefer_final_fields, unnecessary_new, sized_box_for_whitespace, prefer_const_literals_to_create_immutables, sort_child_properties_last, prefer_interpolation_to_compose_strings, use_build_context_synchronously, avoid_print, non_constant_identifier_names, library_prefixes, unused_label, cast_from_null_always_fails, unnecessary_null_comparison, unused_element, unnecessary_cast, unused_local_variable, deprecated_member_use, depend_on_referenced_packages, must_be_immutable
+// ignore_for_file: prefer_const_constructors, unnecessary_import, library_private_types_in_public_api, prefer_final_fields, unnecessary_new, sized_box_for_whitespace, prefer_const_literals_to_create_immutables, sort_child_properties_last, prefer_interpolation_to_compose_strings, use_build_context_synchronously, avoid_print, non_constant_identifier_names, library_prefixes, unused_label, cast_from_null_always_fails, unnecessary_null_comparison, unused_element, unnecessary_cast, unused_local_variable, deprecated_member_use, depend_on_referenced_packages, must_be_immutable, await_only_futures
 
 import 'dart:async';
 
 import 'package:drivers_app/AllScreens/registerationScreen.dart';
+import 'package:drivers_app/Notifications/pushNotificationService.dart';
 import 'package:drivers_app/configMaps.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -60,6 +62,9 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
   String diverStatusText = "Offline Now - Go Online";
   Color diverStatusColor = Colors.black;
   bool isDriverAvailable = false;
+
+
+
 
 //vi tri hien tai
   Future<dynamic> getLocation() async {
@@ -134,9 +139,18 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
     print(zoomSize);
   }
 
+  void getCurrentDriverInfo() async{
+    currentfirebaseUser = await FirebaseAuth.instance.currentUser;
+    PushNotificationService pushNotificationService = PushNotificationService();
+
+    pushNotificationService.initialize();
+    pushNotificationService.getToken();
+  }
+
   @override
   void initState() {
     super.initState();
+    getCurrentDriverInfo();
     getLocation();
   }
 

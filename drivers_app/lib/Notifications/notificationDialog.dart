@@ -1,7 +1,9 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_unnecessary_containers
 
 import 'package:drivers_app/Models/rideDetails.dart';
+import 'package:drivers_app/configMaps.dart';
 import 'package:flutter/material.dart';
+import 'package:assets_audio_player/assets_audio_player.dart';
 
 class NotificationDialog extends StatelessWidget {
   const  NotificationDialog({Key? key, required this.rideDetails}) : super(key: key);
@@ -85,6 +87,8 @@ class NotificationDialog extends StatelessWidget {
                       padding: EdgeInsets.all(17.0),
                     ),
                     onPressed: () {
+                        assetsAudioPlayer.stop();
+                        Navigator.pop(context);
 
                     },
                     child: Row(
@@ -114,7 +118,8 @@ class NotificationDialog extends StatelessWidget {
                       padding: EdgeInsets.all(17.0),
                     ),
                     onPressed: () {
-
+                      assetsAudioPlayer.stop();
+                      Navigator.pop(context);
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,

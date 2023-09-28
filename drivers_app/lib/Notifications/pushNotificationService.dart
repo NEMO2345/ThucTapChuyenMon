@@ -3,6 +3,7 @@
 
 import 'dart:async';
 
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:drivers_app/Models/rideDetails.dart';
 import 'package:drivers_app/Notifications/notificationDialog.dart';
 import 'package:drivers_app/configMaps.dart';
@@ -55,11 +56,16 @@ class PushNotificationService {
   Future<void> retrieveRideRequestInfo(String rideRequestId, BuildContext context) async {
     newRequestsRef.child(rideRequestId).once().then((DatabaseEvent event) {
       DataSnapshot dataSnapShot = event.snapshot;
-      print("Hello");
-      print("rideRequestId: $rideRequestId");
-      print(dataSnapShot.value);
-      print("hihi");
+    //  print("Hello");
+     // print("rideRequestId: $rideRequestId");
+     // print(dataSnapShot.value);
+      //print("hihi");
       if (dataSnapShot.value != null) {
+
+
+        assetsAudioPlayer.open(Audio("sounds/alert.mp3"));
+        assetsAudioPlayer.play();
+
         if (dataSnapShot.value is Map<dynamic, dynamic>) {
           Map<dynamic, dynamic> requestValue = dataSnapShot.value as Map<dynamic, dynamic>;
 

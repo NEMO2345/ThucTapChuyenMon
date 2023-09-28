@@ -49,6 +49,7 @@ dependencies:
   flutter_geofire: ^2.0.3
   firebase_messaging: ^14.6.7
   flutter_local_notifications: ^15.1.1
+  assets_audio_player: ^3.1.1
   #geoflutterfire: ^2.2.0
 
 
@@ -91,6 +92,7 @@ flutter:
      - images/redmarker.png
      - images/taxi.png
      - images/user_icon.png
+     - sounds/alert.mp3
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

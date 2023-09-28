@@ -30,7 +30,9 @@ import 'package:intl/intl.dart';
 class MainScreen extends StatefulWidget {
   static const String idScreen = "mainScreen";
 
-  const MainScreen({Key? key}) : super(key: key);
+  const MainScreen({Key? key, this.firebaseUser}) : super(key: key);
+
+  final User? firebaseUser;
 
   @override
   _MainScreenState createState() => _MainScreenState();
@@ -233,44 +235,44 @@ void displayRideDetailContainer() async{
   void initState() {
     super.initState();
      getLocation();
-    //  vsync: this;
-    // duration: Duration(milliseconds: 500);
     AssistantMethods.getCurrentOnlineUserInfo();
   }
-
-  void saveRideRequest(){
+  final DatabaseReference usersRef = FirebaseDatabase.instance.ref();
+  //Save ride request to firebase
+  Future<void> saveRideRequest() async {
       rideRequestRef = FirebaseDatabase.instance.ref().child("Ride Requests").push();
-
       Map pickUpLocMap = {
         "latitude": sourLatitude.toString(),
         "longitude": sourLongitude.toString(),
-
       };
       Map dropOffLocMap = {
         "latitude": desLatitude.toString(),
         "longitude": desLongitude.toString(),
       };
-
+      String? name;
+      String? phone;
+      final snapshot = await usersRef.child('users/'+widget.firebaseUser!.uid.toString()).get()
+          .then((value) => {
+        name = value.child("name").value as String?,
+        phone = value.child("phone").value as String?
+      });
       Map rideInfoMap = {
         "driver_id" : "waiting",
         "payment_method" : "cash",
         "pickup" : pickUpLocMap,
         "dropoff" : dropOffLocMap,
         "created_at": DateTime.now().toString(),
-        "rider_name": userCurrentInfo?.name,
-        "rider_phone": userCurrentInfo?.phone,
+        "rider_name": name,
+        "rider_phone": phone,
         "pickup_address": PickUpPoint.toString(),
         "dropoff_address": Destination.toString(),
       };
       rideRequestRef.set(rideInfoMap);
-
   }
-
+  //cancel ride request
   void cancelRideRequest(){
     rideRequestRef.remove();
-
   }
-
   @override
   Widget build(BuildContext context) {
     // createIconMarker();
@@ -979,7 +981,7 @@ void displayRideDetailContainer() async{
       ),
     );
   }
-
+//Hien thi driver
   void initGeoFireListener() {
     Geofire.initialize("availableDrivers");
     // Lắng nghe và cập nhật tọa độ từ Firebase

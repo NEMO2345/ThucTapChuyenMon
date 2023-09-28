@@ -1,7 +1,5 @@
 // ignore_for_file: prefer_const_constructors, unnecessary_import, library_private_types_in_public_api, prefer_final_fields, unnecessary_new, sized_box_for_whitespace, prefer_const_literals_to_create_immutables, sort_child_properties_last, prefer_interpolation_to_compose_strings, use_build_context_synchronously, avoid_print, non_constant_identifier_names, library_prefixes, unused_label, cast_from_null_always_fails, unnecessary_null_comparison, unused_element, unnecessary_cast, unused_local_variable, deprecated_member_use, depend_on_referenced_packages, must_be_immutable, await_only_futures
-
 import 'dart:async';
-
 import 'package:drivers_app/AllScreens/registerationScreen.dart';
 import 'package:drivers_app/Notifications/pushNotificationService.dart';
 import 'package:drivers_app/configMaps.dart';
@@ -18,7 +16,6 @@ import 'package:drivers_app/AllScreens/api.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:location/location.dart' as Loc;
-
 
 class HomeTabPage extends StatefulWidget {
 
@@ -39,7 +36,6 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
   double tripDirectionDetails = 0;
   double totalcalculateCost = 0;
   String formattedCost = '';
-
   // Conversion of listOfPoints into LatLng(Latitude, Longitude) list of points
   List<LatLng> points = [];
   double sourLatitude = 0;
@@ -50,7 +46,6 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
   double Latitude = 6.131015;
   double Longitude = 1.223898;
   String display_name_Location = "You address";
-
   double rideDetailContainerHeigth = 0;
   double requestRideContainerHeigth = 0;
   double searchContainerHeight = 310.0;
@@ -63,10 +58,7 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
   Color diverStatusColor = Colors.black;
   bool isDriverAvailable = false;
 
-
-
-
-//vi tri hien tai
+  //vi tri hien tai
   Future<dynamic> getLocation() async {
     _serviceEnabled = await location.serviceEnabled();
     if (!_serviceEnabled) _serviceEnabled = await location.requestService();
@@ -142,16 +134,15 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
   void getCurrentDriverInfo() async{
     currentfirebaseUser = await FirebaseAuth.instance.currentUser;
     PushNotificationService pushNotificationService = PushNotificationService();
-
-    pushNotificationService.initialize();
+    pushNotificationService.initialize(context);
     pushNotificationService.getToken();
   }
 
   @override
   void initState() {
     super.initState();
-    getCurrentDriverInfo();
     getLocation();
+    getCurrentDriverInfo();
   }
 
   @override
@@ -396,42 +387,7 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
       ],
     );
   }
-  // void makerDriverOnlineNow() async {
-  //   Geolocator geolocator = Geolocator();
-  //
-  //   Position position = await Geolocator.getCurrentPosition(
-  //     desiredAccuracy: LocationAccuracy.best,
-  //   );
-  //
-  //   double latitude = position.latitude;
-  //   double longitude = position.longitude;
-  //
-  //   Map<String, dynamic> myLocation = {
-  //     "latitude": latitude,
-  //     "longitude": longitude,
-  //   };
-  //
-  //   DatabaseReference driversRef = FirebaseDatabase.instance.reference().child(
-  //       "availableDrivers");
-  //   await driversRef.child(currentfirebaseUser!.uid).set(myLocation);
-  // }
-  // void getLocationLiveUpdates() {
-  //   homeTabPageStreamSubscription = Geolocator.getPositionStream().listen(
-  //         (Position position) {
-  //       if (currentfirebaseUser != null) {
-  //         Geofire.setLocation(
-  //           currentfirebaseUser!.uid,
-  //           position.latitude,
-  //           position.longitude,
-  //         );
-  //       }
-  //       LatLng latLng = LatLng(position.latitude, position.longitude);
-  //       if (_mapController != null) {
-  //         _mapController.move(latLng, zoomSize);
-  //       }
-  //     },
-  //   );
-  // }
+  //Xu li su kien on-offline
   void makerDriverOnlineNow() async {
     Geolocator geolocator = Geolocator();
     Position position = await Geolocator.getCurrentPosition(
@@ -447,7 +403,6 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
     FirebaseDatabase.instance.reference().child("availableDrivers");
     await driversRef.child(currentfirebaseUser!.uid).update(myLocation);
   }
-
   void getLocationLiveUpdates() {
     Geolocator.getPositionStream().listen((Position position) {
      if(isDriverAvailable == true){

@@ -161,9 +161,9 @@ class NotificationDialog extends StatelessWidget {
       DataSnapshot dataSnapshot = event.snapshot;
       Navigator.pop(context);
       String theRideId = "";
-      print("helooooooo");
-      print(dataSnapshot.value);
-      print(rideDetails.ride_request_id);
+      // print("helooooooo");
+      // print(dataSnapshot.value);
+      // print(rideDetails.ride_request_id);
       if (dataSnapshot.value != null) {
         theRideId = dataSnapshot.value.toString();
       } else {

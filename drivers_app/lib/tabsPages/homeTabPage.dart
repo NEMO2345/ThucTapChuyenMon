@@ -29,6 +29,8 @@ bool _serviceEnabled = false;
 Loc.PermissionStatus _permissionGranted = Loc.PermissionStatus.denied;
 Loc.LocationData _locationData = null as Loc.LocationData;
 class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
+  late final DatabaseReference rideRequestRef;
+
   // Raw coordinates got from  OpenRouteService
   List listOfPoints = [];
   String PickUpPoint = "";
@@ -51,7 +53,6 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
   double searchContainerHeight = 310.0;
   bool drawerOpen = true;
 
-  late DatabaseReference rideRequestRef;
   MapController _mapController = MapController();
 
   String diverStatusText = "Offline Now - Go Online";
@@ -140,7 +141,6 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
 
   @override
   void initState() {
-    super.initState();
     getLocation();
     getCurrentDriverInfo();
   }
@@ -388,10 +388,27 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
     );
   }
   //Xu li su kien on-offline
+
   void makerDriverOnlineNow() async {
+    DatabaseReference rideRequestRef = FirebaseDatabase.instance
+        .reference()
+        .child("drivers")
+        .child(currentfirebaseUser!.uid);
+
     Geolocator geolocator = Geolocator();
+
+    LocationPermission permission = await Geolocator.checkPermission();
+
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // Xử lý khi người dùng từ chối cấp quyền
+        return;
+      }
+    }
+
     Position position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.best,
+      desiredAccuracy: LocationAccuracy.high,
     );
     double latitude = position.latitude;
     double longitude = position.longitude;
@@ -399,17 +416,27 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
       "latitude": latitude,
       "longitude": longitude,
     };
+
+    await rideRequestRef.update({"newRide": "searching"});
+
     DatabaseReference driversRef =
     FirebaseDatabase.instance.reference().child("availableDrivers");
     await driversRef.child(currentfirebaseUser!.uid).update(myLocation);
+
+    rideRequestRef.onValue.listen((event) {
+      // Xử lý sự kiện thay đổi dữ liệu
+      // Kiểu dữ liệu của event là DataSnapshot
+    }, onError: (Object error) {
+    });
   }
   void getLocationLiveUpdates() {
     Geolocator.getPositionStream().listen((Position position) {
-     if(isDriverAvailable == true){
-       if (currentfirebaseUser != null) {
-         Geofire.setLocation(
-           currentfirebaseUser!.uid,
-           position.latitude,
+      if(isDriverAvailable == true){
+        if (currentfirebaseUser != null) {
+          Geofire.setLocation(
+              currentfirebaseUser!.uid,
+              position.latitude,
+      // Xử lý lỗi nếu có
            position.longitude,
          );
        }

@@ -1,9 +1,14 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_unnecessary_containers
 
+import 'dart:async';
+
+import 'package:drivers_app/AllScreens/newRideScreen.dart';
+import 'package:drivers_app/AllScreens/registerationScreen.dart';
 import 'package:drivers_app/Models/rideDetails.dart';
 import 'package:drivers_app/configMaps.dart';
+import 'package:drivers_app/main.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:assets_audio_player/assets_audio_player.dart';
 
 class NotificationDialog extends StatelessWidget {
   const  NotificationDialog({Key? key, required this.rideDetails}) : super(key: key);
@@ -115,11 +120,11 @@ class NotificationDialog extends StatelessWidget {
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: diverStatusColorGreen, // Đặt màu xanh lá cho nút
-                      padding: EdgeInsets.all(17.0),
+                      padding: EdgeInsets.all(18.0),
                     ),
                     onPressed: () {
                       assetsAudioPlayer.stop();
-                      Navigator.pop(context);
+                      checkAvailabilityOfRide(context);
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -150,5 +155,33 @@ class NotificationDialog extends StatelessWidget {
         ),
       ),
     );
+  }
+  void checkAvailabilityOfRide(context) {
+    rideRequestRef.once().then((DatabaseEvent event) {
+      DataSnapshot dataSnapshot = event.snapshot;
+      Navigator.pop(context);
+      String theRideId = "";
+      print("helooooooo");
+      print(dataSnapshot.value);
+      print(rideDetails.ride_request_id);
+      if (dataSnapshot.value != null) {
+        theRideId = dataSnapshot.value.toString();
+      } else {
+        displayToastMessage("Ride not exists.", context);
+      }
+
+      if (theRideId == rideDetails.ride_request_id) {
+        rideRequestRef.set("accepted");
+        Navigator.push(context, MaterialPageRoute(builder: (context) => NewRideScreen(rideDetails: rideDetails)));
+      } else if (theRideId == "cancelled") {
+        displayToastMessage("Ride has been Cancelled.", context);
+      } else if (theRideId == "timeout") {
+        displayToastMessage("Ride has time out.", context);
+      } else {
+        displayToastMessage("Ride not exists", context);
+      }
+    }, onError: (Object error) {
+      // Xử lý lỗi nếu có
+    });
   }
 }

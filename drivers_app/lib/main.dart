@@ -58,6 +58,14 @@ Future<void> setupFlutterNotifications() async {
 }
 
 final navigatorKey = GlobalKey<NavigatorState>();
+DatabaseReference usersRef = FirebaseDatabase.instance.reference().child("users");
+DatabaseReference driversRef = FirebaseDatabase.instance.reference().child("drivers");
+DatabaseReference newRequestsRef = FirebaseDatabase.instance.reference().child("Ride Requests");
+DatabaseReference rideRequestRef = FirebaseDatabase.instance
+    .reference()
+    .child("drivers")
+    .child(currentfirebaseUser!.uid)
+    .child("newRide");
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();//Khoi tao flutter framework
@@ -82,10 +90,7 @@ void main() async{
   //runApp(const MyApp());
 }
 
-DatabaseReference usersRef = FirebaseDatabase.instance.reference().child("users");
-DatabaseReference driversRef = FirebaseDatabase.instance.reference().child("drivers");
-DatabaseReference newRequestsRef = FirebaseDatabase.instance.reference().child("Ride Requests");
-DatabaseReference rideRequestRef = FirebaseDatabase.instance.reference().child("drivers").child(currentfirebaseUser!.uid).child("newRide");
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key, required GlobalKey<NavigatorState> navigatorKey});

@@ -1,5 +1,8 @@
 // ignore_for_file: library_private_types_in_public_api, prefer_const_constructors, non_constant_identifier_names, prefer_final_fields, must_call_super, unnecessary_import, library_prefixes, unnecessary_new, cast_from_null_always_fails, avoid_print, prefer_const_literals_to_create_immutables, sort_child_properties_last, avoid_unnecessary_containers, deprecated_member_use
+import 'dart:math';
+
 import 'package:drivers_app/Models/rideDetails.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -81,7 +84,15 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
     return _locationData;
   }
 
-
+  void initWay() {
+    setState(() {
+      sourLatitude = widget.rideDetails.pickup.latitude;
+      sourLongitude = widget.rideDetails.pickup.longitude;
+      desLatitude = widget.rideDetails.dropoff.latitude;
+      desLongitude = widget.rideDetails.dropoff.longitude;
+      getCoordinates(sourLatitude,sourLongitude,desLatitude,desLongitude);
+    });
+  }
   // Method to consume the OpenRouteService API
   getCoordinates(double sour_lat, double sour_lon, double des_lat,
       double des_lon) async {
@@ -99,13 +110,54 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
     });
   }
 
+  //Tinh khoang cach giua 2 diem
+  double calculateDistance(double point1_latitude,double point1_longitude,double point2_latitude,double point2_longitude){
+    const double earthRadius = 6371; // Đường kính trái đất (đơn vị kilômét)
+
+    double dLat = _degreesToRadians(point2_latitude - point1_latitude);
+    double dLon = _degreesToRadians(point2_longitude - point1_longitude);
+
+    double a = pow(sin(dLat / 2), 2) +
+        cos(_degreesToRadians(point1_latitude)) *
+            cos(_degreesToRadians(point2_latitude)) *
+            pow(sin(dLon / 2), 2);
+
+    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+    double distance = earthRadius * c;
+
+    return distance;
+  }
+
+  double _degreesToRadians(double degrees) {
+    return degrees * (pi / 180);
+  }
+  double calculateTotalDistance(List<LatLng> points) {
+    double totalDistance = 0;
+
+    for (int i = 0; i < points.length - 1; i++) {
+      LatLng point1 = points[i];
+      LatLng point2 = points[i + 1];
+      double distance = calculateDistance(
+          point1.latitude, point1.longitude, point2.latitude, point2.longitude);
+      totalDistance += distance;
+    }
+
+    return totalDistance;
+  }
+//end
+  //Tinh tien
+  double calculateCost(double distance) {
+    double cost = distance * 100.0;
+    return cost;
+  }
+
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   double bottomPaddingOfMap = 0;
-
   @override
   void initState() {
     getLocation();
+    initWay();
   }
 
   @override
@@ -186,159 +238,13 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
             ),
 
           ),
-          Positioned(
-            top: 45.0,
-            right: 22.0,
-            child: GestureDetector(
-              onTap: () {
-                getLocation();
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(22.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.transparent,
-                      blurRadius: 6.0,
-                      spreadRadius: 0.5,
-                      offset: Offset(
-                        0.7,
-                        0.7,
-                      ),
-                    ),
-                  ],
-                ),
-
-                child: CircleAvatar(
-                  backgroundColor: Colors.transparent,
-                  child: Icon(
-                    Icons.control_point, color: Colors.white, size: 50,),
-                  radius: 20.0,
-                ),
-              ),
-            ),
-          ), //Get position
-
-          Positioned(
-            left: 0.0,
-            right: 0.0,
-            bottom: 0.0,
-            child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(topLeft: Radius.circular(16.0),topRight: Radius.circular(16.0)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black,
-                      blurRadius: 16.0,
-                      spreadRadius: 0.5,
-                      offset: Offset(0.7,0.7),
-                    ),
-                  ],
-                ),
-              height: 270.0,
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24.0,vertical: 18.0),
-                child: Column(
-                  children: [
-
-                    Text(
-                      "10 mins",
-                      style: TextStyle(fontSize: 14.0, fontFamily: "Brand-Bold",color: Colors.deepPurple),
-                    ),
-
-                    SizedBox(height: 6.0,),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text("Pham Ly",style: TextStyle(fontFamily: "Brand-Bold",fontSize: 24.0),),
-                        Padding(
-                          padding: EdgeInsets.only(right: 10.0),
-                          child: Icon(Icons.phone_android),
-
-                        ),
-                      ],
-                    ),
-
-                    SizedBox(height: 26.0,),
-                    Row(
-                      children: [
-                        Image.asset("images/pickicon.png",height: 16.0,width: 16.0,),
-                        SizedBox(width: 18.0,),
-                        Expanded(
-                          child: Container(
-                            child: Text(
-                              "Street, 449",
-                              style: TextStyle(fontSize: 18.0),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    SizedBox(height: 16.0,),
-                    Row(
-                      children: [
-                        Image.asset("images/desticon.png",height: 16.0,width: 16.0,),
-                        SizedBox(width: 18.0,),
-                        Expanded(
-                          child: Container(
-                            child: Text(
-                              "Street, XaloHN",
-                              style: TextStyle(fontSize: 18.0),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    SizedBox(height: 26.0,),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16.0),
-                      child: ElevatedButton(
-                        onPressed: () {
-                        },
-                        style: ElevatedButton.styleFrom(
-                          primary: Theme.of(context).primaryColor,
-                          padding: EdgeInsets.all(17.0),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "Arrived",
-                              style: TextStyle(
-                                fontSize: 20.0,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                            Icon(
-                              Icons.directions_car,
-                              color: Colors.white,
-                              size: 26.0,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-
-                  ],
-                ),
-
-              ),
-
-              ),
-
-          ),
         ],
       ),
     );
   }
 }
+
+
 
 
 

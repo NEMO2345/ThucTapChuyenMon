@@ -667,8 +667,7 @@ void displayRideDetailContainer() async{
                           ),
                         ),
                         //Diem cuoi
-                        // ]
-                        // ].0,),
+
                         GestureDetector(
                           onTap:() async {
                             showProgressDialog() {

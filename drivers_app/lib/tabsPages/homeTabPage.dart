@@ -1,8 +1,10 @@
 // ignore_for_file: prefer_const_constructors, unnecessary_import, library_private_types_in_public_api, prefer_final_fields, unnecessary_new, sized_box_for_whitespace, prefer_const_literals_to_create_immutables, sort_child_properties_last, prefer_interpolation_to_compose_strings, use_build_context_synchronously, avoid_print, non_constant_identifier_names, library_prefixes, unused_label, cast_from_null_always_fails, unnecessary_null_comparison, unused_element, unnecessary_cast, unused_local_variable, deprecated_member_use, depend_on_referenced_packages, must_be_immutable, await_only_futures
 import 'dart:async';
 import 'package:drivers_app/AllScreens/registerationScreen.dart';
+import 'package:drivers_app/Models/drivers.dart';
 import 'package:drivers_app/Notifications/pushNotificationService.dart';
 import 'package:drivers_app/configMaps.dart';
+import 'package:drivers_app/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
@@ -132,8 +134,45 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
     print(zoomSize);
   }
 
-  void getCurrentDriverInfo() async{
+  // void getCurrentDriverInfo() async{
+  //   currentfirebaseUser = await FirebaseAuth.instance.currentUser;
+  //
+  //   try {
+  //     DataSnapshot dataSnapshot = (await driversRef.child(currentfirebaseUser!.uid).once()) as DataSnapshot;
+  //     if (dataSnapshot.value != null) {
+  //       driversInformation = Drivers.fromSnapshot(dataSnapshot);
+  //       print(driversInformation);
+  //     }
+  //   } catch (error) {
+  //     print("Error: $error");
+  //   }
+  //
+  //   PushNotificationService pushNotificationService = PushNotificationService();
+  //   pushNotificationService.initialize(context);
+  //   pushNotificationService.getToken();
+  // }
+  void getCurrentDriverInfo() async {
     currentfirebaseUser = await FirebaseAuth.instance.currentUser;
+
+    try {
+      DatabaseReference reference = driversRef.child(currentfirebaseUser?.uid ?? "");
+      reference.onValue.listen((event) {
+          event.snapshot.children.forEach((element) {
+            print(element.value);
+          });
+      });
+      DatabaseEvent event = await reference.once();
+      DataSnapshot dataSnapshot = event.snapshot;
+
+      if (dataSnapshot.value != null) {
+        driversInformation = Drivers.fromSnapshot(dataSnapshot);
+        print(driversInformation);
+      }
+    } catch (error) {
+      print("This is error");
+      print("Error: $error");
+    }
+
     PushNotificationService pushNotificationService = PushNotificationService();
     pushNotificationService.initialize(context);
     pushNotificationService.getToken();

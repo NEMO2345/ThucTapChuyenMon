@@ -56,10 +56,6 @@ class PushNotificationService {
   Future<void> retrieveRideRequestInfo(String rideRequestId, BuildContext context) async {
     newRequestsRef.child(rideRequestId).once().then((DatabaseEvent event) {
       DataSnapshot dataSnapShot = event.snapshot;
-    //  print("Hello");
-     // print("rideRequestId: $rideRequestId");
-     // print(dataSnapShot.value);
-      //print("hihi");
       if (dataSnapShot.value != null) {
 
 

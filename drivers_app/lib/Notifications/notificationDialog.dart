@@ -166,9 +166,13 @@ class NotificationDialog extends StatelessWidget {
       } else {
         displayToastMessage("Ride not exists.", context);
       }
-
       if (theRideId == rideDetails.ride_request_id) {
         rideRequestRef.set("accepted");
+        print("Ly Ngao");
+        print(rideDetails);
+        print(rideDetails.ride_request_id);
+        print(rideDetails.dropoff);
+        print(rideDetails.pickup);
         Navigator.push(context, MaterialPageRoute(builder: (context) => NewRideScreen(rideDetails: rideDetails)));
       } else if (theRideId == "cancelled") {
         displayToastMessage("Ride has been Cancelled.", context);

@@ -1,9 +1,6 @@
-// ignore_for_file: library_private_types_in_public_api, prefer_const_constructors, non_constant_identifier_names, prefer_final_fields, must_call_super, unnecessary_import, library_prefixes, unnecessary_new, cast_from_null_always_fails, avoid_print, prefer_const_literals_to_create_immutables, sort_child_properties_last, avoid_unnecessary_containers, deprecated_member_use
+// ignore_for_file: library_private_types_in_public_api, prefer_const_constructors, non_constant_identifier_names, prefer_final_fields, must_call_super, unnecessary_import, library_prefixes, unnecessary_new, cast_from_null_always_fails, avoid_print, prefer_const_literals_to_create_immutables, sort_child_properties_last, avoid_unnecessary_containers, deprecated_member_use, unnecessary_null_comparison, constant_identifier_names
 import 'dart:math';
-
-import 'package:drivers_app/Assistants/AssistantMethods.dart';
-import 'package:drivers_app/Assistants/geoFireAssistant.dart';
-import 'package:drivers_app/Models/nearbyAvailableDrivers.dart';
+import 'package:drivers_app/Assistants/mapKitAssistant.dart';
 import 'package:drivers_app/Models/rideDetails.dart';
 import 'package:drivers_app/configMaps.dart';
 import 'package:drivers_app/main.dart';
@@ -12,7 +9,6 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
@@ -20,6 +16,8 @@ import 'package:drivers_app/AllScreens/api.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:location/location.dart' as Loc;
+
+import '../AllWidgets/MarkerWidget.dart';
 class NewRideScreen extends StatefulWidget {
   const NewRideScreen({Key? key, required this.rideDetails}) : super(key: key);
   final RideDetails rideDetails;
@@ -54,13 +52,22 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
   double searchContainerHeight = 310.0;
   bool drawerOpen = true;
 
+
+
   MapController _mapController = MapController();
 
   var geolocator = Geolocator();
+  String status = "accepted";
+  String durationRide = "10 mins";
+  bool isRequestingDirection = false;
 
 
   //vi tri hien tai
   Future<dynamic> getLocation() async {
+
+    LatLng oldPos = LatLng(0, 0);
+    var root = MapKitAssistant.getMarkerRotation(oldPos.latitude, oldPos.longitude, Latitude, Longitude);
+
     _serviceEnabled = await location.serviceEnabled();
     if (!_serviceEnabled) _serviceEnabled = await location.requestService();
 
@@ -90,6 +97,15 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
       display_name_Location;
     });
     acceptRideRequest();
+    oldPos = LatLng(Latitude, Longitude);
+    updateRideDetails();
+    String rideRequestId = widget.rideDetails.ride_request_id;
+    DatabaseReference rideRequestRef = newRequestsRef.child(rideRequestId);
+    Map<String, String> locMap = {
+      "latitude": Latitude.toString(),
+      "longitude": Longitude.toString(),
+    };
+    rideRequestRef.child("driver_location").set(locMap);
    // initGeoFireListener();
     return _locationData;
   }
@@ -173,6 +189,9 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
+    LatLng oldPos = LatLng(0, 0);
+    var root = MapKitAssistant.getMarkerRotation(oldPos.latitude, oldPos.longitude, Latitude, Longitude);
+
 
     return Scaffold(
       body: Stack(
@@ -195,51 +214,52 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
                   markers: [
                     // First Marker
                     Marker(
-                      point: LatLng(sourLatitude == 0 ? Latitude : sourLatitude,
-                          sourLongitude == 0 ? Longitude : sourLongitude),
+                      point: LatLng(sourLatitude == 0 ? Latitude : sourLatitude, sourLongitude == 0 ? Longitude : sourLongitude),
                       width: 80,
                       height: 80,
-                      builder: (context) =>
-                          IconButton(
-                            onPressed: () {},
-                            icon: const Icon(Icons.location_on),
-                            color: Colors.green,
-                            iconSize: 45,
-                          ),
+                      builder: (context) => IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.location_on),
+                        color: Colors.green,
+                        iconSize: 45,
+                      ),
                     ),
                     Marker(
                       point: LatLng(Latitude, Longitude),
                       width: 80,
                       height: 80,
-                      builder: (context) =>
-                          IconButton(
-                            onPressed: () {},
-                            icon: const Icon(Icons.location_on),
-                            color: Colors.blue,
-                            iconSize: 45,
-                          ),
+                      builder: (context) => IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.location_on),
+                        color: Colors.blue,
+                        iconSize: 45,
+                      ),
                     ),
                     // Second Marker
                     Marker(
-                      point: LatLng(desLatitude == 0 ? Latitude : desLatitude,
-                          desLongitude == 0 ? Longitude : desLongitude),
+                      point: LatLng(desLatitude == 0 ? Latitude : desLatitude, desLongitude == 0 ? Longitude : desLongitude),
                       width: 80,
                       height: 80,
-                      builder: (context) =>
-                          IconButton(
-                            onPressed: () {},
-                            icon: const Icon(Icons.location_on),
-                            color: Colors.red,
-                            iconSize: 45,
-                          ),
+                      builder: (context) => IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.location_on),
+                        color: Colors.red,
+                        iconSize: 45,
+                      ),
                     ),
                     Marker(
-                    point: LatLng(Latitude,Longitude),
-                    builder: (ctx) => Container(
-                    child: Image.asset('images/car_ios.png', width: 40, height: 40),
-                    ),
-                    width: 40,
-                    height: 40,
+                      point: LatLng(Latitude, Longitude),
+                      builder: (ctx) => GestureDetector(
+                        onTap: () {
+
+                        },
+                        child: MarkerWidget(
+                          imagePath: 'images/car_android.png',
+                          width: 40,
+                          height: 40,
+                          rotation: MapKitAssistant.getMarkerRotation(oldPos.latitude, oldPos.longitude, Latitude, Longitude),
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -318,7 +338,7 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
                   children: [
 
                     Text(
-                      "10 mins",
+                      durationRide,
                       style: TextStyle(fontSize: 14.0, fontFamily: "Brand-Bold",color: Colors.deepPurple),
                     ),
 
@@ -423,7 +443,7 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
     rideRequestRef.child("driver_phone").set(driversInformation?.phone);
     rideRequestRef.child("driver_id").set(driversInformation?.id);
     rideRequestRef.child("car_details").set('${driversInformation?.car_color} - ${driversInformation?.car_model} - ${driversInformation?.car_number}');
-    print("320");
+
     Map<String, String> locMap = {
       "latitude": Latitude.toString(),
       "longitude": Longitude.toString(),
@@ -431,6 +451,29 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
    rideRequestRef.child("driver_location").set(locMap);
 
    print(locMap);
+  }
+  void updateRideDetails() async{
+
+    if(isRequestingDirection == false){
+      isRequestingDirection = true;
+      if(Latitude == null && Longitude == null){
+        return;
+      }
+      var posLatLng = LatLng(Latitude, Longitude);
+      LatLng destinationLatLng;
+      if(status == "accepted"){
+        destinationLatLng = widget.rideDetails.pickup;
+      }else{
+        destinationLatLng = widget.rideDetails.dropoff;
+      }
+      var directionDetails = await getinfoLocationUrl(posLatLng as String, destinationLatLng as String);
+      if(directionDetails != null){
+        setState(() {
+          durationRide =  directionDetails.durationText;
+        });
+      }
+      isRequestingDirection = false;
+    }
   }
 }
 

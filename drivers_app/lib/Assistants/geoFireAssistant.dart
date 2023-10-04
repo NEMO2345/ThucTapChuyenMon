@@ -2,8 +2,7 @@
 
 import 'dart:math';
 
-import 'package:rider_app/Models/nearbyAvailableDrivers.dart';
-
+import 'package:drivers_app/Models/nearbyAvailableDrivers.dart';
 class GeoFireAssistant{
   static List<NearbyAvailableDrivers> nearByAvailableDriversList = [];
 
@@ -17,6 +16,7 @@ class GeoFireAssistant{
     nearByAvailableDriversList[index].latitude = driver.latitude;
     nearByAvailableDriversList[index].longitude = driver.longitude;
   }
+
   static double createRandomNumber(int num){
     var random = Random();
     int randNumber = random.nextInt(num);

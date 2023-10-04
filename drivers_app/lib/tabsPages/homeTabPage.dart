@@ -180,6 +180,7 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
 
   @override
   void initState() {
+    super.initState();
     getLocation();
     getCurrentDriverInfo();
   }

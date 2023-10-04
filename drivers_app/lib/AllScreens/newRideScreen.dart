@@ -1,6 +1,9 @@
 // ignore_for_file: library_private_types_in_public_api, prefer_const_constructors, non_constant_identifier_names, prefer_final_fields, must_call_super, unnecessary_import, library_prefixes, unnecessary_new, cast_from_null_always_fails, avoid_print, prefer_const_literals_to_create_immutables, sort_child_properties_last, avoid_unnecessary_containers, deprecated_member_use
 import 'dart:math';
 
+import 'package:drivers_app/Assistants/AssistantMethods.dart';
+import 'package:drivers_app/Assistants/geoFireAssistant.dart';
+import 'package:drivers_app/Models/nearbyAvailableDrivers.dart';
 import 'package:drivers_app/Models/rideDetails.dart';
 import 'package:drivers_app/configMaps.dart';
 import 'package:drivers_app/main.dart';
@@ -9,7 +12,9 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:drivers_app/AllScreens/api.dart';
 import 'package:http/http.dart' as http;
@@ -26,6 +31,7 @@ Loc.Location location = new Loc.Location();
 bool _serviceEnabled = false;
 Loc.PermissionStatus _permissionGranted = Loc.PermissionStatus.denied;
 Loc.LocationData _locationData = null as Loc.LocationData;
+const double MAXDISTANCE = 15000;
 class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateMixin {
   // Raw coordinates got from  OpenRouteService
   List listOfPoints = [];
@@ -34,7 +40,6 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
   double tripDirectionDetails = 0;
   double totalcalculateCost = 0;
   String formattedCost = '';
-  // Conversion of listOfPoints into LatLng(Latitude, Longitude) list of points
   List<LatLng> points = [];
   double sourLatitude = 0;
   double sourLongitude = 0;
@@ -50,6 +55,8 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
   bool drawerOpen = true;
 
   MapController _mapController = MapController();
+
+  var geolocator = Geolocator();
 
 
   //vi tri hien tai
@@ -82,9 +89,8 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
       Longitude = _locationData.longitude!;
       display_name_Location;
     });
-
     acceptRideRequest();
-
+   // initGeoFireListener();
     return _locationData;
   }
 
@@ -162,9 +168,7 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
   void initState() {
     super.initState();
     getLocation();
-
     initWay();
-
   }
 
   @override
@@ -228,6 +232,14 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
                             color: Colors.red,
                             iconSize: 45,
                           ),
+                    ),
+                    Marker(
+                    point: LatLng(Latitude,Longitude),
+                    builder: (ctx) => Container(
+                    child: Image.asset('images/car_ios.png', width: 40, height: 40),
+                    ),
+                    width: 40,
+                    height: 40,
                     ),
                   ],
                 ),
@@ -401,22 +413,7 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
       ),
     );
   }
-  // void acceptRideRequest(){
-  //   String rideRequestId = widget.rideDetails.ride_request_id;
-  //   newRequestsRef.child(rideRequestId).child("status").set("accepted");
-  //   newRequestsRef.child(rideRequestId).child("driver_name").set(driversInformation!.name);
-  //   newRequestsRef.child(rideRequestId).child("driver_phone").set(driversInformation!.phone);
-  //   newRequestsRef.child(rideRequestId).child("driver_id").set(driversInformation!.id);
-  //   newRequestsRef.child(rideRequestId).child("car_details").set('${driversInformation!.car_color} - ${driversInformation!.car_model} - ${driversInformation!.car_number}');
-  //
-  //   Map locMap = {
-  //     "latitude": currentPosition!.latitude.toString(),
-  //     "longitude": currentPosition!.longitude.toString(),
-  //   };
-  //
-  //   newRequestsRef.child(rideRequestId).child("driver_location").set(locMap);
-  //   print(locMap);
-  // }
+
   void acceptRideRequest() {
     String rideRequestId = widget.rideDetails.ride_request_id;
     DatabaseReference rideRequestRef = newRequestsRef.child(rideRequestId);
@@ -427,10 +424,6 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
     rideRequestRef.child("driver_id").set(driversInformation?.id);
     rideRequestRef.child("car_details").set('${driversInformation?.car_color} - ${driversInformation?.car_model} - ${driversInformation?.car_number}');
     print("320");
-
-
-
-
     Map<String, String> locMap = {
       "latitude": Latitude.toString(),
       "longitude": Longitude.toString(),

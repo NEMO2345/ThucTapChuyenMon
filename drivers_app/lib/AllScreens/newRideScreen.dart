@@ -1,5 +1,7 @@
-// ignore_for_file: library_private_types_in_public_api, prefer_const_constructors, non_constant_identifier_names, prefer_final_fields, must_call_super, unnecessary_import, library_prefixes, unnecessary_new, cast_from_null_always_fails, avoid_print, prefer_const_literals_to_create_immutables, sort_child_properties_last, avoid_unnecessary_containers, deprecated_member_use, unnecessary_null_comparison, constant_identifier_names
+// ignore_for_file: library_private_types_in_public_api, prefer_const_constructors, non_constant_identifier_names, prefer_final_fields, must_call_super, unnecessary_import, library_prefixes, unnecessary_new, cast_from_null_always_fails, avoid_print, prefer_const_literals_to_create_immutables, sort_child_properties_last, avoid_unnecessary_containers, deprecated_member_use, unnecessary_null_comparison, constant_identifier_names, use_build_context_synchronously
+import 'dart:ffi';
 import 'dart:math';
+import 'package:drivers_app/AllWidgets/progressDialog.dart';
 import 'package:drivers_app/Assistants/mapKitAssistant.dart';
 import 'package:drivers_app/Models/rideDetails.dart';
 import 'package:drivers_app/configMaps.dart';
@@ -11,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:drivers_app/AllScreens/api.dart';
 import 'package:http/http.dart' as http;
@@ -60,7 +63,10 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
   String status = "accepted";
   String durationRide = "10 mins";
   bool isRequestingDirection = false;
-
+  String btnTitle = "Arrived";
+  Color btnColor = Colors.blueAccent;
+  late Timer timer;
+  int durationCounter = 0;
 
   //vi tri hien tai
   Future<dynamic> getLocation() async {
@@ -251,7 +257,6 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
                       point: LatLng(Latitude, Longitude),
                       builder: (ctx) => GestureDetector(
                         onTap: () {
-
                         },
                         child: MarkerWidget(
                           imagePath: 'images/car_android.png',
@@ -393,17 +398,47 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16.0),
                       child: ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
+                          if(status == "accepted"){
+                            status = "arrived";
+                            String rideRequestId = widget.rideDetails.ride_request_id;
+                            newRequestsRef.child(rideRequestId).child("status").set(status);
+
+                            setState(() {
+                              btnTitle = "Start Trip";
+                              btnColor = Colors.purple;
+                            });
+                            showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: ( BuildContext context) => ProgressDialog(message: "Please wait...",),
+                            );
+                            await getinfoLocationUrl(widget.rideDetails.pickup.latitude.toString(), widget.rideDetails.pickup.longitude.toString());                            Navigator.pop(context);
+                          }else if(status == "arrived"){
+                            status = "onride";
+                            String rideRequestId = widget.rideDetails.ride_request_id;
+                            newRequestsRef.child(rideRequestId).child("status").set(status);
+
+                            setState(() {
+                              btnTitle = "End Trip";
+                              btnColor = Colors.redAccent;
+                            });
+                            initTimer();
+                          }
+                          else if(status == "onride"){
+                            endTheTrip();
+                          }
                         },
                         style: ElevatedButton.styleFrom(
-                          primary: Theme.of(context).primaryColor,
+                          primary: btnColor,
                           padding: EdgeInsets.all(17.0),
                         ),
+
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              "Arrived",
+                              btnTitle,
                               style: TextStyle(
                                 fontSize: 20.0,
                                 fontWeight: FontWeight.bold,
@@ -466,7 +501,10 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
       }else{
         destinationLatLng = widget.rideDetails.dropoff;
       }
-      var directionDetails = await getinfoLocationUrl(posLatLng as String, destinationLatLng as String);
+      var posLatLngString = "${posLatLng.latitude},${posLatLng.longitude}";
+      var destinationLatLngString = "${destinationLatLng.latitude},${destinationLatLng.longitude}";
+
+      var directionDetails = await getinfoLocationUrl(posLatLngString, destinationLatLngString);
       if(directionDetails != null){
         setState(() {
           durationRide =  directionDetails.durationText;
@@ -475,7 +513,50 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
       isRequestingDirection = false;
     }
   }
+
+  void initTimer(){
+    const interval = Duration(seconds: 1);
+    timer = Timer.periodic(interval, (timer) {
+      durationCounter = durationCounter + 1;
+    });
+  }
+  endTheTrip() async {
+    timer.cancel();
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context)=> ProgressDialog(message: "Please wait..."),
+    );
+    var currentLatLng = LatLng(Latitude, Longitude);
+
+    Navigator.pop(context);
+    var directionDetails = await getLocation();
+    setState(() {
+      desLatitude =Latitude;
+      desLongitude = Longitude;
+      if (sourLatitude != 0 && sourLongitude != 0){
+        getCoordinates(sourLatitude,sourLongitude,desLatitude,desLongitude);
+        List<LatLng> points = [
+          LatLng(sourLatitude, sourLongitude),
+          LatLng(desLatitude, desLongitude),
+        ];
+        tripDirectionDetails = calculateTotalDistance(points);
+        totalcalculateCost = calculateCost(tripDirectionDetails);
+        if (totalcalculateCost != null) {
+          formattedCost = NumberFormat.currency(locale: 'en_US', symbol: '\$').format(totalcalculateCost);
+        } else {
+          formattedCost = '0 \$';
+        }
+      }
+    });
+    String rideRequestId = widget.rideDetails.ride_request_id;
+    newRequestsRef.child(rideRequestId).child("fares").set(formattedCost.toString());
+    newRequestsRef.child(rideRequestId).child("status").set("ended");
+    //rideStreamSubscription.cancel();
+  }
+
 }
+
 
 
 

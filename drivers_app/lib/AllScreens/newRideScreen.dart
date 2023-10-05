@@ -353,7 +353,7 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text("Pham Ly",style: TextStyle(fontFamily: "Brand-Bold",fontSize: 24.0),),
+                        Text(widget.rideDetails.rider_name,style: TextStyle(fontFamily: "Brand-Bold",fontSize: 24.0),),
                         Padding(
                           padding: EdgeInsets.only(right: 10.0),
                           child: Icon(Icons.phone_android),
@@ -370,7 +370,7 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
                         Expanded(
                           child: Container(
                             child: Text(
-                              "Street, 449",
+                              widget.rideDetails.pickup_address,
                               style: TextStyle(fontSize: 18.0),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -387,7 +387,7 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
                         Expanded(
                           child: Container(
                             child: Text(
-                              "Street, XaloHN",
+                              widget.rideDetails.dropoff_address,
                               style: TextStyle(fontSize: 18.0),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -488,6 +488,9 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
    rideRequestRef.child("driver_location").set(locMap);
 
    print(locMap);
+   
+   driversRef.child(currentfirebaseUser!.uid).child("history").child(rideRequestId).set(true);
+   
   }
   void updateRideDetails() async{
 

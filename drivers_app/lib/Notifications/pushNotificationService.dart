@@ -77,6 +77,7 @@ class PushNotificationService {
           String riderName = requestValue['rider_name'].toString();
           String riderPhone = requestValue['rider_phone'].toString();
 
+
           RideDetails rideDetails = RideDetails(
             pickup_address: pickUpAddress,
             dropoff_address: dropOffAddress,

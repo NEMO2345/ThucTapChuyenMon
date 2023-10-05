@@ -1,6 +1,7 @@
 // ignore_for_file: library_private_types_in_public_api, prefer_const_constructors, non_constant_identifier_names, prefer_final_fields, must_call_super, unnecessary_import, library_prefixes, unnecessary_new, cast_from_null_always_fails, avoid_print, prefer_const_literals_to_create_immutables, sort_child_properties_last, avoid_unnecessary_containers, deprecated_member_use, unnecessary_null_comparison, constant_identifier_names, use_build_context_synchronously
 import 'dart:ffi';
 import 'dart:math';
+import 'package:drivers_app/AllWidgets/CollectFareDialog.dart';
 import 'package:drivers_app/AllWidgets/progressDialog.dart';
 import 'package:drivers_app/Assistants/mapKitAssistant.dart';
 import 'package:drivers_app/Models/rideDetails.dart';
@@ -67,6 +68,7 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
   Color btnColor = Colors.blueAccent;
   late Timer timer;
   int durationCounter = 0;
+
 
   //vi tri hien tai
   Future<dynamic> getLocation() async {
@@ -521,7 +523,9 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
     });
   }
   endTheTrip() async {
+
     timer.cancel();
+
     showDialog(
         context: context,
         barrierDismissible: false,
@@ -553,8 +557,29 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
     newRequestsRef.child(rideRequestId).child("fares").set(formattedCost.toString());
     newRequestsRef.child(rideRequestId).child("status").set("ended");
     //rideStreamSubscription.cancel();
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context)=> CollectFareDialog(paymentMethod: widget.rideDetails.payment_method, fareAmount: totalcalculateCost.toInt(),),
+    );
+    saveEarnings(totalcalculateCost.toInt());
   }
 
+  void saveEarnings(int fareAmount){
+    driversRef.child(currentfirebaseUser!.uid).child("earnings").once().then((DataSnapshot dataSnapShot){
+        if(dataSnapShot.value != null){
+         double oldEarnings = double.parse(dataSnapShot.value.toString());
+         double totalEarnings = fareAmount + oldEarnings;
+
+         driversRef.child(currentfirebaseUser!.uid).child("earnings").set(totalEarnings.toStringAsFixed(2));
+        }
+        else{
+          double totalEarnings = fareAmount.toDouble();
+          driversRef.child(currentfirebaseUser!.uid).child("earnings").set(totalEarnings.toStringAsFixed(2));
+        }
+    } as FutureOr Function(DatabaseEvent value));
+  }
 }
 
 

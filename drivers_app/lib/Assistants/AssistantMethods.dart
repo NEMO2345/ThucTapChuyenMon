@@ -30,18 +30,18 @@ class AssistantMethods {
     homeTabPageStreamSubscription!.pause();
     Geofire.removeLocation(currentfirebaseUser!.uid);
   }
-  // static void enablehomeTabLiveLocationUpdates() {
-  //   homeTabPageStreamSubscription!.resume();
-  //   DatabaseReference driverRef = FirebaseDatabase.instance
-  //       .ref().child('availableDrivers').child(currentfirebaseUser!.uid);
-  //
-  //   driverRef.child('latitude').once().then((DataSnapshot snapshot) {
-  //     double latitude = snapshot.value as double;
-  //
-  //     driverRef.child('longitude').once().then((DataSnapshot snapshot) {
-  //       double longitude = snapshot.value as double;
-  //       Geofire.setLocation(currentfirebaseUser!.uid, latitude, longitude);
-  //     } as FutureOr Function(Object value));
-  //   } as FutureOr Function(Object value));
-  // }
+  static void enablehomeTabLiveLocationUpdates() {
+    homeTabPageStreamSubscription!.resume();
+    DatabaseReference driverRef = FirebaseDatabase.instance
+        .ref().child('availableDrivers').child(currentfirebaseUser!.uid);
+
+    driverRef.child('latitude').once().then((DataSnapshot snapshot) {
+      double latitude = snapshot.value as double;
+
+      driverRef.child('longitude').once().then((DataSnapshot snapshot) {
+        double longitude = snapshot.value as double;
+        Geofire.setLocation(currentfirebaseUser!.uid, latitude, longitude);
+      } as FutureOr Function(Object value));
+    } as FutureOr Function(Object value));
+  }
 }

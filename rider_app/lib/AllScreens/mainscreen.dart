@@ -21,6 +21,7 @@ import 'package:rider_app/Assistants/AssistantMethods.dart';
 import 'package:rider_app/Assistants/geoFireAssistant.dart';
 import 'package:rider_app/Models/nearbyAvailableDrivers.dart';
 import 'package:rider_app/configMaps.dart';
+import 'package:rider_app/main.dart';
 import '../Models/address.dart';
 import 'api.dart';
 import 'package:http/http.dart' as http;
@@ -82,7 +83,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
   late DatabaseReference rideRequestRef;
 
   late List<NearbyAvailableDrivers> availableDrivers;
-
+  String state = "normal";
 
   //function adjust requestRideContainerHeight
   void displayRequestRideContainer(){
@@ -276,6 +277,9 @@ void displayRideDetailContainer() async{
   //cancel ride request
   void cancelRideRequest(){
     rideRequestRef.remove();
+    setState(() {
+      state = "normal";
+    });
   }
   @override
   Widget build(BuildContext context) {
@@ -866,6 +870,9 @@ void displayRideDetailContainer() async{
                         padding: EdgeInsets.symmetric(horizontal: 16.0),
                         child: ElevatedButton(
                           onPressed: () {
+                            setState(() {
+                              state = "requesting";
+                            });
                             displayRequestRideContainer();
                             availableDrivers = GeoFireAssistant.nearByAvailableDriversList;
                             searchNearestDriver();
@@ -1075,8 +1082,53 @@ void displayRideDetailContainer() async{
       return;
     }
     var driver = availableDrivers[0];
+    notifyDriver(driver);
     availableDrivers.removeAt(0);
 
+  }
+  void notifyDriver(NearbyAvailableDrivers drivers) {
+    driversRef.child(drivers.key).child("newRide").set(rideRequestRef.key);
+    driversRef.child(drivers.key).child("token").once().then((DatabaseEvent event) {
+      DataSnapshot snapshot = event.snapshot;
+      // print("lllllll");
+      // print(snapshot.value);
+      // print(rideRequestRef.key.toString());
+      // print("llll");
+      if (snapshot.value != null) {
+        String token = snapshot.value.toString();
+        AssistantMethods.sendNotificationToDriver(token, context, rideRequestRef.key.toString());
+      }else{
+        return;
+      }
+      const oneSecondPassed = Duration(seconds: 1);
+      var timer = Timer.periodic(oneSecondPassed, (timer) {
+
+        if(state != "requesting"){
+          driversRef.child(drivers.key).child("newRide").set("cancelled");
+          driversRef.child(drivers.key).child("newRide").onDisconnect();
+          driverRequestTimeOut = 20;
+          timer.cancel();
+        }
+
+        driverRequestTimeOut = driverRequestTimeOut - 1;
+
+        driversRef.child(drivers.key).child("newRide").onValue.listen((event) {
+            if(event.snapshot.value.toString() == "accepted"){
+              driversRef.child(drivers.key).child("newRide").onDisconnect();
+              driverRequestTimeOut = 20;
+              timer.cancel();
+            }
+        });
+        if(driverRequestTimeOut == 0){
+          driversRef.child(drivers.key).child("newRide").set("timeout");
+          driversRef.child(drivers.key).child("newRide").onDisconnect();
+          driverRequestTimeOut = 20;
+          timer.cancel();
+
+          searchNearestDriver();
+        }
+      });
+    });
   }
 }
 

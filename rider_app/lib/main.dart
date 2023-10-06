@@ -12,7 +12,7 @@ import 'package:rider_app/AllScreens/mainscreen.dart';
 import 'package:rider_app/AllScreens/registerationScreen.dart';
 
 void main() async{
-  WidgetsFlutterBinding.ensureInitialized();//Khoi tao flutter framework
+  WidgetsFlutterBinding.ensureInitialized();//Khoi tao fl utter framework
   await Firebase.initializeApp();//Khoi tao firebase
   // Add this line to ignore certificate validation
   HttpOverrides.global = MyHttpOverrides();

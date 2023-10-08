@@ -74,6 +74,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
   double rideDetailContainerHeigth = 0;
   double requestRideContainerHeigth = 0;
   double searchContainerHeight = 310.0;
+  double driverDetailsContainerHeight = 0;
 
   bool drawerOpen = true;
   bool nearbyAvailableDriverKeysLoaded = false;
@@ -82,6 +83,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
 
   late List<NearbyAvailableDrivers> availableDrivers;
   String state = "normal";
+   late StreamSubscription<DatabaseEvent> rideStreamSubscription;
 
   //function adjust requestRideContainerHeight
   void displayRequestRideContainer(){
@@ -92,6 +94,15 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
       drawerOpen = true;
     });
     saveRideRequest();
+  }
+  //Tuy chinh ride request detail
+  void displayDriverDetailsContainer(){
+    setState(() {
+      requestRideContainerHeigth = 0.0;
+      rideDetailContainerHeigth = 0.0;
+      bottomPaddingOfMap = 270.0;
+      driverDetailsContainerHeight = 310.0;
+    });
   }
 
   resetApp(){
@@ -128,7 +139,6 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
 
     }
 
-
     print(_locationData);
     setState(() {
       _mapController.move(LatLng(_locationData.latitude!, _locationData.longitude!), zoomSize);
@@ -152,6 +162,8 @@ void displayRideDetailContainer() async{
     });
 
 }
+
+
 
   // Method to consume the OpenRouteService API
   getCoordinates(double sour_lat, double sour_lon, double des_lat, double des_lon) async {
@@ -236,7 +248,6 @@ void displayRideDetailContainer() async{
   @override
   void initState() {
     super.initState();
-    print("IDUSER trong main screen");
     print(widget.firebaseUser?.uid.toString());
      getLocation();
     AssistantMethods.getCurrentOnlineUserInfo();
@@ -245,7 +256,6 @@ void displayRideDetailContainer() async{
   //Save ride request to firebase
   Future<void> saveRideRequest() async {
 
-    print("1991");
       rideRequestRef = FirebaseDatabase.instance.ref().child("Ride Requests").push();
       Map pickUpLocMap = {
         "latitude": sourLatitude.toString(),
@@ -257,7 +267,6 @@ void displayRideDetailContainer() async{
       };
       String? name;
       String? phone;
-    print("1992");
     print(widget.firebaseUser!.uid.toString());
       final snapshot = await usersRef.child('users/'+widget.firebaseUser!.uid.toString()).get()
           .then((value) => {
@@ -267,7 +276,6 @@ void displayRideDetailContainer() async{
         print(name),
         print(name)
       });
-    print("1993");
       Map rideInfoMap = {
         "driver_id" : "waiting",
         "payment_method" : "cash",
@@ -279,12 +287,42 @@ void displayRideDetailContainer() async{
         "pickup_address": PickUpPoint.toString(),
         "dropoff_address": Destination.toString(),
       };
-      print("ABC");
       print(pickUpLocMap);
       print(dropOffLocMap);
       print(name);
       print(phone);
       rideRequestRef.set(rideInfoMap);
+
+      rideStreamSubscription = rideRequestRef.onValue.listen((event) {
+        if (event.snapshot.value == null) {
+          return;
+        }
+        var snapshotValue = event.snapshot.value as Map<dynamic, dynamic>;
+
+        if (snapshotValue["car_details"] != null) {
+          setState(() {
+            carDetailsDriver = snapshotValue["car_details"].toString();
+          });
+        }
+        if (snapshotValue["driver_name"] != null) {
+          setState(() {
+            driverName = snapshotValue["driver_name"].toString();
+          });
+        }
+        if (snapshotValue["driver_phone"] != null) {
+          setState(() {
+            driverPhone = snapshotValue["driver_phone"].toString();
+          });
+        }
+
+        if (snapshotValue["status"] != null) {
+          statusRide = snapshotValue["status"].toString();
+        }
+        if(statusRide == "accepted"){
+         displayDriverDetailsContainer();
+        }
+      });
+
   }
   //cancel ride request
    void cancelRideRequest(){
@@ -1012,53 +1050,127 @@ void displayRideDetailContainer() async{
               ),
             ),
           ),
-          //Display Assisned Driver Info
-          // Positioned(
-          //   bottom: 0.0,
-          //   left: 0.0,
-          //   right: 0.0,
-          //   child: Container(
-          //     decoration: BoxDecoration(
-          //       borderRadius: BorderRadius.only(topLeft: Radius.circular(16.0),topRight: Radius.circular(16.0),),
-          //       color: Colors.white,
-          //       boxShadow: [
-          //         BoxShadow(
-          //           spreadRadius: 0.5,
-          //           blurRadius: 16.0,
-          //           color: Colors.black54,
-          //           offset: Offset(0.7,0.7),
-          //         ),
-          //       ],
-          //     ),
-          //     height: 290.0,
-          //     child: Padding(
-          //       padding: const EdgeInsets.symmetric(horizontal: 24.0,vertical: 18.0),
-          //       child: Column(
-          //         crossAxisAlignment: CrossAxisAlignment.start,
-          //         children: [
-          //           SizedBox(height: 6.0,),
-          //           Row(
-          //             mainAxisAlignment: MainAxisAlignment.center,
-          //             children: [
-          //               Text("Driver is coming",textAlign: TextAlign.center,style: TextStyle(fontSize: 20.0,fontFamily: "Brand-Bold"),),
-          //
-          //               SizedBox(height: 22.0,),
-          //               Divider(),
-          //
-          //               Text("While - Toyota Corolla", style: TextStyle(color: Colors.grey),),
-          //               Text("Pham Ly",style: TextStyle(fontSize: 20.0),),
-          //
-          //               SizedBox(height: 22.0,),
-          //               Divider(),
-          //
-          //               SizedBox(height: 22.0,),
-          //             ],
-          //           ),
-          //         ],
-          //       ),
-          //     ),
-          //   ),
-          // ),
+         // Display Assisned Driver Info
+          Positioned(
+            bottom: 0.0,
+            left: 0.0,
+            right: 0.0,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(topLeft: Radius.circular(16.0),topRight: Radius.circular(16.0),),
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    spreadRadius: 0.5,
+                    blurRadius: 16.0,
+                    color: Colors.black54,
+                    offset: Offset(0.7,0.7),
+                  ),
+                ],
+              ),
+              height: driverDetailsContainerHeight,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0,vertical: 18.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+
+                    SizedBox(height: 6.0,),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(riderStatus,textAlign: TextAlign.center,style: TextStyle(fontSize: 20.0,fontFamily: "Brand-Bold"),),
+                      ],
+                    ),
+                    SizedBox(height: 22.0,),
+                    Divider(height: 2.0, thickness: 2.0,),                    // Icon(
+                    //   Icons.check_circle,
+                    //   color: Colors.green,
+                    // ),
+                    // Text("Waiting is your happiness!", style: TextStyle(color: Colors.grey),),
+                    // SizedBox(height: 12.0,),
+                    SizedBox(height: 22.0,),
+
+                    Text(carDetailsDriver, style: TextStyle(color: Colors.grey),),
+                    Text(driverName,style: TextStyle(fontSize: 20.0),),
+
+                    SizedBox(height: 22.0,),
+                    Divider(height: 2.0, thickness: 2.0,),
+                    SizedBox(height: 22.0,),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Column(
+                          //crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              height: 55.0,
+                              width: 55.0,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.all(Radius.circular(26.0)),
+                                border: Border.all(width: 2.0, color: Colors.grey),
+                              ),
+                              child: Icon(
+                                Icons.call,
+                              ),
+                            ),
+                            SizedBox(height: 10.0,),
+                            Text("Call"),
+                          ],
+                        ),
+                        Column(
+                         // crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              height: 55.0,
+                              width: 55.0,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.all(Radius.circular(26.0)),
+                                border: Border.all(width: 2.0, color: Colors.grey),
+                              ),
+                              child: Icon(
+                                Icons.list,
+                                color: Colors.black, // Màu của icon
+                              ),
+                            ),
+                            SizedBox(height: 10.0,),
+                            Text(
+                              "Details",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.black, // Màu của văn bản
+                              ),
+                            ),
+                          ],
+                        ),
+                        Column(
+                          //crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              height: 55.0,
+                              width: 55.0,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.all(Radius.circular(26.0)),
+                                border: Border.all(width: 2.0, color: Colors.grey),
+                              ),
+                              child: Icon(
+                                Icons.close,
+                              ),
+                            ),
+                            SizedBox(height: 10.0,),
+                            Text("Cancel"),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -1202,6 +1314,62 @@ void displayRideDetailContainer() async{
       });
     });
   }
+ //  Future<void> notifyDriver(NearbyAvailableDrivers drivers) async {
+ //    DatabaseReference driversRef =
+ //    FirebaseDatabase.instance.ref("drivers/${drivers.key}");
+ //
+ //    driversRef.child("newRide").set(rideRequestRef.key.toString());
+ //
+ //    Completer<void> completer = Completer<void>();
+ //    const timeoutDuration = Duration(seconds: 10);
+ //
+ //    Future.delayed(timeoutDuration).then((_) {
+ //      if (!completer.isCompleted) {
+ //        completer.completeError("Timeout");
+ //      }
+ //    });
+ //
+ //    await driversRef.child("token").once().then((DatabaseEvent event) {
+ //      DataSnapshot snapshot = event.snapshot;
+ //      if (snapshot.value != null) {
+ //        String token = snapshot.value.toString();
+ //        AssistantMethods.sendNotificationToDriver(token, context, rideRequestRef.key);
+ //        completer.complete(); // Hoàn thành Completer khi bạn muốn
+ //        return;
+ //      }
+ //
+ //      const oneSecondPassed = Duration(seconds: 1);
+ //      var timer = Timer.periodic(oneSecondPassed, (timer) {
+ //        if (state != "requesting") {
+ //          driversRef.child(drivers.key).child("newRide").set("cancelled");
+ //          driversRef.child(drivers.key).child("newRide").onDisconnect();
+ //          driverRequestTimeOut = 20;
+ //          timer.cancel();
+ //        }
+ //
+ //        driverRequestTimeOut = driverRequestTimeOut - 1;
+ //
+ //        driversRef.child(drivers.key).child("newRide").onValue.listen((event) {
+ //          if (event.snapshot.value.toString() == "accepted") {
+ //            driversRef.child(drivers.key).child("newRide").onDisconnect();
+ //            driverRequestTimeOut = 20;
+ //            timer.cancel();
+ //          }
+ //        });
+ //
+ //        if (driverRequestTimeOut == 0) {
+ //          driversRef.child(drivers.key).child("newRide").set("timeout");
+ //          driversRef.child(drivers.key).child("newRide").onDisconnect();
+ //          driverRequestTimeOut = 20;
+ //          timer.cancel();
+ //
+ //          searchNearestDriver();
+ //        }
+ //      });
+ //    });
+ //
+ //    await completer.future; // Đợi hoàn thành Completer
+ //  }
 }
 
 

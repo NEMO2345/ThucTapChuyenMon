@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:rider_app/AllScreens/loginScreen.dart';
 import 'package:rider_app/AllScreens/searchScreen.dart';
 import 'package:rider_app/AllWidgets/Divider.dart';
@@ -29,61 +30,46 @@ import 'package:intl/intl.dart';
 
 class MainScreen extends StatefulWidget {
   static const String idScreen = "mainScreen";
-
   const MainScreen({Key? key, this.firebaseUser}) : super(key: key);
-
   final User? firebaseUser;
-
   @override
   _MainScreenState createState() => _MainScreenState();
 }
-
-Loc.Location location = new Loc.Location();
-bool _serviceEnabled = false;
-Loc.PermissionStatus _permissionGranted = Loc.PermissionStatus.denied;
-Loc.LocationData _locationData = null as Loc.LocationData;
-const double MAXDISTANCE = 15000;
-
+    Loc.Location location = new Loc.Location();
+    bool _serviceEnabled = false;
+    Loc.PermissionStatus _permissionGranted = Loc.PermissionStatus.denied;
+    Loc.LocationData _locationData = null as Loc.LocationData;
+    const double MAXDISTANCE = 15000;
 
 class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
   // Raw coordinates got from  OpenRouteService
-  List listOfPoints = [];
-
-
-
-  String PickUpPoint = "";
-  String Destination = "";
-  double tripDirectionDetails = 0;
-  double totalcalculateCost = 0;
-  String formattedCost = '';
-
+    List listOfPoints = [];
+    String PickUpPoint = "";
+    String Destination = "";
+    double tripDirectionDetails = 0;
+    double totalcalculateCost = 0;
+    String formattedCost = '';
   // Conversion of listOfPoints into LatLng(Latitude, Longitude) list of points
-  List<LatLng> points = [];
-
-  double sourLatitude = 0;
-  double sourLongitude = 0;
-
-  double desLatitude = 0;
-  double desLongitude = 0;
-
-  double zoomSize = 15;
-  double Latitude = 6.131015;
-  double Longitude = 1.223898;
-  String display_name_Location = "You address";
-
-  double rideDetailContainerHeigth = 0;
-  double requestRideContainerHeigth = 0;
-  double searchContainerHeight = 310.0;
-  double driverDetailsContainerHeight = 0;
-
-  bool drawerOpen = true;
-  bool nearbyAvailableDriverKeysLoaded = false;
-
-  late DatabaseReference rideRequestRef;
-
-  late List<NearbyAvailableDrivers> availableDrivers;
-  String state = "normal";
-   late StreamSubscription<DatabaseEvent> rideStreamSubscription;
+    List<LatLng> points = [];
+    double sourLatitude = 0;
+    double sourLongitude = 0;
+    double desLatitude = 0;
+    double desLongitude = 0;
+    double zoomSize = 15;
+    double Latitude = 6.131015;
+    double Longitude = 1.223898;
+    String display_name_Location = "You address";
+    double rideDetailContainerHeigth = 0;
+    double requestRideContainerHeigth = 0;
+    double searchContainerHeight = 310.0;
+    double driverDetailsContainerHeight = 0;
+    bool drawerOpen = true;
+    bool nearbyAvailableDriverKeysLoaded = false;
+    late DatabaseReference rideRequestRef;
+    late List<NearbyAvailableDrivers> availableDrivers;
+    String state = "normal";
+    late StreamSubscription<DatabaseEvent> rideStreamSubscription;
+    bool isRequestingPositionDetails = false;
 
   //function adjust requestRideContainerHeight
   void displayRequestRideContainer(){
@@ -117,7 +103,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
   }
 
   MapController _mapController = MapController();
-//vi tri hien tai
+  //vi tri hien tai
   Future<dynamic> getLocation() async{
     _serviceEnabled = await location.serviceEnabled();
     if(!_serviceEnabled) _serviceEnabled = await location.requestService();
@@ -127,18 +113,12 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
       _permissionGranted = await location.requestPermission();
     }
     _locationData = await location.getLocation();
-
-
     var response = await http.get(getinfoLocationUrl(Latitude.toString(),Longitude.toString()));
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
-
       display_name_Location = data['display_name'];
       print(data['display_name']);
-
-
     }
-
     print(_locationData);
     setState(() {
       _mapController.move(LatLng(_locationData.latitude!, _locationData.longitude!), zoomSize);
@@ -146,35 +126,23 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
       Longitude = _locationData.longitude!;
       display_name_Location ;
     });
-
     return _locationData;
   }
-
   //Xu li ham ticket
 void displayRideDetailContainer() async{
     await getLocation();
-
     setState(() {
         searchContainerHeight = 0;
         rideDetailContainerHeigth = 300.0;
         bottomPaddingOfMap = 230.0;
         drawerOpen = false;
     });
-
 }
-
-
-
   // Method to consume the OpenRouteService API
   getCoordinates(double sour_lat, double sour_lon, double des_lat, double des_lon) async {
-
     var response = await http.get(getRouteUrl("$sour_lon,$sour_lat",
         '$des_lon,$des_lat'));
-    // Requesting for openrouteservice api
-    // var response = await http.get(getRouteUrl("1.243344,6.145332",
-    //     '1.2160116523406839,6.125231015668568'));
-    // var distance = jsonDecode(response.body)['features'][0]['summary']['distance'];
-    print(response.statusCode);
+      //print(response.statusCode);
     setState(() {
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
@@ -188,27 +156,22 @@ void displayRideDetailContainer() async{
 //Tinh khoang cach giua 2 diem
   double calculateDistance(double point1_latitude,double point1_longitude,double point2_latitude,double point2_longitude){
     const double earthRadius = 6371; // Đường kính trái đất (đơn vị kilômét)
-
     double dLat = _degreesToRadians(point2_latitude - point1_latitude);
     double dLon = _degreesToRadians(point2_longitude - point1_longitude);
-
     double a = pow(sin(dLat / 2), 2) +
         cos(_degreesToRadians(point1_latitude)) *
             cos(_degreesToRadians(point2_latitude)) *
             pow(sin(dLon / 2), 2);
-
     double c = 2 * atan2(sqrt(a), sqrt(1 - a));
     double distance = earthRadius * c;
 
     return distance;
   }
-
   double _degreesToRadians(double degrees) {
     return degrees * (pi / 180);
   }
   double calculateTotalDistance(List<LatLng> points) {
     double totalDistance = 0;
-
     for (int i = 0; i < points.length - 1; i++) {
       LatLng point1 = points[i];
       LatLng point2 = points[i + 1];
@@ -219,17 +182,15 @@ void displayRideDetailContainer() async{
 
     return totalDistance;
   }
-  //Tinh tien
+  //Tinh thanh tien
   double calculateCost(double distance) {
     double cost = distance * 100.0;
     return cost;
   }
-
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
-
   double bottomPaddingOfMap = 0;
-
+  //Zoom lon
   void updateZoomSizePlus() {
     setState(() {
       zoomSize = zoomSize +1;
@@ -237,6 +198,7 @@ void displayRideDetailContainer() async{
     });
     print(zoomSize);
   }
+  //Zoom nho
   void updateZoomSizeMinus(){
     setState(() {
       zoomSize = zoomSize -1;
@@ -244,7 +206,6 @@ void displayRideDetailContainer() async{
     });
     print(zoomSize);
   }
-
   @override
   void initState() {
     super.initState();
@@ -255,7 +216,6 @@ void displayRideDetailContainer() async{
   final DatabaseReference usersRef = FirebaseDatabase.instance.ref();
   //Save ride request to firebase
   Future<void> saveRideRequest() async {
-
       rideRequestRef = FirebaseDatabase.instance.ref().child("Ride Requests").push();
       Map pickUpLocMap = {
         "latitude": sourLatitude.toString(),
@@ -292,7 +252,6 @@ void displayRideDetailContainer() async{
       print(name);
       print(phone);
       rideRequestRef.set(rideInfoMap);
-
       rideStreamSubscription = rideRequestRef.onValue.listen((event) {
         if (event.snapshot.value == null) {
           return;
@@ -314,15 +273,64 @@ void displayRideDetailContainer() async{
             driverPhone = snapshotValue["driver_phone"].toString();
           });
         }
-
+        if (snapshotValue["driver_location"] != null) {
+          double driverLat  = double.parse(snapshotValue["driver_location"]["latitude"].toString());
+          double driverLng  = double.parse(snapshotValue["driver_location"]["longitude"].toString());
+          LatLng driverCurrentLocation = LatLng(driverLat, driverLng);
+          if(statusRide == "accepted"){
+            updateRideTimeToPickUpLoc(driverCurrentLocation);
+          }else if(statusRide == "onride"){
+            updateRideTimeToDropOffLoc(driverCurrentLocation);
+          }else if(statusRide == "arrived"){
+            setState(() {
+              riderStatus = "Driver has Arrived.";
+            });
+          }
+        }
         if (snapshotValue["status"] != null) {
           statusRide = snapshotValue["status"].toString();
         }
         if(statusRide == "accepted"){
          displayDriverDetailsContainer();
+         Geofire.stopListener();
+         deleteGeofileMarkers();
         }
       });
+  }
+  void deleteGeofileMarkers(){
+    setState(() {
+      markers.clear();
+    });
+  }
+  void updateRideTimeToPickUpLoc(LatLng driverCurrentLocation) async{
+    if(isRequestingPositionDetails == false){
+      isRequestingPositionDetails = true;
+      var positionUserLatLng = LatLng(sourLatitude, sourLongitude);
+      var details = await getCoordinates(driverCurrentLocation.latitude, driverCurrentLocation.longitude, positionUserLatLng.latitude, positionUserLatLng.longitude);
+      if(details == null){
+        return;
+      }
+      setState(() {
+        riderStatus = "Driver is coming - "+  details.toString();
+      });
+      isRequestingPositionDetails = false;
+    }
+  }
+  void updateRideTimeToDropOffLoc(LatLng driverCurrentLocation) async{
+    if(isRequestingPositionDetails == false){
+      isRequestingPositionDetails = true;
 
+      var dropOffUserLaLng = LatLng(desLatitude, desLongitude);
+
+      var details = await getCoordinates(driverCurrentLocation.latitude, driverCurrentLocation.longitude, dropOffUserLaLng.latitude, dropOffUserLaLng.longitude);
+      if(details == null){
+        return;
+      }
+      setState(() {
+        riderStatus = "Going to Destination - "+  details.toString();
+      });
+      isRequestingPositionDetails = false;
+    }
   }
   //cancel ride request
    void cancelRideRequest(){
@@ -369,22 +377,18 @@ void displayRideDetailContainer() async{
 
               DividerWidget(),
               SizedBox(height: 12.0,),
-
               //Drawer controller
               ListTile(
                 leading: Icon(Icons.history),
                 title: Text("History", style: TextStyle(fontSize: 16.0),),
-
               ),
               ListTile(
                 leading: Icon(Icons.person),
                 title: Text("Visit Profile", style: TextStyle(fontSize: 16.0),),
-
               ),
               ListTile(
                 leading: Icon(Icons.info),
                 title: Text("About", style: TextStyle(fontSize: 16.0),),
-
               ),
               GestureDetector(
                 onTap: (){
@@ -394,10 +398,8 @@ void displayRideDetailContainer() async{
                 child: ListTile(
                   leading: Icon(Icons.info),
                   title: Text("Sign Out", style: TextStyle(fontSize: 16.0),),
-
                 ),
               ),
-
             ],
           ),
         ),
@@ -458,7 +460,6 @@ void displayRideDetailContainer() async{
                     for (int i = 0; i < markers.length; i++) markers[i]
                   ],
                 ),
-
                 // Polylines layer
                 PolylineLayer(
                   polylineCulling: false,
@@ -468,13 +469,11 @@ void displayRideDetailContainer() async{
                       color: Colors.red,
                       strokeWidth: 5,
                       isDotted: true, // Use a dotted line style
-                      // You can also use other properties like: isDashed, gradient, etc.
                     ),
                   ],
                 ),
               ],
             ),
-
           ),
           //HambugarButton for Drawer
           Positioned(
@@ -539,7 +538,6 @@ void displayRideDetailContainer() async{
                     ),
                   ],
                 ),
-
                 child: CircleAvatar(
                   backgroundColor: Colors.transparent,
                   child: Icon(Icons.control_point,color: Colors.blueAccent,size: 50,),
@@ -664,7 +662,6 @@ void displayRideDetailContainer() async{
                             }
                             final  Address address = await  Navigator.push(context, MaterialPageRoute(builder: (context) => SearchScreen(Latitude: Latitude,Longitude: Longitude,)));
                             if(address != null){
-
                               setState(() {
                                 sourLatitude = address.latitude;
                                 sourLongitude = address.longitude;
@@ -674,7 +671,6 @@ void displayRideDetailContainer() async{
                                 getCoordinates(sourLatitude,sourLongitude,desLatitude,desLongitude);
                               }
                               print('$sourLatitude, $sourLongitude');
-
                               _mapController.move(LatLng(sourLatitude, sourLongitude), zoomSize);
                             }
                            // displayRideDetailContainer();
@@ -705,12 +701,6 @@ void displayRideDetailContainer() async{
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        // TextFormField(
-                                        //   // decoration: InputDecoration(
-                                        //   //  // hintText: "Pickup Point", // Gợi ý cho trường Pickup Point
-                                        //   //   //border: InputBorder.none,
-                                        //   // ),
-                                        // ),
                                         Text(
                                           PickUpPoint.length <= 40
                                               ? PickUpPoint
@@ -766,10 +756,8 @@ void displayRideDetailContainer() async{
                               });
                               print('$desLatitude, $desLongitude');
                               initGeoFireListener();
-                             // tripDirectionDetails = calculateTotalDistance(points) as double;
                               displayRideDetailContainer();
                             }
-
                           },
                           child: Container(
                             decoration: BoxDecoration(
@@ -812,7 +800,6 @@ void displayRideDetailContainer() async{
                                 ],
                               ),
                             ),
-
                           ),
                         ),
                         SizedBox(height: 24.0,),
@@ -844,7 +831,6 @@ void displayRideDetailContainer() async{
                             ),
                           ],
                         ),
-
                         SizedBox(height: 19.0,),
                         DividerWidget(),
                       ],
@@ -860,7 +846,6 @@ void displayRideDetailContainer() async{
             left: 0.0,
             right: 0.0,
             child: AnimatedSize(
-              //vsync: this, (if not ) khong dong bo duoc to do
               curve: Curves.bounceIn,
               duration: new Duration(
                 milliseconds: 160,
@@ -879,7 +864,6 @@ void displayRideDetailContainer() async{
                     ),
                   ],
                 ),
-
                 child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 17.0),
                   child: Column(
@@ -905,7 +889,6 @@ void displayRideDetailContainer() async{
                                  ],
                                ),
                                Expanded(child: Container()),
-
                                Text(
                                  formattedCost, style: TextStyle(fontFamily: "Brand-Bold",),
                                ),
@@ -913,7 +896,6 @@ void displayRideDetailContainer() async{
                           ),
                         ),
                       ),
-
                       SizedBox(height: 20.0,),
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 20.0),
@@ -940,7 +922,7 @@ void displayRideDetailContainer() async{
                              searchNearestDriver();
                             },
                           style: ElevatedButton.styleFrom(
-                            primary: Colors.blue, // Thay thế màu này bằng màu khác
+                            primary: Colors.blue,
                             padding: EdgeInsets.all(17.0),
                           ),
                           child: Row(
@@ -1020,7 +1002,6 @@ void displayRideDetailContainer() async{
                         //alignment: AlignmentDirectional.topStart,
                       ),
                     ),
-
                     SizedBox(height: 22.0),
                     GestureDetector(
                       onTap:() async {
@@ -1036,10 +1017,8 @@ void displayRideDetailContainer() async{
                           border: Border.all(width: 2.0, color: Colors.grey),
                         ),
                         child: Icon(Icons.close,size: 26.0,),
-
                       ),
                     ),
-
                     SizedBox(height: 10.0),
                     Container(
                       width: double.infinity,
@@ -1074,7 +1053,6 @@ void displayRideDetailContainer() async{
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
                     SizedBox(height: 6.0,),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -1083,17 +1061,10 @@ void displayRideDetailContainer() async{
                       ],
                     ),
                     SizedBox(height: 22.0,),
-                    Divider(height: 2.0, thickness: 2.0,),                    // Icon(
-                    //   Icons.check_circle,
-                    //   color: Colors.green,
-                    // ),
-                    // Text("Waiting is your happiness!", style: TextStyle(color: Colors.grey),),
-                    // SizedBox(height: 12.0,),
+                    Divider(height: 2.0, thickness: 2.0,),
                     SizedBox(height: 22.0,),
-
                     Text(carDetailsDriver, style: TextStyle(color: Colors.grey),),
                     Text(driverName,style: TextStyle(fontSize: 20.0),),
-
                     SizedBox(height: 22.0,),
                     Divider(height: 2.0, thickness: 2.0,),
                     SizedBox(height: 22.0,),
@@ -1101,7 +1072,6 @@ void displayRideDetailContainer() async{
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         Column(
-                          //crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Container(
@@ -1189,8 +1159,6 @@ void displayRideDetailContainer() async{
         doubleArray.clear();
         element.children.forEach((valu2) {
           doubleArray.add(valu2.value as double);
-
-
           print(valu2.key);
           print(valu2.value);
         });
@@ -1201,13 +1169,12 @@ void displayRideDetailContainer() async{
     });
     updateAvailableDriversOnMap();
   }
-
+//Cap nhat tai xe
   List<Marker> markers = [];
   void updateAvailableDriversOnMap() {
     setState(() {
       markers.clear();
     });
-
     List<Marker> tMarkers = [];
     for (NearbyAvailableDrivers driver in GeoFireAssistant.nearByAvailableDriversList) {
       print("Distance between driver and customer: ");
@@ -1218,7 +1185,7 @@ void displayRideDetailContainer() async{
         Marker marker = Marker(
           point: driverAvailablePosition,
           builder: (ctx) => Container(
-            child: Image.asset('images/car_ios.png', width: 40, height: 40),
+            child: Image.asset('images/car_android.png', width: 40, height: 40),
           ),
           width: 40,
           height: 40,
@@ -1230,7 +1197,6 @@ void displayRideDetailContainer() async{
       markers = tMarkers;
     });
   }
-
   double getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
     var R = 6371; // Radius of the earth in km
     var dLat = deg2rad(lat2-lat1);  // deg2rad below
@@ -1244,11 +1210,10 @@ void displayRideDetailContainer() async{
     var d = R * c; // Distance in km
     return d;
   }
-
   double deg2rad(deg) {
     return deg * (pi/180);
   }
-
+//Dialog noDriverFound
   void noDriverFound(){
     showDialog(
         context: context,
@@ -1256,7 +1221,7 @@ void displayRideDetailContainer() async{
         builder: (BuildContext context) => NoDriverAvailableDialog()
     );
   }
-
+//Tim kiem xe gan
  void searchNearestDriver()  {
     if(availableDrivers.isEmpty){
       cancelRideRequest();
@@ -1269,9 +1234,9 @@ void displayRideDetailContainer() async{
     availableDrivers.removeAt(0);
 
   }
+  //Send new request
  Future<void> notifyDriver(NearbyAvailableDrivers drivers)  async {
    DatabaseReference driversRef = FirebaseDatabase.instance.ref("drivers/${drivers.key}");
-
    driversRef.child("newRide").set(rideRequestRef.key.toString());
 
     driversRef.child("token").once().then((DatabaseEvent event) {
@@ -1314,62 +1279,7 @@ void displayRideDetailContainer() async{
       });
     });
   }
- //  Future<void> notifyDriver(NearbyAvailableDrivers drivers) async {
- //    DatabaseReference driversRef =
- //    FirebaseDatabase.instance.ref("drivers/${drivers.key}");
- //
- //    driversRef.child("newRide").set(rideRequestRef.key.toString());
- //
- //    Completer<void> completer = Completer<void>();
- //    const timeoutDuration = Duration(seconds: 10);
- //
- //    Future.delayed(timeoutDuration).then((_) {
- //      if (!completer.isCompleted) {
- //        completer.completeError("Timeout");
- //      }
- //    });
- //
- //    await driversRef.child("token").once().then((DatabaseEvent event) {
- //      DataSnapshot snapshot = event.snapshot;
- //      if (snapshot.value != null) {
- //        String token = snapshot.value.toString();
- //        AssistantMethods.sendNotificationToDriver(token, context, rideRequestRef.key);
- //        completer.complete(); // Hoàn thành Completer khi bạn muốn
- //        return;
- //      }
- //
- //      const oneSecondPassed = Duration(seconds: 1);
- //      var timer = Timer.periodic(oneSecondPassed, (timer) {
- //        if (state != "requesting") {
- //          driversRef.child(drivers.key).child("newRide").set("cancelled");
- //          driversRef.child(drivers.key).child("newRide").onDisconnect();
- //          driverRequestTimeOut = 20;
- //          timer.cancel();
- //        }
- //
- //        driverRequestTimeOut = driverRequestTimeOut - 1;
- //
- //        driversRef.child(drivers.key).child("newRide").onValue.listen((event) {
- //          if (event.snapshot.value.toString() == "accepted") {
- //            driversRef.child(drivers.key).child("newRide").onDisconnect();
- //            driverRequestTimeOut = 20;
- //            timer.cancel();
- //          }
- //        });
- //
- //        if (driverRequestTimeOut == 0) {
- //          driversRef.child(drivers.key).child("newRide").set("timeout");
- //          driversRef.child(drivers.key).child("newRide").onDisconnect();
- //          driverRequestTimeOut = 20;
- //          timer.cancel();
- //
- //          searchNearestDriver();
- //        }
- //      });
- //    });
- //
- //    await completer.future; // Đợi hoàn thành Completer
- //  }
+
 }
 
 

@@ -1173,8 +1173,8 @@ void displayRideDetailContainer() async{
       var timer = Timer.periodic(oneSecondPassed, (timer) {
 
         if(state != "requesting"){
-          driversRef.child("newRide").set("cancelled");
-          driversRef.child("newRide").onDisconnect();
+          driversRef.child(drivers.key).child("newRide").set("cancelled");
+          driversRef.child(drivers.key).child("newRide").onDisconnect();
           driverRequestTimeOut = 20;
           timer.cancel();
         }
@@ -1182,18 +1182,18 @@ void displayRideDetailContainer() async{
         driverRequestTimeOut = driverRequestTimeOut - 1;
 
         print("driverRef " + driversRef.key.toString());
-        driversRef.child("newRide").onValue.listen((event) {
+        driversRef.child(drivers.key).child("newRide").onValue.listen((event) {
           print("driverRef1 " + driversRef.key.toString());
           print("event" + event.snapshot.value.toString());
             if(event.snapshot.value.toString() == "accepted"){
-              driversRef.child("newRide").onDisconnect();
+              driversRef.child(drivers.key).child("newRide").onDisconnect();
               driverRequestTimeOut = 20;
               timer.cancel();
             }
         });
         if(driverRequestTimeOut == 0){
-          driversRef.child("newRide").set("timeout");
-          driversRef.child("newRide").onDisconnect();
+          driversRef.child(drivers.key).child("newRide").set("timeout");
+          driversRef.child(drivers.key).child("newRide").onDisconnect();
           driverRequestTimeOut = 20;
           timer.cancel();
 

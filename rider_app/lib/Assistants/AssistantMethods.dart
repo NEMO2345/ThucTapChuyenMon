@@ -40,7 +40,6 @@ class AssistantMethods {
     final ref = FirebaseDatabase.instance.ref();
     final snapshot = await ref.child('Ride Requests/$ride_request_id').get();
     if (snapshot.exists) {
-      print("Be Ly");
       print(snapshot.child("dropoff_address"));
       var dropOffAddress = snapshot.child("dropoff_address");
       print(dropOffAddress);
@@ -65,7 +64,6 @@ class AssistantMethods {
         "priority": "high",
         "to": token,
       };
-      print("Sau send");
       var res = await http.post(
         Uri.parse('https://fcm.googleapis.com/fcm/send'),
         headers: headerMap,

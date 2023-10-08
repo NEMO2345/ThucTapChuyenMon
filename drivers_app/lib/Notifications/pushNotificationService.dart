@@ -19,7 +19,9 @@ class PushNotificationService {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
   Future<void> initialize(BuildContext context) async {
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+
+    await FirebaseMessaging.instance.requestPermission();
+     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       final rideRequestId = getRideRequest(message.data);
       print("onBackgroundMessage: 2" + message.data.toString());
       retrieveRideRequestInfo(rideRequestId, context);
@@ -32,7 +34,7 @@ class PushNotificationService {
       retrieveRideRequestInfo(rideRequestId, context);
     });
 
-    await FirebaseMessaging.instance.requestPermission();
+
     final token = await _firebaseMessaging.getToken();
     if (token != null) {
       driversRef.child(currentfirebaseUser!.uid).child("token").set(token);
@@ -54,6 +56,7 @@ class PushNotificationService {
   }
 
   Future<void> retrieveRideRequestInfo(String rideRequestId, BuildContext context) async {
+    print("DialogTaiXe: ");
     newRequestsRef.child(rideRequestId).once().then((DatabaseEvent event) {
       DataSnapshot dataSnapShot = event.snapshot;
       if (dataSnapShot.value != null) {

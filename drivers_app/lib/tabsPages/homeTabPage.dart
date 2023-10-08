@@ -174,8 +174,8 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
     }
 
     PushNotificationService pushNotificationService = PushNotificationService();
-    pushNotificationService.initialize(context);
-    pushNotificationService.getToken();
+    await pushNotificationService.initialize(context);
+    await pushNotificationService.getToken();
   }
 
   @override
@@ -289,7 +289,7 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
               child: CircleAvatar(
                 backgroundColor: Colors.transparent,
                 child: Icon(
-                  Icons.control_point, color: Colors.white, size: 50,),
+                  Icons.control_point, color: Colors.blueAccent, size: 50,),
                 radius: 20.0,
               ),
             ),
@@ -322,7 +322,7 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
               child: CircleAvatar(
                 backgroundColor: Colors.transparent,
                 child: Icon(
-                  Icons.indeterminate_check_box_rounded, color: Colors.white,
+                  Icons.indeterminate_check_box_rounded, color: Colors.blueAccent,
                   size: 50,),
                 radius: 20.0,
               ),
@@ -355,7 +355,7 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
 
               child: CircleAvatar(
                 backgroundColor: Colors.transparent,
-                child: Icon(Icons.add_box, color: Colors.white, size: 50,),
+                child: Icon(Icons.add_box, color: Colors.blueAccent, size: 50,),
                 radius: 20.0,
               ),
             ),
@@ -375,52 +375,52 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                padding: EdgeInsets.symmetric(horizontal: 10.0),
                 child: ElevatedButton(
-                  onPressed: () {
-                    if(isDriverAvailable != true){
+                onPressed: () {
+                  if (isDriverAvailable != true) {
                       makerDriverOnlineNow();
                       getLocationLiveUpdates();
                       setState(() {
                         diverStatusColor = Colors.green;
                         diverStatusText = "Online Now";
                         isDriverAvailable = true;
-                      });
-                      displayToastMessage("you are Online Now", context);
-                    }
-                    else {
+                    });
+                    displayToastMessage("You are Online Now", context);
+                  } else {
                       setState(() {
-                        diverStatusColor = Colors.black;
+                        diverStatusColor = Colors.blueAccent;
                         diverStatusText = "Offline Now - Go Online";
                         isDriverAvailable = false;
                       });
-                        makeDriverOfflineNow();
+                      makeDriverOfflineNow();
                     }
                   },
-                  style: ElevatedButton.styleFrom(
-                    primary: diverStatusColor, // Đặt màu xanh lá cho nút
-                    padding: EdgeInsets.all(17.0),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        diverStatusText,
-                        style: TextStyle(
-                          fontSize: 28.0,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      Icon(
-                        Icons.phone_android,
+                style: ElevatedButton.styleFrom(
+                  primary: diverStatusColor, // Set green color for the button
+                  padding: EdgeInsets.all(17.0),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      diverStatusText,
+                      style: TextStyle(
+                        fontSize: 18.0, // Adjust the desired font size here
+                        fontWeight: FontWeight.bold,
                         color: Colors.white,
-                        size: 26.0,
+                      ),
+                    ),
+                    Icon(
+                      Icons.phone_android,
+                      color: Colors.black,
+                      size: 26.0,
                       ),
                     ],
                   ),
                 ),
               ),
+
             ],
           ),
         ),

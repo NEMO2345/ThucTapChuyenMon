@@ -12,7 +12,7 @@ class CollectFareDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const btnColor = Colors.deepPurpleAccent;
+    const btnColor = Colors.blueAccent;
     final buttonStyle = ElevatedButton.styleFrom(
       backgroundColor: btnColor,
       padding: const EdgeInsets.all(17.0),
@@ -93,4 +93,5 @@ class CollectFareDialog extends StatelessWidget {
       ),
     );
   }
+
 }

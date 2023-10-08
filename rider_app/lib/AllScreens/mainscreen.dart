@@ -1,5 +1,4 @@
 // ignore_for_file: prefer_const_constructors, unnecessary_import, library_private_types_in_public_api, prefer_final_fields, unnecessary_new, sized_box_for_whitespace, prefer_const_literals_to_create_immutables, sort_child_properties_last, prefer_interpolation_to_compose_strings, use_build_context_synchronously, avoid_print, non_constant_identifier_names, library_prefixes, unused_label, cast_from_null_always_fails, unnecessary_null_comparison, unused_element, unnecessary_cast, unused_local_variable, no_leading_underscores_for_local_identifiers, constant_pattern_never_matches_value_type, prefer_collection_literals, deprecated_member_use, avoid_unnecessary_containers, prefer_conditional_assignment, constant_identifier_names, avoid_function_literals_in_foreach_calls
-import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'dart:async';
 import 'dart:math';
 import 'package:animated_text_kit/animated_text_kit.dart';
@@ -21,7 +20,6 @@ import 'package:rider_app/Assistants/AssistantMethods.dart';
 import 'package:rider_app/Assistants/geoFireAssistant.dart';
 import 'package:rider_app/Models/nearbyAvailableDrivers.dart';
 import 'package:rider_app/configMaps.dart';
-import 'package:rider_app/main.dart';
 import '../Models/address.dart';
 import 'api.dart';
 import 'package:http/http.dart' as http;
@@ -209,7 +207,6 @@ void displayRideDetailContainer() async{
 
     return totalDistance;
   }
-//end
   //Tinh tien
   double calculateCost(double distance) {
     double cost = distance * 100.0;
@@ -239,12 +236,16 @@ void displayRideDetailContainer() async{
   @override
   void initState() {
     super.initState();
+    print("IDUSER trong main screen");
+    print(widget.firebaseUser?.uid.toString());
      getLocation();
     AssistantMethods.getCurrentOnlineUserInfo();
   }
   final DatabaseReference usersRef = FirebaseDatabase.instance.ref();
   //Save ride request to firebase
   Future<void> saveRideRequest() async {
+
+    print("1991");
       rideRequestRef = FirebaseDatabase.instance.ref().child("Ride Requests").push();
       Map pickUpLocMap = {
         "latitude": sourLatitude.toString(),
@@ -256,11 +257,17 @@ void displayRideDetailContainer() async{
       };
       String? name;
       String? phone;
+    print("1992");
+    print(widget.firebaseUser!.uid.toString());
       final snapshot = await usersRef.child('users/'+widget.firebaseUser!.uid.toString()).get()
           .then((value) => {
+
         name = value.child("name").value as String?,
-        phone = value.child("phone").value as String?
+        phone = value.child("phone").value as String?,
+        print(name),
+        print(name)
       });
+    print("1993");
       Map rideInfoMap = {
         "driver_id" : "waiting",
         "payment_method" : "cash",
@@ -272,10 +279,15 @@ void displayRideDetailContainer() async{
         "pickup_address": PickUpPoint.toString(),
         "dropoff_address": Destination.toString(),
       };
+      print("ABC");
+      print(pickUpLocMap);
+      print(dropOffLocMap);
+      print(name);
+      print(phone);
       rideRequestRef.set(rideInfoMap);
   }
   //cancel ride request
-  void cancelRideRequest(){
+   void cancelRideRequest(){
     rideRequestRef.remove();
     setState(() {
       state = "normal";
@@ -414,8 +426,12 @@ void displayRideDetailContainer() async{
                   polylineCulling: false,
                   polylines: [
                     Polyline(
-                      //Line chi duong
-                        points: points, color: Colors.red, strokeWidth: 5),
+                      points: points,
+                      color: Colors.red,
+                      strokeWidth: 5,
+                      isDotted: true, // Use a dotted line style
+                      // You can also use other properties like: isDashed, gradient, etc.
+                    ),
                   ],
                 ),
               ],
@@ -423,7 +439,6 @@ void displayRideDetailContainer() async{
 
           ),
           //HambugarButton for Drawer
-
           Positioned(
             top: 38.0,
             left: 22.0,
@@ -462,6 +477,7 @@ void displayRideDetailContainer() async{
               ),
             ),
           ),
+          //Zoom larger map screen
           Positioned(
             top:45.0,
             right: 22.0,
@@ -488,12 +504,13 @@ void displayRideDetailContainer() async{
 
                 child: CircleAvatar(
                   backgroundColor: Colors.transparent,
-                  child: Icon(Icons.control_point,color: Colors.white,size: 50,),
+                  child: Icon(Icons.control_point,color: Colors.blueAccent,size: 50,),
                   radius: 20.0,
                 ),
               ),
             ),
-          ),//Get position
+          ),
+          //Zoom smaller map screen
           Positioned(
             bottom:400.0,
             right: 22.0,
@@ -520,13 +537,13 @@ void displayRideDetailContainer() async{
 
                 child: CircleAvatar(
                   backgroundColor: Colors.transparent,
-                  child: Icon(Icons.indeterminate_check_box_rounded,color: Colors.white,size: 50,),
+                  child: Icon(Icons.indeterminate_check_box_rounded,color: Colors.blueAccent,size: 50,),
                   radius: 20.0,
                 ),
               ),
             ),
           ),
-
+          //Add screen
           Positioned(
             bottom:350.0,
             right: 22.0,
@@ -553,19 +570,19 @@ void displayRideDetailContainer() async{
 
                 child: CircleAvatar(
                   backgroundColor: Colors.transparent,
-                  child: Icon(Icons.add_box,color: Colors.white,size: 50,),
+                  child: Icon(Icons.add_box,color: Colors.blueAccent,size: 50,),
                   radius: 20.0,
                 ),
               ),
             ),
           ),
+          //Ride Details Ui
           Positioned(
             left: 0.0,
             right: 0.0,
             bottom: 0.0,
             child: SingleChildScrollView(
               child: AnimatedSize(
-                //vsync: this, (if not ) khong dong bo duoc to do
                 curve: Curves.bounceIn,
                 duration: new Duration(
                   milliseconds: 160,
@@ -588,15 +605,15 @@ void displayRideDetailContainer() async{
                     ],
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 22.0,vertical: 17.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 17.0,vertical: 17.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         SizedBox(height: 6.0),
-                        Text("Hi There, ",style: TextStyle(fontSize: 12.0),),
-                        Text("Where to? ",style: TextStyle(fontSize: 20.0,fontFamily: "Brand-Bold"),),
+                        Text("Hi There, ",style: TextStyle(fontSize: 20.0),),
+                        Text("Where you go? ",style: TextStyle(fontSize: 15.0,fontFamily: "Brand-Bold"),),
                         //Diem Dau
-                        SizedBox(height:20.0 ),
+                        SizedBox(height:10.0 ),
                         GestureDetector(
                           onTap:() async {
                             showProgressDialog() {
@@ -627,7 +644,7 @@ void displayRideDetailContainer() async{
                           },
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: Colors.lightBlueAccent,
                               borderRadius: BorderRadius.circular(
                                   5.0
                               ),
@@ -644,8 +661,8 @@ void displayRideDetailContainer() async{
                               padding: const EdgeInsets.all(12.0),
                               child: Row(
                                 children: [
-                                  Icon(Icons.search,color: Colors.blueAccent,),
-                                  SizedBox(width: 10.0,),
+                                  Icon(Icons.search,color: Colors.black,),
+                                  SizedBox(width: 4.0,),
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -657,14 +674,16 @@ void displayRideDetailContainer() async{
                                         //   // ),
                                         // ),
                                         Text(
-                                          PickUpPoint.length <= 45
+                                          PickUpPoint.length <= 40
                                               ? PickUpPoint
-                                              : PickUpPoint.substring(0, 45),
+                                              : PickUpPoint.substring(0, 40),
+                                          style: TextStyle(fontSize: 12),
                                         ),
                                         Text(
-                                          PickUpPoint.length > 45
-                                              ? PickUpPoint.substring(45)
+                                          PickUpPoint.length > 40
+                                              ? PickUpPoint.substring(40)
                                               : "",
+                                          style: TextStyle(fontSize: 12),
                                         ),
                                       ],
                                     ),
@@ -674,6 +693,7 @@ void displayRideDetailContainer() async{
                             ),
                           ),
                         ),
+                        SizedBox(height: 15),
                         //Diem cuoi
                         GestureDetector(
                           onTap:() async {
@@ -715,7 +735,7 @@ void displayRideDetailContainer() async{
                           },
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: Colors.lightBlueAccent,
                               borderRadius: BorderRadius.circular(
                                   5.0
                               ),
@@ -729,61 +749,65 @@ void displayRideDetailContainer() async{
                               ],
                             ),
                             child: Padding(
-                              padding: const EdgeInsets.all(6.0),
+                              padding: const EdgeInsets.all(12.0),
                               child: Row(
                                 children: [
-                                  Icon(Icons.search,color: Colors.blueAccent,),
-                                  SizedBox(width: 12.0,),
-                                  Column(
-                                    children: [
-                                      Text(
-                                        Destination.length <= 45
-                                            ? Destination
-                                            : Destination.substring(0, 45),
-
-                                      ),
-                                      Text(
-                                        Destination.length > 45
-                                            ? Destination.substring(45)
-                                            : " ",
-                                      ),
-                                    ],
+                                  Icon(Icons.search, color: Colors.black),
+                                  SizedBox(width: 2.0),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          Destination.length <= 40
+                                              ? Destination
+                                              : Destination.substring(0, 40),
+                                          style: TextStyle(fontSize: 12),  // Cỡ chữ ở đây là 16
+                                        ),
+                                        Text(
+                                          Destination.length > 40 ? Destination.substring(40) : " ",
+                                          style: TextStyle(fontSize: 12),  // Cỡ chữ ở đây là 14
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ],
                               ),
                             ),
+
                           ),
                         ),
                         SizedBox(height: 24.0,),
                         Row(
                           children: [
-                            Icon(Icons.home,color: Colors.grey,),
-                            SizedBox(width: 12.0,),
+                            Icon(Icons.home,color: Colors.blueAccent,),
+                            SizedBox(width: 9.0,),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  display_name_Location.length <= 45
+                                  display_name_Location.length <= 70
                                       ? display_name_Location
-                                      : display_name_Location.substring(0, 45),
-
+                                      : display_name_Location.substring(0, 70),
+                                  style: TextStyle(fontSize: 11),
                                 ),
                                 Text(
-                                  display_name_Location.length > 45
-                                      ? display_name_Location.substring(45)
+                                  display_name_Location.length > 70
+                                      ? display_name_Location.substring(70)
                                       :"",
+                                  style: TextStyle(fontSize: 11),
                                 ),
-                                SizedBox(height: 4.0,),
+                                SizedBox(height: 6.0,),
                                 Text(
                                   "Your living home address",
-                                  style: TextStyle(color: Colors.grey[200], fontSize: 12.0),
+                                  style: TextStyle(color: Colors.blueAccent[200], fontSize: 12.0),
                                 ),
                               ],
                             ),
                           ],
                         ),
 
-                        SizedBox(height: 10.0,),
+                        SizedBox(height: 19.0,),
                         DividerWidget(),
                       ],
                     ),
@@ -792,7 +816,7 @@ void displayRideDetailContainer() async{
               ),
             ),
           ),
-
+          //Cash pay
           Positioned(
             bottom: 0.0,
             left: 0.0,
@@ -869,13 +893,13 @@ void displayRideDetailContainer() async{
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 16.0),
                         child: ElevatedButton(
-                          onPressed: () {
+                          onPressed: ()  {
                             setState(() {
                               state = "requesting";
                             });
                             displayRequestRideContainer();
                             availableDrivers = GeoFireAssistant.nearByAvailableDriversList;
-                            searchNearestDriver();
+                             searchNearestDriver();
                             },
                           style: ElevatedButton.styleFrom(
                             primary: Colors.blue, // Thay thế màu này bằng màu khác
@@ -907,7 +931,7 @@ void displayRideDetailContainer() async{
               ),
             ),
           ),
-
+          //Request Cancel Ui
           Positioned(
             bottom: 0.0,
             left: 0.0,
@@ -961,8 +985,8 @@ void displayRideDetailContainer() async{
 
                     SizedBox(height: 22.0),
                     GestureDetector(
-                      onTap:(){
-                        cancelRideRequest();
+                      onTap:() async {
+                         cancelRideRequest();
                         resetApp();
                      },
                       child: Container(
@@ -988,6 +1012,53 @@ void displayRideDetailContainer() async{
               ),
             ),
           ),
+          //Display Assisned Driver Info
+          // Positioned(
+          //   bottom: 0.0,
+          //   left: 0.0,
+          //   right: 0.0,
+          //   child: Container(
+          //     decoration: BoxDecoration(
+          //       borderRadius: BorderRadius.only(topLeft: Radius.circular(16.0),topRight: Radius.circular(16.0),),
+          //       color: Colors.white,
+          //       boxShadow: [
+          //         BoxShadow(
+          //           spreadRadius: 0.5,
+          //           blurRadius: 16.0,
+          //           color: Colors.black54,
+          //           offset: Offset(0.7,0.7),
+          //         ),
+          //       ],
+          //     ),
+          //     height: 290.0,
+          //     child: Padding(
+          //       padding: const EdgeInsets.symmetric(horizontal: 24.0,vertical: 18.0),
+          //       child: Column(
+          //         crossAxisAlignment: CrossAxisAlignment.start,
+          //         children: [
+          //           SizedBox(height: 6.0,),
+          //           Row(
+          //             mainAxisAlignment: MainAxisAlignment.center,
+          //             children: [
+          //               Text("Driver is coming",textAlign: TextAlign.center,style: TextStyle(fontSize: 20.0,fontFamily: "Brand-Bold"),),
+          //
+          //               SizedBox(height: 22.0,),
+          //               Divider(),
+          //
+          //               Text("While - Toyota Corolla", style: TextStyle(color: Colors.grey),),
+          //               Text("Pham Ly",style: TextStyle(fontSize: 20.0),),
+          //
+          //               SizedBox(height: 22.0,),
+          //               Divider(),
+          //
+          //               SizedBox(height: 22.0,),
+          //             ],
+          //           ),
+          //         ],
+          //       ),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );
@@ -1074,7 +1145,7 @@ void displayRideDetailContainer() async{
     );
   }
 
-  void searchNearestDriver(){
+ void searchNearestDriver()  {
     if(availableDrivers.isEmpty){
       cancelRideRequest();
       resetApp();
@@ -1082,46 +1153,47 @@ void displayRideDetailContainer() async{
       return;
     }
     var driver = availableDrivers[0];
-    notifyDriver(driver);
+     notifyDriver(driver);
     availableDrivers.removeAt(0);
 
   }
-  void notifyDriver(NearbyAvailableDrivers drivers) {
-    driversRef.child(drivers.key).child("newRide").set(rideRequestRef.key);
-    driversRef.child(drivers.key).child("token").once().then((DatabaseEvent event) {
+ Future<void> notifyDriver(NearbyAvailableDrivers drivers)  async {
+   DatabaseReference driversRef = FirebaseDatabase.instance.ref("drivers/${drivers.key}");
+
+   driversRef.child("newRide").set(rideRequestRef.key.toString());
+
+    driversRef.child("token").once().then((DatabaseEvent event) {
       DataSnapshot snapshot = event.snapshot;
-      // print("lllllll");
-      // print(snapshot.value);
-      // print(rideRequestRef.key.toString());
-      // print("llll");
       if (snapshot.value != null) {
         String token = snapshot.value.toString();
-        AssistantMethods.sendNotificationToDriver(token, context, rideRequestRef.key.toString());
-      }else{
+        AssistantMethods.sendNotificationToDriver(token, context, rideRequestRef.key);
         return;
       }
       const oneSecondPassed = Duration(seconds: 1);
       var timer = Timer.periodic(oneSecondPassed, (timer) {
 
         if(state != "requesting"){
-          driversRef.child(drivers.key).child("newRide").set("cancelled");
-          driversRef.child(drivers.key).child("newRide").onDisconnect();
+          driversRef.child("newRide").set("cancelled");
+          driversRef.child("newRide").onDisconnect();
           driverRequestTimeOut = 20;
           timer.cancel();
         }
 
         driverRequestTimeOut = driverRequestTimeOut - 1;
 
-        driversRef.child(drivers.key).child("newRide").onValue.listen((event) {
+        print("driverRef " + driversRef.key.toString());
+        driversRef.child("newRide").onValue.listen((event) {
+          print("driverRef1 " + driversRef.key.toString());
+          print("event" + event.snapshot.value.toString());
             if(event.snapshot.value.toString() == "accepted"){
-              driversRef.child(drivers.key).child("newRide").onDisconnect();
+              driversRef.child("newRide").onDisconnect();
               driverRequestTimeOut = 20;
               timer.cancel();
             }
         });
         if(driverRequestTimeOut == 0){
-          driversRef.child(drivers.key).child("newRide").set("timeout");
-          driversRef.child(drivers.key).child("newRide").onDisconnect();
+          driversRef.child("newRide").set("timeout");
+          driversRef.child("newRide").onDisconnect();
           driverRequestTimeOut = 20;
           timer.cancel();
 

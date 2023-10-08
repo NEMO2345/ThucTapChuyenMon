@@ -1,5 +1,4 @@
-// ignore_for_file: library_private_types_in_public_api, prefer_const_constructors, non_constant_identifier_names, prefer_final_fields, must_call_super, unnecessary_import, library_prefixes, unnecessary_new, cast_from_null_always_fails, avoid_print, prefer_const_literals_to_create_immutables, sort_child_properties_last, avoid_unnecessary_containers, deprecated_member_use, unnecessary_null_comparison, constant_identifier_names, use_build_context_synchronously
-import 'dart:ffi';
+// ignore_for_file: library_private_types_in_public_api, prefer_const_constructors, non_constant_identifier_names, prefer_final_fields, must_call_super, unnecessary_import, library_prefixes, unnecessary_new, cast_from_null_always_fails, avoid_print, prefer_const_literals_to_create_immutables, sort_child_properties_last, avoid_unnecessary_containers, deprecated_member_use, unnecessary_null_comparison, constant_identifier_names, use_build_context_synchronously, unused_local_variable
 import 'dart:math';
 import 'package:drivers_app/AllWidgets/CollectFareDialog.dart';
 import 'package:drivers_app/AllWidgets/progressDialog.dart';
@@ -75,7 +74,6 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
 
     LatLng oldPos = LatLng(0, 0);
     var root = MapKitAssistant.getMarkerRotation(oldPos.latitude, oldPos.longitude, Latitude, Longitude);
-
     _serviceEnabled = await location.serviceEnabled();
     if (!_serviceEnabled) _serviceEnabled = await location.requestService();
 

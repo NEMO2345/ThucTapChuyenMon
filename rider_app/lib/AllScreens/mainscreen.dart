@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, unnecessary_import, library_private_types_in_public_api, prefer_final_fields, unnecessary_new, sized_box_for_whitespace, prefer_const_literals_to_create_immutables, sort_child_properties_last, prefer_interpolation_to_compose_strings, use_build_context_synchronously, avoid_print, non_constant_identifier_names, library_prefixes, unused_label, cast_from_null_always_fails, unnecessary_null_comparison, unused_element, unnecessary_cast, unused_local_variable, no_leading_underscores_for_local_identifiers, constant_pattern_never_matches_value_type, prefer_collection_literals, deprecated_member_use, avoid_unnecessary_containers, prefer_conditional_assignment, constant_identifier_names, avoid_function_literals_in_foreach_calls
+// ignore_for_file: prefer_const_constructors, unnecessary_import, library_private_types_in_public_api, prefer_final_fields, unnecessary_new, sized_box_for_whitespace, prefer_const_literals_to_create_immutables, sort_child_properties_last, prefer_interpolation_to_compose_strings, use_build_context_synchronously, avoid_print, non_constant_identifier_names, library_prefixes, unused_label, cast_from_null_always_fails, unnecessary_null_comparison, unused_element, unnecessary_cast, unused_local_variable, no_leading_underscores_for_local_identifiers, constant_pattern_never_matches_value_type, prefer_collection_literals, deprecated_member_use, avoid_unnecessary_containers, prefer_conditional_assignment, constant_identifier_names, avoid_function_literals_in_foreach_calls, unnecessary_brace_in_string_interps
 import 'dart:async';
 import 'dart:math';
 import 'package:animated_text_kit/animated_text_kit.dart';
@@ -21,6 +21,7 @@ import 'package:rider_app/Assistants/AssistantMethods.dart';
 import 'package:rider_app/Assistants/geoFireAssistant.dart';
 import 'package:rider_app/Models/nearbyAvailableDrivers.dart';
 import 'package:rider_app/configMaps.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../Models/address.dart';
 import 'api.dart';
 import 'package:http/http.dart' as http;
@@ -371,9 +372,6 @@ void displayRideDetailContainer() async{
     // createIconMarker();
     return Scaffold(
       key: scaffoldKey,
-      appBar: AppBar(
-        title: Text("Main Screen"),
-      ),
       drawer: Container(
         color: Colors.white,
         width: 255.0,
@@ -1098,68 +1096,37 @@ void displayRideDetailContainer() async{
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              height: 55.0,
-                              width: 55.0,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.all(Radius.circular(26.0)),
-                                border: Border.all(width: 2.0, color: Colors.grey),
-                              ),
-                              child: Icon(
-                                Icons.call,
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 20.0),
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              launch(('tel://${driverPhone}'));
+                            },
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(Colors.pink),
+                            ),
+                            child: Padding(
+                              padding: EdgeInsets.all(17.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  Text(
+                                    "Call Driver",
+                                    style: TextStyle(
+                                      fontSize: 20.0,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  Icon(
+                                    Icons.call,
+                                    color: Colors.white,
+                                    size: 26.0,
+                                  ),
+                                ],
                               ),
                             ),
-                            SizedBox(height: 10.0,),
-                            Text("Call"),
-                          ],
-                        ),
-                        Column(
-                         // crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              height: 55.0,
-                              width: 55.0,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.all(Radius.circular(26.0)),
-                                border: Border.all(width: 2.0, color: Colors.grey),
-                              ),
-                              child: Icon(
-                                Icons.list,
-                                color: Colors.black, // Màu của icon
-                              ),
-                            ),
-                            SizedBox(height: 10.0,),
-                            Text(
-                              "Details",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.black, // Màu của văn bản
-                              ),
-                            ),
-                          ],
-                        ),
-                        Column(
-                          //crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              height: 55.0,
-                              width: 55.0,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.all(Radius.circular(26.0)),
-                                border: Border.all(width: 2.0, color: Colors.grey),
-                              ),
-                              child: Icon(
-                                Icons.close,
-                              ),
-                            ),
-                            SizedBox(height: 10.0,),
-                            Text("Cancel"),
-                          ],
+                          ),
                         ),
                       ],
                     ),

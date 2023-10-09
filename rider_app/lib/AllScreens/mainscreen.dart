@@ -10,6 +10,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:rider_app/AllScreens/loginScreen.dart';
+import 'package:rider_app/AllScreens/ratingScreen.dart';
 import 'package:rider_app/AllScreens/searchScreen.dart';
 import 'package:rider_app/AllWidgets/CollectFareDialog.dart';
 import 'package:rider_app/AllWidgets/Divider.dart';
@@ -315,7 +316,13 @@ void displayRideDetailContainer() async{
             barrierDismissible: false,
             builder: (BuildContext context)=> CollectFareDialog(paymentMethod:"cash" ,fareAmount: snapshotValue["fares"],),
           );
+          String driverId = "";
           if(res == "close"){
+            if(snapshotValue["driver_id"] != null){
+              driverId = snapshotValue["driver_id"].toString();
+            }
+            Navigator.of(context).push(MaterialPageRoute(builder: (context) => RatingScreen(driverId: driverId)));
+
             rideRequestRef.onDisconnect();
             rideRequestRef.remove();
             rideStreamSubscription.cancel();
@@ -1103,7 +1110,7 @@ void displayRideDetailContainer() async{
                               launch(('tel://${driverPhone}'));
                             },
                             style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all<Color>(Colors.pink),
+                              backgroundColor: MaterialStateProperty.all<Color>(Colors.blueAccent),
                             ),
                             child: Padding(
                               padding: EdgeInsets.all(17.0),

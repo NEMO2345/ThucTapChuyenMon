@@ -9,9 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:provider/provider.dart';
 import 'package:rider_app/AllScreens/loginScreen.dart';
 import 'package:rider_app/AllScreens/searchScreen.dart';
+import 'package:rider_app/AllWidgets/CollectFareDialog.dart';
 import 'package:rider_app/AllWidgets/Divider.dart';
 import 'package:flutter_map/flutter_map.dart' show  FlutterMap, MapController, MapOptions, Marker, MarkerLayer, Polyline, PolylineLayer, TileLayer;
 import 'package:latlong2/latlong.dart';
@@ -98,6 +98,13 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
       rideDetailContainerHeigth = 0;
       requestRideContainerHeigth = 0;
       bottomPaddingOfMap = 230.0;
+
+      statusRide = "";
+      driverName = "";
+      driverPhone = "";
+      carDetailsDriver = "";
+      riderStatus = "Driver is coming";
+      driverDetailsContainerHeight = 0.0;
     });
     getLocation();
   }
@@ -252,8 +259,10 @@ void displayRideDetailContainer() async{
       print(name);
       print(phone);
       rideRequestRef.set(rideInfoMap);
-      rideStreamSubscription = rideRequestRef.onValue.listen((event) {
-        if (event.snapshot.value == null) {
+      // rideStreamSubscription = rideRequestRef.onValue.listen((event) async{
+      rideStreamSubscription = rideRequestRef.onValue.listen((event) async {
+
+      if (event.snapshot.value == null) {
           return;
         }
         var snapshotValue = event.snapshot.value as Map<dynamic, dynamic>;
@@ -278,8 +287,10 @@ void displayRideDetailContainer() async{
           double driverLng  = double.parse(snapshotValue["driver_location"]["longitude"].toString());
           LatLng driverCurrentLocation = LatLng(driverLat, driverLng);
           if(statusRide == "accepted"){
+            print("ended1"+ statusRide.toString());
             updateRideTimeToPickUpLoc(driverCurrentLocation);
           }else if(statusRide == "onride"){
+            print("ended2"+ statusRide.toString());
             updateRideTimeToDropOffLoc(driverCurrentLocation);
           }else if(statusRide == "arrived"){
             setState(() {
@@ -287,14 +298,30 @@ void displayRideDetailContainer() async{
             });
           }
         }
+       // print("ended3"+ statusRide.toString());
         if (snapshotValue["status"] != null) {
           statusRide = snapshotValue["status"].toString();
         }
         if(statusRide == "accepted"){
-         displayDriverDetailsContainer();
-         Geofire.stopListener();
-         deleteGeofileMarkers();
+          displayDriverDetailsContainer();
+          Geofire.stopListener();
+          deleteGeofileMarkers();
         }
+      if(statusRide == "ended"){
+        if(snapshotValue["fares"] != null){
+          var res = await showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context)=> CollectFareDialog(paymentMethod:"cash" ,fareAmount: snapshotValue["fares"],),
+          );
+          if(res == "close"){
+            rideRequestRef.onDisconnect();
+            rideRequestRef.remove();
+            rideStreamSubscription.cancel();
+            resetApp();
+          }
+        }
+      }
       });
   }
   void deleteGeofileMarkers(){

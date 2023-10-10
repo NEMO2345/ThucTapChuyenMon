@@ -24,7 +24,7 @@ class _SearchScreenState extends State<SearchScreen> {
       ),
       body: OpenStreetMapSearchAndPick(
           center: LatLong(latitude, longitude),
-          buttonColor: Colors.blue,
+          buttonColor: Color(0xFF00CCFF),
           buttonText: 'Set Location',
           onPicked: (pickedData) {
             Address address = Address();

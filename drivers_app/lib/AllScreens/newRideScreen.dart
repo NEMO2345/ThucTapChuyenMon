@@ -64,7 +64,7 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
   String durationRide = "10 mins";
   bool isRequestingDirection = false;
   String btnTitle = "Arrived";
-  Color btnColor = Colors.blueAccent;
+  Color btnColor = Color(0xFF00CCFF);
   late Timer timer;
   int durationCounter = 0;
 
@@ -274,8 +274,11 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
                   polylineCulling: false,
                   polylines: [
                     Polyline(
-                      //Line chi duong
-                        points: points, color: Colors.red, strokeWidth: 5),
+                      points: points,
+                      color: Colors.red,
+                      strokeWidth: 5,
+                      isDotted: true, // Use a dotted line style
+                    ),
                   ],
                 ),
               ],
@@ -312,7 +315,7 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
                 child: CircleAvatar(
                   backgroundColor: Colors.transparent,
                   child: Icon(
-                    Icons.control_point, color: Colors.blue, size: 50,),
+                    Icons.control_point, color: Color(0xFF00CCFF), size: 50,),
                   radius: 20.0,
                 ),
               ),
@@ -344,7 +347,7 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
 
                     Text(
                       durationRide,
-                      style: TextStyle(fontSize: 14.0, fontFamily: "Brand-Bold",color: Colors.deepPurple),
+                      style: TextStyle(fontSize: 14.0, fontFamily: "Brand-Bold",color:Color(0xFF00CCFF)),
                     ),
 
                     SizedBox(height: 6.0,),
@@ -406,7 +409,7 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
 
                             setState(() {
                               btnTitle = "Start Trip";
-                              btnColor = Colors.purple;
+                              btnColor = Color(0xFF00CCFF);
                             });
                             showDialog(
                                 context: context,
@@ -421,7 +424,7 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
 
                             setState(() {
                               btnTitle = "End Trip";
-                              btnColor = Colors.redAccent;
+                              btnColor = Color(0xFF00CCFF);
                             });
                             initTimer();
                           }

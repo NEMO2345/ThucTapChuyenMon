@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, unnecessary_import, library_private_types_in_public_api, prefer_final_fields, unnecessary_new, sized_box_for_whitespace, prefer_const_literals_to_create_immutables, sort_child_properties_last, prefer_interpolation_to_compose_strings, use_build_context_synchronously, avoid_print, non_constant_identifier_names, library_prefixes, unused_label, cast_from_null_always_fails, unnecessary_null_comparison, unused_element, unnecessary_cast, unused_local_variable, deprecated_member_use, depend_on_referenced_packages, must_be_immutable, await_only_futures
+// ignore_for_file: prefer_const_constructors, unnecessary_import, library_private_types_in_public_api, prefer_final_fields, unnecessary_new, sized_box_for_whitespace, prefer_const_literals_to_create_immutables, sort_child_properties_last, prefer_interpolation_to_compose_strings, use_build_context_synchronously, avoid_print, non_constant_identifier_names, library_prefixes, unused_label, cast_from_null_always_fails, unnecessary_null_comparison, unused_element, unnecessary_cast, unused_local_variable, deprecated_member_use, depend_on_referenced_packages, must_be_immutable, await_only_futures, avoid_function_literals_in_foreach_calls
 import 'dart:async';
 import 'package:drivers_app/AllScreens/registerationScreen.dart';
 import 'package:drivers_app/Models/drivers.dart';
@@ -134,23 +134,7 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
     print(zoomSize);
   }
 
-  // void getCurrentDriverInfo() async{
-  //   currentfirebaseUser = await FirebaseAuth.instance.currentUser;
-  //
-  //   try {
-  //     DataSnapshot dataSnapshot = (await driversRef.child(currentfirebaseUser!.uid).once()) as DataSnapshot;
-  //     if (dataSnapshot.value != null) {
-  //       driversInformation = Drivers.fromSnapshot(dataSnapshot);
-  //       print(driversInformation);
-  //     }
-  //   } catch (error) {
-  //     print("Error: $error");
-  //   }
-  //
-  //   PushNotificationService pushNotificationService = PushNotificationService();
-  //   pushNotificationService.initialize(context);
-  //   pushNotificationService.getToken();
-  // }
+
   void getCurrentDriverInfo() async {
     currentfirebaseUser = await FirebaseAuth.instance.currentUser;
 
@@ -254,8 +238,11 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
                 polylineCulling: false,
                 polylines: [
                   Polyline(
-                    //Line chi duong
-                      points: points, color: Colors.red, strokeWidth: 5),
+                    points: points,
+                    color: Colors.red,
+                    strokeWidth: 5,
+                    isDotted: true, // Use a dotted line style
+                  ),
                 ],
               ),
             ],
@@ -289,7 +276,7 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
               child: CircleAvatar(
                 backgroundColor: Colors.transparent,
                 child: Icon(
-                  Icons.control_point, color: Colors.blueAccent, size: 50,),
+                  Icons.control_point, color: Color(0xFF00CCFF), size: 50,),
                 radius: 20.0,
               ),
             ),
@@ -322,7 +309,7 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
               child: CircleAvatar(
                 backgroundColor: Colors.transparent,
                 child: Icon(
-                  Icons.indeterminate_check_box_rounded, color: Colors.blueAccent,
+                  Icons.indeterminate_check_box_rounded, color: Color(0xFF00CCFF),
                   size: 50,),
                 radius: 20.0,
               ),
@@ -355,7 +342,7 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
 
               child: CircleAvatar(
                 backgroundColor: Colors.transparent,
-                child: Icon(Icons.add_box, color: Colors.blueAccent, size: 50,),
+                child: Icon(Icons.add_box, color: Color(0xFF00CCFF), size: 50,),
                 radius: 20.0,
               ),
             ),
@@ -382,14 +369,14 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
                       makerDriverOnlineNow();
                       getLocationLiveUpdates();
                       setState(() {
-                        diverStatusColor = Colors.green;
+                        diverStatusColor = Colors.white38;
                         diverStatusText = "Online Now";
                         isDriverAvailable = true;
                     });
                     displayToastMessage("You are Online Now", context);
                   } else {
                       setState(() {
-                        diverStatusColor = Colors.blueAccent;
+                        diverStatusColor = Color(0xFF00CCFF);
                         diverStatusText = "Offline Now - Go Online";
                         isDriverAvailable = false;
                       });
@@ -442,7 +429,6 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        // Xử lý khi người dùng từ chối cấp quyền
         return;
       }
     }
@@ -464,8 +450,6 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
     await driversRef.child(currentfirebaseUser!.uid).update(myLocation);
 
     rideRequestRef.onValue.listen((event) {
-      // Xử lý sự kiện thay đổi dữ liệu
-      // Kiểu dữ liệu của event là DataSnapshot
     }, onError: (Object error) {
     });
   }

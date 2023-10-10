@@ -1,3 +1,5 @@
+// ignore_for_file: use_key_in_widget_constructors, avoid_unnecessary_containers
+
 import 'package:flutter/cupertino.dart';
 
 class MarkerWidget extends StatelessWidget {

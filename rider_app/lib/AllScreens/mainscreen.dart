@@ -11,6 +11,7 @@ import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:rider_app/AllScreens/loginScreen.dart';
 import 'package:rider_app/AllScreens/ratingScreen.dart';
+import 'package:rider_app/AllScreens/registerationScreen.dart';
 import 'package:rider_app/AllScreens/searchScreen.dart';
 import 'package:rider_app/AllWidgets/CollectFareDialog.dart';
 import 'package:rider_app/AllWidgets/Divider.dart';
@@ -142,8 +143,8 @@ void displayRideDetailContainer() async{
     await getLocation();
     setState(() {
         searchContainerHeight = 0;
-        rideDetailContainerHeigth = 300.0;
-        bottomPaddingOfMap = 230.0;
+        rideDetailContainerHeigth = 380.0;
+        bottomPaddingOfMap = 380.0;
         drawerOpen = false;
     });
 }
@@ -572,7 +573,7 @@ void displayRideDetailContainer() async{
                 ),
                 child: CircleAvatar(
                   backgroundColor: Colors.transparent,
-                  child: Icon(Icons.control_point,color: Colors.blueAccent,size: 50,),
+                  child: Icon(Icons.control_point,color: Color(0xFF00CCFF),size: 50,),
                   radius: 20.0,
                 ),
               ),
@@ -605,7 +606,7 @@ void displayRideDetailContainer() async{
 
                 child: CircleAvatar(
                   backgroundColor: Colors.transparent,
-                  child: Icon(Icons.indeterminate_check_box_rounded,color: Colors.blueAccent,size: 50,),
+                  child: Icon(Icons.indeterminate_check_box_rounded,color: Color(0xFF00CCFF),size: 50,),
                   radius: 20.0,
                 ),
               ),
@@ -638,7 +639,7 @@ void displayRideDetailContainer() async{
 
                 child: CircleAvatar(
                   backgroundColor: Colors.transparent,
-                  child: Icon(Icons.add_box,color: Colors.blueAccent,size: 50,),
+                  child: Icon(Icons.add_box,color: Color(0xFF00CCFF),size: 50,),
                   radius: 20.0,
                 ),
               ),
@@ -649,7 +650,7 @@ void displayRideDetailContainer() async{
             left: 0.0,
             right: 0.0,
             bottom: 0.0,
-            child: SingleChildScrollView(
+            //child: SingleChildScrollView(
               child: AnimatedSize(
                 curve: Curves.bounceIn,
                 duration: new Duration(
@@ -678,7 +679,7 @@ void displayRideDetailContainer() async{
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         SizedBox(height: 6.0),
-                        Text("Hi There, ",style: TextStyle(fontSize: 20.0),),
+                        Text("Hi There, ",style: TextStyle(fontSize: 20.0,fontFamily: "Brand-Bold"),),
                         Text("Where you go? ",style: TextStyle(fontSize: 15.0,fontFamily: "Brand-Bold"),),
                         //Diem Dau
                         SizedBox(height:10.0 ),
@@ -710,13 +711,13 @@ void displayRideDetailContainer() async{
                           },
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.lightBlueAccent,
+                              color: Color(0xFF00CCFF),
                               borderRadius: BorderRadius.circular(
                                   5.0
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black54,
+                                  color: Colors.black,
                                   blurRadius: 6.0,
                                   spreadRadius: 0.5,
                                   offset: Offset(0.7, 0.7),
@@ -737,13 +738,13 @@ void displayRideDetailContainer() async{
                                           PickUpPoint.length <= 40
                                               ? PickUpPoint
                                               : PickUpPoint.substring(0, 40),
-                                          style: TextStyle(fontSize: 12),
+                                          style: TextStyle(fontSize: 12,fontFamily: "Brand Bold"),
                                         ),
                                         Text(
                                           PickUpPoint.length > 40
                                               ? PickUpPoint.substring(40)
                                               : "",
-                                          style: TextStyle(fontSize: 12),
+                                          style: TextStyle(fontSize: 12,fontFamily: "Brand Bold"),
                                         ),
                                       ],
                                     ),
@@ -793,13 +794,13 @@ void displayRideDetailContainer() async{
                           },
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.lightBlueAccent,
+                              color: Color(0xFF00CCFF),
                               borderRadius: BorderRadius.circular(
                                   5.0
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black54,
+                                  color: Colors.black,
                                   blurRadius: 6.0,
                                   spreadRadius: 0.5,
                                   offset: Offset(0.7, 0.7),
@@ -820,11 +821,11 @@ void displayRideDetailContainer() async{
                                           Destination.length <= 40
                                               ? Destination
                                               : Destination.substring(0, 40),
-                                          style: TextStyle(fontSize: 12),  // Cỡ chữ ở đây là 16
+                                          style: TextStyle(fontSize: 12,fontFamily: "Brand Bold"),
                                         ),
                                         Text(
                                           Destination.length > 40 ? Destination.substring(40) : " ",
-                                          style: TextStyle(fontSize: 12),  // Cỡ chữ ở đây là 14
+                                          style: TextStyle(fontSize: 12,fontFamily: "Brand Bold"),
                                         ),
                                       ],
                                     ),
@@ -837,7 +838,7 @@ void displayRideDetailContainer() async{
                         SizedBox(height: 24.0,),
                         Row(
                           children: [
-                            Icon(Icons.home,color: Colors.blueAccent,),
+                            Icon(Icons.home, color: Color(0xFF00CCFF),),
                             SizedBox(width: 9.0,),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -846,13 +847,13 @@ void displayRideDetailContainer() async{
                                   display_name_Location.length <= 70
                                       ? display_name_Location
                                       : display_name_Location.substring(0, 70),
-                                  style: TextStyle(fontSize: 11),
+                                  style: TextStyle(fontSize: 9,fontFamily: "Brand Bold"),
                                 ),
                                 Text(
                                   display_name_Location.length > 70
                                       ? display_name_Location.substring(70)
                                       :"",
-                                  style: TextStyle(fontSize: 11),
+                                  style: TextStyle(fontSize: 9,fontFamily: "Brand Bold"),
                                 ),
                                 SizedBox(height: 6.0,),
                                 Text(
@@ -871,7 +872,7 @@ void displayRideDetailContainer() async{
                 ),
               ),
             ),
-          ),
+         // ),
           //Cash pay
           Positioned(
             bottom: 0.0,
@@ -884,6 +885,7 @@ void displayRideDetailContainer() async{
               ),
               child: Container(
                 height: rideDetailContainerHeigth,
+
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(topLeft: Radius.circular(16.0), topRight:Radius.circular(16.0),),
@@ -900,79 +902,145 @@ void displayRideDetailContainer() async{
                   padding: EdgeInsets.symmetric(vertical: 17.0),
                   child: Column(
                     children: [
-                      Container(
-                        width: double.infinity,
-                        color: Colors.tealAccent[100],
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16.0),
-                          child: Row(
-                             children: [
-                               Image.asset("images/taxi.png",height: 70.0,width: 80.0,),
-                               SizedBox(width: 16.0,),
-                               Column(
-                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                 children: [
-                                   Text(
-                                     "Car", style: TextStyle(fontSize: 18.0, fontFamily: "Brand-Bold",),
-                                   ),
-                                   Text(
-                                     ((tripDirectionDetails != null) ? tripDirectionDetails.toStringAsFixed(2) + " Km" : " 0 Km"), style: TextStyle(fontSize: 16.0,color: Colors.grey,),
-                                   ),
-                                 ],
-                               ),
-                               Expanded(child: Container()),
-                               Text(
-                                 formattedCost, style: TextStyle(fontFamily: "Brand-Bold",),
-                               ),
-                             ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 20.0,),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 20.0),
-                        child: Row(
-                          children: [
-                            Icon(FontAwesomeIcons.moneyCheckDollar, size: 18.0, color: Colors.black54,),
-                            SizedBox(width: 16.0,),
-                            Text("Cash"),
-                            SizedBox(width: 6.0,),
-                            Icon(Icons.keyboard_arrow_down, color: Colors.black54, size: 16.0,),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: 24.0,),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16.0),
-                        child: ElevatedButton(
-                          onPressed: ()  {
-                            setState(() {
-                              state = "requesting";
-                            });
-                            displayRequestRideContainer();
-                            availableDrivers = GeoFireAssistant.nearByAvailableDriversList;
-                             searchNearestDriver();
-                            },
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.blue,
-                            padding: EdgeInsets.all(17.0),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Request",
-                                style: TextStyle(
-                                  fontSize: 20.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                      //bike ride
+                      GestureDetector(
+                        onTap: (){
+                          displayToastMessage("Searching Bike...", context);
+                          setState(() {
+                            state = "requesting";
+                          });
+                          displayRequestRideContainer();
+                          availableDrivers = GeoFireAssistant.nearByAvailableDriversList;
+                          searchNearestDriver();
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Row(
+                              children: [
+                                Image.asset("images/bike.png",height: 70.0,width: 80.0,),
+                                SizedBox(width: 16.0,),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Bike", style: TextStyle(fontSize: 18.0, fontFamily: "Brand-Bold",),
+                                    ),
+                                    Text(
+                                      ((tripDirectionDetails != null) ? tripDirectionDetails.toStringAsFixed(2) + " Km" : " 0 Km"), style: TextStyle(fontSize: 16.0,color: Colors.grey,),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                              Icon(
-                                FontAwesomeIcons.taxi,
-                                color: Colors.white,
-                                size: 26.0,
-                              ),
+                                Expanded(child: Container()),
+                                Text(
+                                  formattedCost, style: TextStyle(fontFamily: "Brand-Bold",),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 10.0,),
+                      Divider(height: 2.0,thickness: 2.0,),
+                      SizedBox(height: 10.0,),
+                      //uber-go ride
+                      GestureDetector(
+                        onTap: (){
+                          displayToastMessage("Searching Uber-Go...", context);
+                          setState(() {
+                            state = "requesting";
+                          });
+                          displayRequestRideContainer();
+                          availableDrivers = GeoFireAssistant.nearByAvailableDriversList;
+                          searchNearestDriver();
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Row(
+                              children: [
+                                Image.asset("images/ubergo.png",height: 70.0,width: 80.0,),
+                                SizedBox(width: 16.0,),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Uber-Go", style: TextStyle(fontSize: 18.0, fontFamily: "Brand-Bold",),
+                                    ),
+                                    Text(
+                                      ((tripDirectionDetails != null) ? tripDirectionDetails.toStringAsFixed(2) + " Km" : " 0 Km"), style: TextStyle(fontSize: 16.0,color: Colors.grey,),
+                                    ),
+                                  ],
+                                ),
+                                Expanded(child: Container()),
+                                Text(
+                                  formattedCost, style: TextStyle(fontFamily: "Brand-Bold",),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 10.0,),
+                      Divider(height: 2.0,thickness: 2.0,),
+                      SizedBox(height: 10.0,),
+                      //uber-x ride
+                      GestureDetector(
+                        onTap: (){
+                          displayToastMessage("Searching Uber-X...", context);
+                          setState(() {
+                            state = "requesting";
+                          });
+                          displayRequestRideContainer();
+                          availableDrivers = GeoFireAssistant.nearByAvailableDriversList;
+                          searchNearestDriver();
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Row(
+                              children: [
+                                Image.asset("images/uberx.png",height: 70.0,width: 80.0,),
+                                SizedBox(width: 16.0,),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Uber-X", style: TextStyle(fontSize: 18.0, fontFamily: "Brand-Bold",),
+                                    ),
+                                    Text(
+                                      ((tripDirectionDetails != null) ? tripDirectionDetails.toStringAsFixed(2) + " Km" : " 0 Km"), style: TextStyle(fontSize: 16.0,color: Colors.grey,),
+                                    ),
+                                  ],
+                                ),
+                                Expanded(child: Container()),
+                                Text(
+                                  formattedCost, style: TextStyle(fontFamily: "Brand-Bold",),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 10.0,),
+                      Divider(height: 2.0,thickness: 2.0,),
+                      SizedBox(height: 10.0,),
+
+                      Container(
+                        color: Color(0xFF00CCFF),
+                        height: 60.0,
+                        child:  Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 20.0),
+                          child: Row(
+                            children: [
+                              Icon(FontAwesomeIcons.moneyCheckDollar, size: 18.0, color: Colors.black,),
+                              SizedBox(width: 16.0,),
+                              Text("Cash"),
+                              SizedBox(width: 6.0,),
+                              Icon(Icons.keyboard_arrow_down, color: Colors.black, size: 16.0,),
                             ],
                           ),
                         ),
@@ -996,7 +1064,7 @@ void displayRideDetailContainer() async{
                   BoxShadow(
                     spreadRadius: 0.5,
                     blurRadius: 16.0,
-                    color: Colors.black54,
+                    color: Colors.black,
                     offset: Offset(0.7,0.7),
                   ),
                 ],
@@ -1110,7 +1178,7 @@ void displayRideDetailContainer() async{
                               launch(('tel://${driverPhone}'));
                             },
                             style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all<Color>(Colors.blueAccent),
+                              backgroundColor: MaterialStateProperty.all<Color>(Color(0xFF00CCFF)),
                             ),
                             child: Padding(
                               padding: EdgeInsets.all(17.0),

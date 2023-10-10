@@ -1,4 +1,4 @@
-// ignore_for_file: library_private_types_in_public_api, prefer_interpolation_to_compose_strings, use_build_context_synchronously, deprecated_member_use
+// ignore_for_file: library_private_types_in_public_api, prefer_interpolation_to_compose_strings, use_build_context_synchronously, deprecated_member_use, file_names, prefer_const_constructors, body_might_complete_normally_catch_error
 
 import 'package:drivers_app/AllScreens/carInfoScreen.dart';
 import 'package:drivers_app/configMaps.dart';
@@ -6,7 +6,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:drivers_app/AllScreens/loginScreen.dart';
-import 'package:drivers_app/AllScreens/mainscreen.dart';
 import 'package:drivers_app/AllWidgets/progressDialog.dart';
 import 'package:drivers_app/main.dart';
 
@@ -130,7 +129,7 @@ class _LoginScreenState extends State<RegisterationScreen> {
                     const SizedBox(height: 10.0,),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        primary: Colors.yellow,
+                        primary: Color(0xFF00CCFF),
                         onPrimary: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(24.0),
@@ -202,7 +201,6 @@ class _LoginScreenState extends State<RegisterationScreen> {
       })).user;
 
       if (firebaseUser != null) {
-        // Xử lý thành công, ví dụ: chuyển hướng tới màn hình tiếp theo
         driversRef.child(firebaseUser.uid);
         Map userDateMap = {
           "name": nameTextEdittingController.text.trim(),
@@ -219,7 +217,6 @@ class _LoginScreenState extends State<RegisterationScreen> {
         Navigator.pushNamed(context, CarInfoScreen.idScreen);
       } else {
         Navigator.pop(context);
-        // Xử lý khi không thể tạo người dùng thành công
         displayToastMessage("New User has not been Created.", context);
       }
   }

@@ -100,6 +100,27 @@ class _RatingScreenState extends State<RatingScreen> {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.0),
                 child: ElevatedButton(
+                  // onPressed: () async {
+                  //   DatabaseReference driverRatingRef = FirebaseDatabase.instance.ref()
+                  //       .child("drivers")
+                  //       .child(widget.driverId)
+                  //       .child("ratings");
+                  //
+                  //   driverRatingRef.onValue.listen((event) {
+                  //     DataSnapshot snap = event.snapshot;
+                  //     if (snap.value.toString() != null) {
+                  //       double oldRatings = double.parse(snap.value.toString());
+                  //       double addRatings = oldRatings + startCounter;
+                  //       double averageRatings = addRatings/2;
+                  //       driverRatingRef.set(averageRatings.toString());
+                  //     } else {
+                  //       driverRatingRef.set(startCounter.toString());
+                  //     }
+                  //     Navigator.pop(context);
+                  //   }, onError: (error) {
+                  //     print("Error: $error");
+                  //   });
+                  // },
                   onPressed: () async {
                     DatabaseReference driverRatingRef = FirebaseDatabase.instance.ref()
                         .child("drivers")
@@ -107,19 +128,31 @@ class _RatingScreenState extends State<RatingScreen> {
                         .child("ratings");
 
                     driverRatingRef.onValue.listen((event) {
-                      DataSnapshot snap = event.snapshot;
-                      if (snap.value.toString() != null) {
-                        double oldRatings = double.parse(snap.value.toString());
-                        double addRatings = oldRatings + startCounter;
-                        double averageRatings = addRatings/2;
-                        driverRatingRef.set(averageRatings.toString());
+                      DataSnapshot snapshot = event.snapshot;
+                      print("Ngao" + snapshot.value.toString());
+                      if (snapshot.value != null) {
+                        double oldRatings = double.parse(snapshot.value.toString());
+                        double newRatings = oldRatings + startCounter;
+                        double averageRatings = newRatings / 2;
+                        driverRatingRef.update({'ratings': averageRatings.toString()}).then((_) {
+                        // driverRatingRef.set(averageRatings.toString()).then((_) {
+
+                          print("Cập nhật trường 'ratings' thành công");
+                        }).catchError((error) {
+                          print("Lỗi khi cập nhật trường 'ratings': $error");
+                        });
                       } else {
-                        driverRatingRef.set(startCounter.toString());
+                        driverRatingRef.set(startCounter.toString()).then((_) {
+                          print("Thêm trường 'ratings' thành công");
+                        }).catchError((error) {
+                          print("Lỗi khi thêm trường 'ratings': $error");
+                        });
                       }
-                      Navigator.pop(context);
                     }, onError: (error) {
                       print("Error: $error");
                     });
+                    Navigator.pop(context);
+
                   },
                   style: buttonStyle,
                   child: const Padding(

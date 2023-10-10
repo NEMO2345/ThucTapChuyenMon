@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, deprecated_member_use, avoid_print
 import 'dart:io';
 import 'package:drivers_app/AllScreens/carInfoScreen.dart';
+import 'package:drivers_app/DataHandler/appData.dart';
 import 'package:drivers_app/Notifications/pushNotificationService.dart';
 import 'package:drivers_app/configMaps.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -19,36 +20,14 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await setupFlutterNotifications();
   print('Handling a background message ${message.messageId}');
 }
+
 late AndroidNotificationChannel channel;
-
 bool isFlutterLocalNotificationsInitialized = false;
-
 
 Future<void> setupFlutterNotifications() async {
   if (isFlutterLocalNotificationsInitialized) {
     return;
   }
-  // channel = const AndroidNotificationChannel(
-  //   'high_importance_channel', // id
-  //   'High Importance Notifications', // title
-  //   description:
-  //   'This channel is used for important notifications.', // description
-  //   importance: Importance.high,
-  // );
-
-  //var flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-
-  /// Create an Android Notification Channel.
-  ///
-  /// We use this channel in the `AndroidManifest.xml` file to override the
-  /// default FCM channel to enable heads up notifications.
-  // await flutterLocalNotificationsPlugin
-  //     .resolvePlatformSpecificImplementation<
-  //     AndroidFlutterLocalNotificationsPlugin>()
-  //     ?.createNotificationChannel(channel);
-
-  /// Update the iOS foreground notification presentation options to allow
-  /// heads up notifications.
   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
     alert: true,
     badge: true,
@@ -67,59 +46,49 @@ DatabaseReference rideRequestRef = FirebaseDatabase.instance
     .child(currentfirebaseUser!.uid)
     .child("newRide");
 
-void main() async{
-  WidgetsFlutterBinding.ensureInitialized();//Khoi tao flutter framework
-  await Firebase.initializeApp();//Khoi tao firebase
-  //await FirebaseApi().initNotifications();
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  //LocalNotificationService.initialize();
-  //
-  // Tạo một GlobalKey để có thể truy cập context
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-  // Chạy ứng dụng thông qua runApp và truyền navigatorKey
-  runApp(MyApp(navigatorKey: navigatorKey));
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => AppData()),
+      ],
+      child: MyApp(navigatorKey: navigatorKey),
+    ),
+  );
 
-  // Truyền navigatorKey vào phương thức initialize của PushNotificationService
   await PushNotificationService().initialize(navigatorKey.currentContext as BuildContext);
-  // Add this line to ignore certificate validation
   HttpOverrides.global = MyHttpOverrides();
 
   currentfirebaseUser = FirebaseAuth.instance.currentUser;
-
-  //runApp(const MyApp());
 }
 
-
-
 class MyApp extends StatelessWidget {
-  const MyApp({super.key, required GlobalKey<NavigatorState> navigatorKey});
+  final GlobalKey<NavigatorState> navigatorKey;
+
+  const MyApp({required this.navigatorKey});
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-
-      create: (BuildContext context) {  },
-      child: MaterialApp(
-        title: 'Taxi Driver App',
-        theme: ThemeData(
-         // fontFamily: "Brand Bold",
-          primarySwatch: Colors.blue,//The banner color
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-        ),
-
-
-        initialRoute: FirebaseAuth.instance.currentUser == null ?LoginScreen.idScreen : MainScreen.idScreen,
-        routes:
-        {
-         // NotificationScreen.route:(context) => const NotificationScreen(),
-          RegisterationScreen.idScreen: (context) => RegisterationScreen(),
-          LoginScreen.idScreen: (context) => LoginScreen(),
-          MainScreen.idScreen: (context) => MainScreen(),
-          CarInfoScreen.idScreen: (context) => CarInfoScreen(),
-        },
-        debugShowCheckedModeBanner: false,//Remove the banner
+    return MaterialApp(
+      navigatorKey: navigatorKey,
+      title: 'Taxi Driver App',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
+      initialRoute: FirebaseAuth.instance.currentUser == null ? LoginScreen.idScreen : MainScreen.idScreen,
+      routes: {
+        RegisterationScreen.idScreen: (context) => RegisterationScreen(),
+        LoginScreen.idScreen: (context) => LoginScreen(),
+        MainScreen.idScreen: (context) => MainScreen(),
+        CarInfoScreen.idScreen: (context) => CarInfoScreen(),
+      },
+      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -127,9 +96,6 @@ class MyApp extends StatelessWidget {
 class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
-    return super.createHttpClient(context)
-      ..badCertificateCallback = (X509Certificate cert, String host,
-          int port) => true;
+    return super.createHttpClient(context)..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
   }
-
 }

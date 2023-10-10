@@ -2,11 +2,14 @@
 
 import 'dart:async';
 
+import 'package:drivers_app/DataHandler/appData.dart';
+import 'package:drivers_app/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:drivers_app/Models/allUsers.dart';
 import 'package:drivers_app/configMaps.dart';
 import 'package:flutter_geofire/flutter_geofire.dart';
+import 'package:provider/provider.dart';
 
 class AssistantMethods {
   static void getCurrentOnlineUserInfo() async {
@@ -43,5 +46,14 @@ class AssistantMethods {
         Geofire.setLocation(currentfirebaseUser!.uid, latitude, longitude);
       } as FutureOr Function(Object value));
     } as FutureOr Function(Object value));
+  }
+  static void retrieveHistoryInfo(context) async{
+    driversRef.child(currentfirebaseUser!.uid).child("earnings").once().then((DatabaseEvent event){
+      DataSnapshot dataSnapshot = event.snapshot;
+      if( dataSnapshot.value != null){
+          String earnings = dataSnapshot.value.toString();
+          Provider.of<AppData>(context,listen: false).updateEarnings(earnings);
+      }
+    });
   }
 }

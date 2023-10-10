@@ -122,35 +122,20 @@ class _RatingScreenState extends State<RatingScreen> {
                   //   });
                   // },
                   onPressed: () async {
-                    DatabaseReference driverRatingRef = FirebaseDatabase.instance.ref()
-                        .child("drivers")
-                        .child(widget.driverId)
-                        .child("ratings");
+                    DatabaseReference driversRef = FirebaseDatabase.instance.ref("drivers/${widget.driverId}");
 
-                    driverRatingRef.onValue.listen((event) {
-                      DataSnapshot snapshot = event.snapshot;
-                      print("Ngao" + snapshot.value.toString());
-                      if (snapshot.value != null) {
-                        double oldRatings = double.parse(snapshot.value.toString());
-                        double newRatings = oldRatings + startCounter;
-                        double averageRatings = newRatings / 2;
-                        driverRatingRef.update({'ratings': averageRatings.toString()}).then((_) {
-                        // driverRatingRef.set(averageRatings.toString()).then((_) {
-
-                          print("Cập nhật trường 'ratings' thành công");
-                        }).catchError((error) {
-                          print("Lỗi khi cập nhật trường 'ratings': $error");
-                        });
-                      } else {
-                        driverRatingRef.set(startCounter.toString()).then((_) {
-                          print("Thêm trường 'ratings' thành công");
-                        }).catchError((error) {
-                          print("Lỗi khi thêm trường 'ratings': $error");
-                        });
-                      }
-                    }, onError: (error) {
-                      print("Error: $error");
-                    });
+                    final snapshot = await driversRef.child("ratings").get();
+                    double averageRatings =0;
+                    if (snapshot.exists) {
+                      print(snapshot.value);
+                      double oldRatings =  double.parse(snapshot.value.toString());
+                      double newRatings = oldRatings + startCounter;
+                      averageRatings = newRatings / 2;
+                    } else {
+                      print('No data available.');
+                      averageRatings = startCounter;
+                    }
+                    driversRef.child("ratings").set(averageRatings.toString());
                     Navigator.pop(context);
 
                   },

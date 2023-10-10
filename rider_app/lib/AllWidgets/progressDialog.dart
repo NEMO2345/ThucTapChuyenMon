@@ -6,7 +6,7 @@ class ProgressDialog extends StatelessWidget
 {
   late String message;
   ProgressDialog({required this.message});
-  @override
+  @ override
   Widget build(BuildContext context) {
     return Dialog(
       backgroundColor: Color(0xFF00CCFF),

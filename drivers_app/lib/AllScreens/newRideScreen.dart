@@ -570,19 +570,21 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
     saveEarnings(totalcalculateCost.toInt());
   }
 
-  void saveEarnings(int fareAmount){
-    driversRef.child(currentfirebaseUser!.uid).child("earnings").once().then((DataSnapshot dataSnapShot){
-        if(dataSnapShot.value != null){
-         double oldEarnings = double.parse(dataSnapShot.value.toString());
-         double totalEarnings = fareAmount + oldEarnings;
+  Future<void> saveEarnings(int fareAmount) async {
 
-         driversRef.child(currentfirebaseUser!.uid).child("earnings").set(totalEarnings.toStringAsFixed(2));
-        }
-        else{
-          double totalEarnings = fareAmount.toDouble();
-          driversRef.child(currentfirebaseUser!.uid).child("earnings").set(totalEarnings.toStringAsFixed(2));
-        }
-    } as FutureOr Function(DatabaseEvent value));
+    final snapshot = await driversRef.child(currentfirebaseUser!.uid).child("earnings").get();
+    double averageRatings =0;
+    if (snapshot.exists) {
+      print(snapshot.value);
+      double oldEarnings = double.parse(snapshot.value.toString());
+      double totalEarnings = fareAmount + oldEarnings;
+      driversRef.child(currentfirebaseUser!.uid).child("earnings").set(totalEarnings.toStringAsFixed(2));
+    } else {
+      print('No data available.');
+      double totalEarnings = fareAmount.toDouble();
+      driversRef.child(currentfirebaseUser!.uid).child("earnings").set(totalEarnings.toStringAsFixed(2));
+    }
+
   }
 }
 

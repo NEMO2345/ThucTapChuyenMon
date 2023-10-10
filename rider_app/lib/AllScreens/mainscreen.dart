@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, unnecessary_import, library_private_types_in_public_api, prefer_final_fields, unnecessary_new, sized_box_for_whitespace, prefer_const_literals_to_create_immutables, sort_child_properties_last, prefer_interpolation_to_compose_strings, use_build_context_synchronously, avoid_print, non_constant_identifier_names, library_prefixes, unused_label, cast_from_null_always_fails, unnecessary_null_comparison, unused_element, unnecessary_cast, unused_local_variable, no_leading_underscores_for_local_identifiers, constant_pattern_never_matches_value_type, prefer_collection_literals, deprecated_member_use, avoid_unnecessary_containers, prefer_conditional_assignment, constant_identifier_names, avoid_function_literals_in_foreach_calls, unnecessary_brace_in_string_interps
+// ignore_for_file: prefer_const_constructors, unnecessary_import, library_private_types_in_public_api, prefer_final_fields, unnecessary_new, sized_box_for_whitespace, prefer_const_literals_to_create_immutables, sort_child_properties_last, prefer_interpolation_to_compose_strings, use_build_context_synchronously, avoid_print, non_constant_identifier_names, library_prefixes, unused_label, cast_from_null_always_fails, unnecessary_null_comparison, unused_element, unnecessary_cast, unused_local_variable, no_leading_underscores_for_local_identifiers, constant_pattern_never_matches_value_type, prefer_collection_literals, deprecated_member_use, avoid_unnecessary_containers, prefer_conditional_assignment, constant_identifier_names, avoid_function_literals_in_foreach_calls, unnecessary_brace_in_string_interps, await_only_futures
 import 'dart:async';
 import 'dart:math';
 import 'package:animated_text_kit/animated_text_kit.dart';
@@ -23,6 +23,7 @@ import 'package:rider_app/Assistants/AssistantMethods.dart';
 import 'package:rider_app/Assistants/geoFireAssistant.dart';
 import 'package:rider_app/Models/nearbyAvailableDrivers.dart';
 import 'package:rider_app/configMaps.dart';
+import 'package:rider_app/main.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../Models/address.dart';
 import 'api.dart';
@@ -64,7 +65,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
     String display_name_Location = "You address";
     double rideDetailContainerHeigth = 0;
     double requestRideContainerHeigth = 0;
-    double searchContainerHeight = 310.0;
+    double searchContainerHeight = 370.0;
     double driverDetailsContainerHeight = 0;
     bool drawerOpen = true;
     bool nearbyAvailableDriverKeysLoaded = false;
@@ -73,6 +74,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
     String state = "normal";
     late StreamSubscription<DatabaseEvent> rideStreamSubscription;
     bool isRequestingPositionDetails = false;
+    String uName = "";
 
   //function adjust requestRideContainerHeight
   void displayRequestRideContainer(){
@@ -256,13 +258,13 @@ void displayRideDetailContainer() async{
         "rider_phone": phone,
         "pickup_address": PickUpPoint.toString(),
         "dropoff_address": Destination.toString(),
+        "ride_type": carRideType,
       };
       print(pickUpLocMap);
       print(dropOffLocMap);
       print(name);
       print(phone);
       rideRequestRef.set(rideInfoMap);
-      // rideStreamSubscription = rideRequestRef.onValue.listen((event) async{
       rideStreamSubscription = rideRequestRef.onValue.listen((event) async {
 
       if (event.snapshot.value == null) {
@@ -398,7 +400,7 @@ void displayRideDetailContainer() async{
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text("Profile Name",style: TextStyle(fontSize: 16.0,fontFamily: "Brand-Bold"),),
+                          Text("Pham Ly",style: TextStyle(fontSize: 16.0,fontFamily: "Brand Bold"),),
                           SizedBox(height: 6.0,),
                           Text("Visit Profile"),
                         ],
@@ -872,7 +874,6 @@ void displayRideDetailContainer() async{
                 ),
               ),
             ),
-         // ),
           //Cash pay
           Positioned(
             bottom: 0.0,
@@ -908,6 +909,7 @@ void displayRideDetailContainer() async{
                           displayToastMessage("Searching Bike...", context);
                           setState(() {
                             state = "requesting";
+                            carRideType = "bike";
                           });
                           displayRequestRideContainer();
                           availableDrivers = GeoFireAssistant.nearByAvailableDriversList;
@@ -950,6 +952,7 @@ void displayRideDetailContainer() async{
                           displayToastMessage("Searching Uber-Go...", context);
                           setState(() {
                             state = "requesting";
+                            carRideType="uber-go";
                           });
                           displayRequestRideContainer();
                           availableDrivers = GeoFireAssistant.nearByAvailableDriversList;
@@ -992,6 +995,7 @@ void displayRideDetailContainer() async{
                           displayToastMessage("Searching Uber-X...", context);
                           setState(() {
                             state = "requesting";
+                            carRideType="uber-x";
                           });
                           displayRequestRideContainer();
                           availableDrivers = GeoFireAssistant.nearByAvailableDriversList;
@@ -1299,14 +1303,29 @@ void displayRideDetailContainer() async{
       return;
     }
     var driver = availableDrivers[0];
-     notifyDriver(driver);
-    availableDrivers.removeAt(0);
 
+    driversRef.child(driver.key).child("car_details").child("type").onValue.listen((event) {
+      print(event.snapshot.value);
+      if ( event.snapshot.value != null) {
+        String carType = event.snapshot.value.toString();
+        if (carType == carRideType) {
+          notifyDriver(driver);
+          availableDrivers.removeAt(0);
+        }
+        else {
+          displayToastMessage(
+              carRideType + " drivers not available. Try again", context);
+        }
+      } else {
+        displayToastMessage("No car found. Try again", context);
+      }
+    });
   }
   //Send new request
  Future<void> notifyDriver(NearbyAvailableDrivers drivers)  async {
    DatabaseReference driversRef = FirebaseDatabase.instance.ref("drivers/${drivers.key}");
    driversRef.child("newRide").set(rideRequestRef.key.toString());
+
 
     driversRef.child("token").once().then((DatabaseEvent event) {
       DataSnapshot snapshot = event.snapshot;

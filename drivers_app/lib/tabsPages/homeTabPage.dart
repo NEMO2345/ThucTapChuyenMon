@@ -251,7 +251,7 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
 
         ),
         Positioned(
-          top: 45.0,
+          top: 200.0,
           right: 22.0,
           child: GestureDetector(
             onTap: () {

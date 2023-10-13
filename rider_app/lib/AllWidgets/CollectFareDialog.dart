@@ -42,7 +42,7 @@ class CollectFareDialog extends StatelessWidget {
              SizedBox(height: 16.0),
              Text(
                fareAmount,
-              style: TextStyle(fontFamily: "Brand-Bold", fontSize: 55.0),
+              style: TextStyle(fontFamily: "Brand Bold", fontSize: 55.0),
             ),
             const SizedBox(height: 16.0),
             const Padding(

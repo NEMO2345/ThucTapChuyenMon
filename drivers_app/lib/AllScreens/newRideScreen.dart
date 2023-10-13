@@ -347,14 +347,14 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
 
                     Text(
                       durationRide,
-                      style: TextStyle(fontSize: 14.0, fontFamily: "Brand-Bold",color:Color(0xFF00CCFF)),
+                      style: TextStyle(fontSize: 14.0, fontFamily: "Brand Bold",color:Color(0xFF00CCFF)),
                     ),
 
                     SizedBox(height: 6.0,),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(widget.rideDetails.rider_name,style: TextStyle(fontFamily: "Brand-Bold",fontSize: 24.0),),
+                        Text(widget.rideDetails.rider_name,style: TextStyle(fontFamily: "Brand Bold",fontSize: 24.0),),
                         Padding(
                           padding: EdgeInsets.only(right: 10.0),
                           child: Icon(Icons.phone_android),

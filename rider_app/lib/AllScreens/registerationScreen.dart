@@ -34,7 +34,7 @@ class _LoginScreenState extends State<RegisterationScreen> {
             children: [
               const SizedBox(height: 20.0),
               const Image(
-                image: AssetImage("images/logo.png"),
+                image: AssetImage("images/logoBookMe.png"),
                 width: 390.0,
                 height: 250.0,
                 alignment: Alignment.center,

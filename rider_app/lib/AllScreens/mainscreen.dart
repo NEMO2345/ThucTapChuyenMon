@@ -292,10 +292,10 @@ void displayRideDetailContainer() async{
           double driverLng  = double.parse(snapshotValue["driver_location"]["longitude"].toString());
           LatLng driverCurrentLocation = LatLng(driverLat, driverLng);
           if(statusRide == "accepted"){
-            print("ended1"+ statusRide.toString());
+            print("ended1 "+ statusRide.toString());
             updateRideTimeToPickUpLoc(driverCurrentLocation);
           }else if(statusRide == "onride"){
-            print("ended2"+ statusRide.toString());
+            print("ended2 "+ statusRide.toString());
             updateRideTimeToDropOffLoc(driverCurrentLocation);
           }else if(statusRide == "arrived"){
             setState(() {

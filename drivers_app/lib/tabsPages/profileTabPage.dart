@@ -1,14 +1,139 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, file_names, prefer_interpolation_to_compose_strings, must_be_immutable, avoid_print
 
+import 'package:drivers_app/AllScreens/loginScreen.dart';
+import 'package:drivers_app/configMaps.dart';
+import 'package:drivers_app/main.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_geofire/flutter_geofire.dart';
 
 class ProfileTabPage extends StatelessWidget {
   const ProfileTabPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text("This is profile Tab Page"),
+    return Scaffold(
+      backgroundColor: Colors.black87,
+      body: SafeArea(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              driversInformation!.name,
+              style: TextStyle(
+                fontSize: 65.0,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Signatra',
+              ),
+            ),
+            Text(
+              title + " driver",
+              style: TextStyle(
+                fontSize: 20.0,
+                color: Colors.blueGrey[200],
+                letterSpacing: 2.5,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Brand-Regular'
+              ),
+            ),
+            SizedBox(
+              height: 20,
+              width: 200,
+              child: Divider(
+                color: Colors.white,
+              ),
+            ),
+            SizedBox(height: 40.0,),
+            InfoCard(
+                text: driversInformation!.phone,
+                icon: Icons.phone,
+                onPressed: () async{
+                  print("This is phone");
+                },
+            ),
+            InfoCard(
+              text: driversInformation!.email,
+              icon: Icons.email,
+              onPressed: () async{
+                print("This is email");
+              },
+            ),
+            InfoCard(
+              text: driversInformation!.car_color + " "+ driversInformation!.car_model+ " "+ driversInformation!.car_number,
+              icon: Icons.car_repair,
+              onPressed: () async{
+                print("This is carInfo");
+              },
+            ),
+            GestureDetector(
+              onTap: (){
+                Geofire.removeLocation(currentfirebaseUser!.uid);
+                rideRequestRef.onDisconnect();
+                //rideRequestRef.remove();
+               // rideRequestRef = null;
+                FirebaseAuth.instance.signOut();
+                Navigator.pushNamedAndRemoveUntil(context, LoginScreen.idScreen, (route) => false);
+              },
+              child: Card(
+                color: Colors.red,
+                margin: EdgeInsets.symmetric(vertical: 10.0,horizontal: 110.0),
+                child: ListTile(
+                  trailing: Icon(
+                    Icons.follow_the_signs_outlined,
+                    color: Colors.white,
+                  ),
+                  title: Text(
+                    "Sign out",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16.0,
+                      fontFamily: 'Brand Bold',
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
+
+class InfoCard extends StatelessWidget {
+  final String text;
+  final IconData? icon;
+  void Function()? onPressed;
+
+  InfoCard({super.key, required this.text, required this.icon,required this.onPressed,});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onPressed,
+      child: Card(
+        color: Colors.white,
+        margin: EdgeInsets.symmetric(vertical: 10.0,horizontal: 25.0),
+        child: ListTile(
+          leading: Icon(
+            icon,
+            color: Colors.black,
+          ),
+          title: Text(
+            text,
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 16.0,
+              fontFamily: 'Brand Bold',
+            ),
+
+          ),
+        ),
+
+      ),
+    );
+  }
+}
+

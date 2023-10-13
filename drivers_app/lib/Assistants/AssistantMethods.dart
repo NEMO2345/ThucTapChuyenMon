@@ -1,4 +1,4 @@
-// ignore_for_file: await_only_futures, non_constant_identifier_names, file_names, unused_local_variable
+// ignore_for_file: await_only_futures, non_constant_identifier_names, file_names, unused_local_variable, avoid_function_literals_in_foreach_calls
 import 'dart:async';
 import 'package:drivers_app/DataHandler/appData.dart';
 import 'package:drivers_app/main.dart';
@@ -50,7 +50,6 @@ class AssistantMethods {
   static void retrieveHistoryInfo(context) async{
 
     //retrieve and display Earnings
-    print("This is trip counter1:");
     driversRef.child(currentfirebaseUser!.uid).child("earnings").once().then((DatabaseEvent event){
       DataSnapshot dataSnapshot = event.snapshot;
       if( dataSnapshot.value != null){
@@ -68,7 +67,7 @@ class AssistantMethods {
         dataSnapshot.children.forEach((element) {
           tripCounter++;
           tripHistoryKeys.add(element.key.toString());
-          print(element.key);
+         // print(element.key);
         });
 
         Provider.of<AppData>(context,listen: false).updateTripsCounter(tripCounter);
@@ -88,8 +87,7 @@ class AssistantMethods {
         newRequestsRef.child(key).once().then((DatabaseEvent event){
           DataSnapshot snapshot = event.snapshot;
           if(snapshot.value != null){
-            print(snapshot.value);
-
+            //print(snapshot.value);
             var history = History(paymentMethod: snapshot.child("payment_method").value.toString() ,
                 createdAt:snapshot.child("created_at").value.toString(),
                 status:snapshot.child("status").value.toString(),

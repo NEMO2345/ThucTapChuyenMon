@@ -1,11 +1,10 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, deprecated_member_use, file_names
 
 import 'package:drivers_app/AllScreens/mainscreen.dart';
 import 'package:drivers_app/AllScreens/registerationScreen.dart';
 import 'package:drivers_app/configMaps.dart';
 import 'package:drivers_app/main.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class CarInfoScreen extends StatelessWidget {
 

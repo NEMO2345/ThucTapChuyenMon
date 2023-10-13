@@ -1,6 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_unnecessary_containers
-
-import 'dart:async';
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_unnecessary_containers, file_names
 
 import 'package:drivers_app/AllScreens/newRideScreen.dart';
 import 'package:drivers_app/AllScreens/registerationScreen.dart';

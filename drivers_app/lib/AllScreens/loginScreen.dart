@@ -1,4 +1,4 @@
-// ignore_for_file: library_private_types_in_public_api, prefer_const_constructors, deprecated_member_use, avoid_print, prefer_interpolation_to_compose_strings, use_build_context_synchronously, file_names
+// ignore_for_file: library_private_types_in_public_api, prefer_const_constructors, deprecated_member_use, avoid_print, prefer_interpolation_to_compose_strings, use_build_context_synchronously, file_names, body_might_complete_normally_catch_error
 import 'package:drivers_app/configMaps.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -32,9 +32,9 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               SizedBox(height: 45.0),
               Image(
-                image: AssetImage("images/logo.png"),
-                width: 390.0,
-                height: 250.0,
+                image: AssetImage("images/logoBookMe.png"),
+                width: 330.0,
+                height: 270.0,
                 alignment: Alignment.center,
               ),
               SizedBox(height: 35.0),

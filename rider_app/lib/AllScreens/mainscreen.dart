@@ -65,7 +65,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
     String display_name_Location = "You address";
     double rideDetailContainerHeigth = 0;
     double requestRideContainerHeigth = 0;
-    double searchContainerHeight = 370.0;
+    double searchContainerHeight = 420.0;
     double driverDetailsContainerHeight = 0;
     bool drawerOpen = true;
     bool nearbyAvailableDriverKeysLoaded = false;
@@ -327,7 +327,7 @@ void displayRideDetailContainer() async{
             Navigator.of(context).push(MaterialPageRoute(builder: (context) => RatingScreen(driverId: driverId)));
 
             rideRequestRef.onDisconnect();
-            rideRequestRef.remove();
+           // rideRequestRef.remove();
             rideStreamSubscription.cancel();
             resetApp();
           }
@@ -372,7 +372,7 @@ void displayRideDetailContainer() async{
   }
   //cancel ride request
    void cancelRideRequest(){
-    rideRequestRef.remove();
+  //  rideRequestRef.remove();
     setState(() {
       state = "normal";
     });
@@ -776,6 +776,12 @@ void displayRideDetailContainer() async{
                                 Destination = address.placeName;
                                 if (sourLatitude != 0 && sourLongitude != 0){
                                   getCoordinates(sourLatitude,sourLongitude,desLatitude,desLongitude);
+                                  print("dropOff");
+                                  print(sourLatitude);
+                                  print(sourLongitude);
+                                  print("pickup");
+                                  print(desLatitude);
+                                  print(desLongitude);
                                   List<LatLng> points = [
                                     LatLng(sourLatitude, sourLongitude),
                                     LatLng(desLatitude, desLongitude),
@@ -1305,7 +1311,7 @@ void displayRideDetailContainer() async{
     var driver = availableDrivers[0];
 
     driversRef.child(driver.key).child("car_details").child("type").onValue.listen((event) {
-      print(event.snapshot.value);
+      print("xe"+ event.snapshot.toString());
       if ( event.snapshot.value != null) {
         String carType = event.snapshot.value.toString();
         if (carType == carRideType) {
@@ -1346,9 +1352,7 @@ void displayRideDetailContainer() async{
 
         driverRequestTimeOut = driverRequestTimeOut - 1;
 
-        print("driverRef " + driversRef.key.toString());
         driversRef.child(drivers.key).child("newRide").onValue.listen((event) {
-          print("driverRef1 " + driversRef.key.toString());
           print("event" + event.snapshot.value.toString());
             if(event.snapshot.value.toString() == "accepted"){
               driversRef.child(drivers.key).child("newRide").onDisconnect();

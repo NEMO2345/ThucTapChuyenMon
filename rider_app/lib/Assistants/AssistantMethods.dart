@@ -43,7 +43,7 @@ class AssistantMethods {
     if (snapshot.exists) {
       print(snapshot.child("dropoff_address"));
       var dropOffAddress = snapshot.child("dropoff_address");
-      print(dropOffAddress);
+      print("NhanNgao"+ dropOffAddress.toString());
       // Gán thông tin vào hàm sendNotificationToDriver
       Map<String, String> headerMap = {
         'Content-Type': 'application/json',

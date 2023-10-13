@@ -100,27 +100,6 @@ class _RatingScreenState extends State<RatingScreen> {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.0),
                 child: ElevatedButton(
-                  // onPressed: () async {
-                  //   DatabaseReference driverRatingRef = FirebaseDatabase.instance.ref()
-                  //       .child("drivers")
-                  //       .child(widget.driverId)
-                  //       .child("ratings");
-                  //
-                  //   driverRatingRef.onValue.listen((event) {
-                  //     DataSnapshot snap = event.snapshot;
-                  //     if (snap.value.toString() != null) {
-                  //       double oldRatings = double.parse(snap.value.toString());
-                  //       double addRatings = oldRatings + startCounter;
-                  //       double averageRatings = addRatings/2;
-                  //       driverRatingRef.set(averageRatings.toString());
-                  //     } else {
-                  //       driverRatingRef.set(startCounter.toString());
-                  //     }
-                  //     Navigator.pop(context);
-                  //   }, onError: (error) {
-                  //     print("Error: $error");
-                  //   });
-                  // },
                   onPressed: () async {
                     DatabaseReference driversRef = FirebaseDatabase.instance.ref("drivers/${widget.driverId}");
 

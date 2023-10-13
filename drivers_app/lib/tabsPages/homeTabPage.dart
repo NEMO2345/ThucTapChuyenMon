@@ -157,12 +157,10 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
       print("This is error");
       print("Error: $error");
     }
-
     PushNotificationService pushNotificationService = PushNotificationService();
     await pushNotificationService.initialize(context);
     await pushNotificationService.getToken();
-    
-   AssistantMethods.retrieveHistoryInfo(context);
+     AssistantMethods.retrieveHistoryInfo(context);
   }
 
   @override
@@ -372,14 +370,14 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
                       makerDriverOnlineNow();
                       getLocationLiveUpdates();
                       setState(() {
-                        diverStatusColor = Colors.white38;
+                        diverStatusColor = Color(0xFF00CCFF);
                         diverStatusText = "Online Now";
                         isDriverAvailable = true;
                     });
                     displayToastMessage("You are Online Now", context);
                   } else {
                       setState(() {
-                        diverStatusColor = Color(0xFF00CCFF);
+                        diverStatusColor = Colors.white38;
                         diverStatusText = "Offline Now - Go Online";
                         isDriverAvailable = false;
                       });

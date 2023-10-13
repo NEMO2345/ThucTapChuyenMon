@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 class CollectFareDialog extends StatelessWidget {
 
   final String paymentMethod;
-  final int fareAmount;
+  final double fareAmount;
 
   const CollectFareDialog({super.key, required this.paymentMethod,required this.fareAmount});
 
@@ -44,7 +44,7 @@ class CollectFareDialog extends StatelessWidget {
 
              SizedBox(height: 16.0),
              Text(
-              "\$$fareAmount",
+              "\$${fareAmount.toStringAsFixed(2)}",
               style: TextStyle(fontFamily: "Brand-Bold", fontSize: 55.0),
             ),
 

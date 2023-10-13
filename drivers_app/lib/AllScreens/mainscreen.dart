@@ -6,6 +6,8 @@ import 'package:drivers_app/tabsPages/profileTabPage.dart';
 import 'package:drivers_app/tabsPages/ratingTabPage.dart';
 import 'package:flutter/material.dart';
 
+import '../Assistants/AssistantMethods.dart';
+
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -30,7 +32,6 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
   void initState() {
     // TODO: implement initState
     super.initState();
-
     tabController = TabController(length: 4, vsync: this);
   }
   @override

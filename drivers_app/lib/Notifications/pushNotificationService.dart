@@ -56,7 +56,6 @@ class PushNotificationService {
   }
 
   Future<void> retrieveRideRequestInfo(String rideRequestId, BuildContext context) async {
-    print("DialogTaiXe: ");
     newRequestsRef.child(rideRequestId).once().then((DatabaseEvent event) {
       DataSnapshot dataSnapShot = event.snapshot;
       if (dataSnapShot.value != null) {
@@ -67,13 +66,21 @@ class PushNotificationService {
 
         if (dataSnapShot.value is Map<dynamic, dynamic>) {
           Map<dynamic, dynamic> requestValue = dataSnapShot.value as Map<dynamic, dynamic>;
+          print("Be Ly Cute");
+          print("pickup");
+
 
           double pickUpLocationLat = double.parse(requestValue['pickup']['latitude'].toString());
           double pickUpLocationLng = double.parse(requestValue['pickup']['longitude'].toString());
+          print(pickUpLocationLat);
+          print(pickUpLocationLng);
           String pickUpAddress = requestValue['pickup_address'].toString();
 
           double dropOffLocationLat = double.parse(requestValue['dropoff']['latitude'].toString());
           double dropOffLocationLng = double.parse(requestValue['dropoff']['longitude'].toString());
+          print("dropOff");
+          print(dropOffLocationLat);
+          print(dropOffLocationLng);
           String dropOffAddress = requestValue['dropoff_address'].toString();
 
           String paymentMethod = requestValue['payment_method'].toString();

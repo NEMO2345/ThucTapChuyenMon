@@ -40,7 +40,7 @@ class NotificationDialog extends StatelessWidget {
             SizedBox(height: 30.0,),
             Image.asset("images/taxi.png",width: 120.0,),
             SizedBox(height: 18.0,),
-            Text("New Ride Request", style: TextStyle(fontFamily: "Brand-bold",fontSize: 18.0,),),
+            Text("New Ride Request", style: TextStyle(fontFamily: "Brand Bold",fontSize: 18.0,),),
             Padding(
                 padding: EdgeInsets.all(18.0),
               child: Column(

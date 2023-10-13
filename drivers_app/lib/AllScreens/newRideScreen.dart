@@ -176,7 +176,7 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
 
     return totalDistance;
   }
-//end
+  //end
   //Tinh tien
   double calculateCost(double distance) {
     double cost = distance * 100.0;
@@ -540,10 +540,10 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
     Navigator.pop(context);
     var directionDetails = await getLocation();
     setState(() {
-      desLatitude =Latitude;
-      desLongitude = Longitude;
+      // desLatitude =Latitude;
+      // desLongitude = Longitude;
       if (sourLatitude != 0 && sourLongitude != 0){
-        getCoordinates(sourLatitude,sourLongitude,desLatitude,desLongitude);
+       // getCoordinates(sourLatitude,sourLongitude,desLatitude,desLongitude);
         List<LatLng> points = [
           LatLng(sourLatitude, sourLongitude),
           LatLng(desLatitude, desLongitude),
@@ -565,7 +565,7 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (BuildContext context)=> CollectFareDialog(paymentMethod: widget.rideDetails.payment_method, fareAmount: totalcalculateCost.toInt(),),
+      builder: (BuildContext context)=> CollectFareDialog(paymentMethod: widget.rideDetails.payment_method, fareAmount: totalcalculateCost.toDouble(),),
     );
     saveEarnings(totalcalculateCost.toInt());
   }

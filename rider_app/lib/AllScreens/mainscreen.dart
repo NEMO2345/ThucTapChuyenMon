@@ -221,8 +221,10 @@ void displayRideDetailContainer() async{
   @override
   void initState() {
     super.initState();
+    getUserInfor();
     print(widget.firebaseUser?.uid.toString());
      getLocation();
+
     AssistantMethods.getCurrentOnlineUserInfo();
   }
   final DatabaseReference usersRef = FirebaseDatabase.instance.ref();
@@ -377,6 +379,15 @@ void displayRideDetailContainer() async{
       state = "normal";
     });
   }
+   Future<void> getUserInfor() async {
+     final DatabaseReference usersRef = FirebaseDatabase.instance.ref();
+     final snapshot = await usersRef.child('users/'+widget.firebaseUser!.uid.toString()).get()
+         .then((value) => {
+       uName = (value.child("name").value as String?)!,
+
+     });
+
+   }
   @override
   Widget build(BuildContext context) {
     // createIconMarker();
@@ -400,7 +411,7 @@ void displayRideDetailContainer() async{
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text("Pham Ly",style: TextStyle(fontSize: 16.0,fontFamily: "Brand Bold"),),
+                          Text(uName,style: TextStyle(fontSize: 16.0,fontFamily: "Brand Bold"),),
                           SizedBox(height: 6.0,),
                           Text("Visit Profile"),
                         ],
@@ -421,9 +432,14 @@ void displayRideDetailContainer() async{
                 leading: Icon(Icons.person),
                 title: Text("Visit Profile", style: TextStyle(fontSize: 16.0),),
               ),
-              ListTile(
-                leading: Icon(Icons.info),
-                title: Text("About", style: TextStyle(fontSize: 16.0),),
+              GestureDetector(
+                onTap: (){
+                  displayToastMessage("Industrial vehicle", context);
+                },
+                child: ListTile(
+                  leading: Icon(Icons.info),
+                  title: Text("About", style: TextStyle(fontSize: 16.0),),
+                ),
               ),
               GestureDetector(
                 onTap: (){

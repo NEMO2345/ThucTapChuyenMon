@@ -1,6 +1,7 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, prefer_interpolation_to_compose_strings
 
 import 'package:drivers_app/Assistants/AssistantMethods.dart';
+import 'package:drivers_app/configMaps.dart';
 import 'package:flutter/material.dart';
 
 class CollectFareDialog extends StatelessWidget {
@@ -37,7 +38,7 @@ class CollectFareDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
              SizedBox(height: 22.0),
-             Text("Trip Fare"),
+             Text("Trip Fare ("+ rideType.toUpperCase()+ ")" ),
 
              SizedBox(height: 22.0),
              Divider(),
@@ -47,6 +48,14 @@ class CollectFareDialog extends StatelessWidget {
               "\$${fareAmount.toStringAsFixed(2)}",
               style: TextStyle(fontFamily: "Brand-Bold", fontSize: 55.0),
             ),
+            // Text(
+            //   rideType == "bike"
+            //       ? "\$${(0.5 * fareAmount).toStringAsFixed(2)}"
+            //       : (rideType == "uber-go"
+            //       ? "\$${(0.75 * fareAmount).toStringAsFixed(2)}"
+            //       : "\$${fareAmount.toStringAsFixed(2)}"),
+            //   style: TextStyle(fontFamily: "Brand-Bold", fontSize: 55.0),
+            // ),
 
             const SizedBox(height: 16.0),
             const Padding(

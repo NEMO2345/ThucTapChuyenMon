@@ -19,3 +19,4 @@ Drivers? driversInformation;
 
 String title = "";
 double startCounter =0.0;
+String rideType = "";

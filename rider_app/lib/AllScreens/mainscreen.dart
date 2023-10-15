@@ -10,6 +10,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:rider_app/AllScreens/loginScreen.dart';
+import 'package:rider_app/AllScreens/profileScreen.dart';
 import 'package:rider_app/AllScreens/ratingScreen.dart';
 import 'package:rider_app/AllScreens/registerationScreen.dart';
 import 'package:rider_app/AllScreens/searchScreen.dart';
@@ -227,6 +228,7 @@ void displayRideDetailContainer() async{
 
     AssistantMethods.getCurrentOnlineUserInfo();
   }
+
   final DatabaseReference usersRef = FirebaseDatabase.instance.ref();
   //Save ride request to firebase
   Future<void> saveRideRequest() async {
@@ -404,34 +406,42 @@ void displayRideDetailContainer() async{
                 height: 165.0,
                   child: DrawerHeader(
                     decoration: BoxDecoration(color: Colors.white),
-                  child: Row(
-                    children: [
-                      Image.asset("images/user_icon.png",height: 65.0,width: 65.0,),
-                      SizedBox(width: 16.0,),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileScreen()));
+                      },
+                      child: Row(
                         children: [
-                          Text(uName,style: TextStyle(fontSize: 16.0,fontFamily: "Brand Bold"),),
-                          SizedBox(height: 6.0,),
-                          Text("Visit Profile"),
+                          Image.asset("images/user_icon.png", height: 65.0, width: 65.0),
+                          SizedBox(width: 16.0),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                uName,
+                                style: TextStyle(fontSize: 16.0, fontFamily: "Brand Bold"),
+                              ),
+                              SizedBox(height: 6.0),
+                              Text("Visit Profile"),
+                            ],
+                          ),
                         ],
                       ),
-                    ],
-                  ),
+                    ),
                   ),
               ),
 
               DividerWidget(),
               SizedBox(height: 12.0,),
               //Drawer controller
-              ListTile(
-                leading: Icon(Icons.history),
-                title: Text("History", style: TextStyle(fontSize: 16.0),),
-              ),
-              ListTile(
-                leading: Icon(Icons.person),
-                title: Text("Visit Profile", style: TextStyle(fontSize: 16.0),),
-              ),
+              // ListTile(
+              //   leading: Icon(Icons.history),
+              //   title: Text("History", style: TextStyle(fontSize: 16.0),),
+              // ),
+              // ListTile(
+              //   leading: Icon(Icons.person),
+              //   title: Text("Visit Profile", style: TextStyle(fontSize: 16.0),),
+              // ),
               GestureDetector(
                 onTap: (){
                   displayToastMessage("Industrial vehicle", context);
@@ -1345,49 +1355,63 @@ void displayRideDetailContainer() async{
   }
   //Send new request
  Future<void> notifyDriver(NearbyAvailableDrivers drivers)  async {
-   DatabaseReference driversRef = FirebaseDatabase.instance.ref("drivers/${drivers.key}");
+   DatabaseReference driversRef = FirebaseDatabase.instance.ref(
+       "drivers/${drivers.key}");
    driversRef.child("newRide").set(rideRequestRef.key.toString());
 
 
-    driversRef.child("token").once().then((DatabaseEvent event) {
-      DataSnapshot snapshot = event.snapshot;
-      if (snapshot.value != null) {
-        String token = snapshot.value.toString();
-        AssistantMethods.sendNotificationToDriver(token, context, rideRequestRef.key);
-        return;
-      }
-      const oneSecondPassed = Duration(seconds: 1);
-      var timer = Timer.periodic(oneSecondPassed, (timer) {
+   driversRef.child("token").once().then((DatabaseEvent event) {
+     DataSnapshot snapshot = event.snapshot;
+     if (snapshot.value != null) {
+       String token = snapshot.value.toString();
+       AssistantMethods.sendNotificationToDriver(
+           token, context, rideRequestRef.key);
+       return;
+     }
+     const oneSecondPassed = Duration(seconds: 1);
+     var timer = Timer.periodic(oneSecondPassed, (timer) {
+       if (state != "requesting") {
+         driversRef.child(drivers.key).child("newRide").set("cancelled");
+         driversRef.child(drivers.key).child("newRide").onDisconnect();
+         driverRequestTimeOut = 20;
+         timer.cancel();
+       }
 
-        if(state != "requesting"){
-          driversRef.child(drivers.key).child("newRide").set("cancelled");
-          driversRef.child(drivers.key).child("newRide").onDisconnect();
-          driverRequestTimeOut = 20;
-          timer.cancel();
-        }
+       driverRequestTimeOut = driverRequestTimeOut - 1;
 
-        driverRequestTimeOut = driverRequestTimeOut - 1;
+       driversRef
+           .child(drivers.key)
+           .child("newRide")
+           .onValue
+           .listen((event) {
+         print("event" + event.snapshot.value.toString());
+         if (event.snapshot.value.toString() == "accepted") {
+           driversRef.child(drivers.key).child("newRide").onDisconnect();
+           driverRequestTimeOut = 20;
+           timer.cancel();
+         }
+       });
+       if (driverRequestTimeOut == 0) {
+         driversRef.child(drivers.key).child("newRide").set("timeout");
+         driversRef.child(drivers.key).child("newRide").onDisconnect();
+         driverRequestTimeOut = 20;
+         timer.cancel();
 
-        driversRef.child(drivers.key).child("newRide").onValue.listen((event) {
-          print("event" + event.snapshot.value.toString());
-            if(event.snapshot.value.toString() == "accepted"){
-              driversRef.child(drivers.key).child("newRide").onDisconnect();
-              driverRequestTimeOut = 20;
-              timer.cancel();
-            }
-        });
-        if(driverRequestTimeOut == 0){
-          driversRef.child(drivers.key).child("newRide").set("timeout");
-          driversRef.child(drivers.key).child("newRide").onDisconnect();
-          driverRequestTimeOut = 20;
-          timer.cancel();
-
-          searchNearestDriver();
-        }
-      });
-    });
+         searchNearestDriver();
+       }
+     });
+   });
+ }
   }
-
-}
+// void getRideType(){
+//   rideRequestRef.child(userCurrentInfo!.id).child("car_details").child("type").once().then((DatabaseEvent event){
+//     DataSnapshot snapshot = event.snapshot;
+//     if(snapshot.value != null){
+//       setState(() {
+//         rideType =  snapshot.value.toString();
+//       });
+//     }
+//   });
+// }
 
 

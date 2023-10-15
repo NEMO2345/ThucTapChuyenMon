@@ -161,8 +161,20 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
     await pushNotificationService.initialize(context);
     await pushNotificationService.getToken();
      AssistantMethods.retrieveHistoryInfo(context);
+     getRideType();
   }
 
+  getRideType(){
+    driversRef.child(currentfirebaseUser!.uid).child("car_details").child("type").once().then((DatabaseEvent event){
+      DataSnapshot snapshot = event.snapshot;
+      if(snapshot.value != null){
+        setState(() {
+          rideType =  snapshot.value.toString();
+        });
+      }
+    });
+
+  }
   @override
   void initState() {
     super.initState();

@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, use_key_in_widget_constructors, prefer_const_constructors_in_immutables, library_private_types_in_public_api, use_build_context_synchronously, unused_local_variable, avoid_print
+// ignore_for_file: prefer_const_constructors, use_key_in_widget_constructors, prefer_const_constructors_in_immutables, library_private_types_in_public_api, use_build_context_synchronously, unused_local_variable, avoid_print, file_names
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_star_rating_null_safety/smooth_star_rating_null_safety.dart';
@@ -135,6 +135,7 @@ class _RatingScreenState extends State<RatingScreen> {
                   ),
                 ),
               ),
+              SizedBox(height: 30.0,),
             ],
           ),
         ),

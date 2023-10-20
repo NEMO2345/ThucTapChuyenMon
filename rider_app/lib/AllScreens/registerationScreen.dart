@@ -39,10 +39,10 @@ class _LoginScreenState extends State<RegisterationScreen> {
                 height: 250.0,
                 alignment: Alignment.center,
               ),
-              const SizedBox(height: 35.0),
+              const SizedBox(height: 16.0),
               const Text(
                 "Register as a Rider",
-                style: TextStyle(fontSize: 24.0, fontFamily: "Brand Bold"),
+                style: TextStyle(fontSize: 35.0, fontFamily: "Brand Bold"),
                 textAlign: TextAlign.center,
               ),
               Padding(
@@ -57,7 +57,7 @@ class _LoginScreenState extends State<RegisterationScreen> {
                       decoration: const InputDecoration(
                         labelText: "Name",
                         labelStyle: TextStyle(
-                          fontSize: 14.0,
+                          fontSize: 16.0,
                         ),
                         hintStyle: TextStyle(
                           color: Colors.grey,
@@ -76,7 +76,7 @@ class _LoginScreenState extends State<RegisterationScreen> {
                       decoration: const InputDecoration(
                         labelText: "Email",
                         labelStyle: TextStyle(
-                          fontSize: 14.0,
+                          fontSize: 16.0,
                         ),
                         hintStyle: TextStyle(
                           color: Colors.grey,
@@ -95,7 +95,7 @@ class _LoginScreenState extends State<RegisterationScreen> {
                       decoration: const InputDecoration(
                         labelText: "Phone",
                         labelStyle: TextStyle(
-                          fontSize: 14.0,
+                          fontSize: 16.0,
                         ),
                         hintStyle: TextStyle(
                           color: Colors.grey,
@@ -114,7 +114,7 @@ class _LoginScreenState extends State<RegisterationScreen> {
                       decoration: const InputDecoration(
                         labelText: "Password",
                         labelStyle: TextStyle(
-                          fontSize: 14.0,
+                          fontSize: 16.0,
                         ),
                         hintStyle: TextStyle(
                           color: Colors.grey,
@@ -150,7 +150,7 @@ class _LoginScreenState extends State<RegisterationScreen> {
                       },
                       child: const Text(
                         "Create Account",
-                        style: TextStyle(fontSize: 18.0,fontFamily: "Brand Bold"),
+                        style: TextStyle(fontSize: 20.0,fontFamily: "Brand Bold"),
                       ),
 
                     ),

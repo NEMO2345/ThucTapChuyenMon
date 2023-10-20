@@ -36,10 +36,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 height: 250.0,
                 alignment: Alignment.center,
               ),
-              SizedBox(height: 35.0),
+              SizedBox(height: 20.0),
               Text(
                 "Login as a Rider",
-                style: TextStyle(fontSize: 24.0, fontFamily: "Brand Bold"),
+                style: TextStyle(fontSize: 35.0, fontFamily: "Brand Bold"),
                 textAlign: TextAlign.center,
               ),
               Padding(
@@ -53,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       decoration: InputDecoration(
                         labelText: "Email",
                         labelStyle: TextStyle(
-                          fontSize: 14.0,
+                          fontSize: 16.0,
                         ),
                         hintStyle: TextStyle(
                           color: Colors.grey,
@@ -71,7 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       decoration: InputDecoration(
                         labelText: "Password",
                         labelStyle: TextStyle(
-                          fontSize: 14.0,
+                          fontSize: 16.0,
                         ),
                         hintStyle: TextStyle(
                           color: Colors.grey,
@@ -101,7 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                       child: Text(
                         "Login",
-                        style: TextStyle(fontSize: 18.0,fontFamily: "Brand Bold"),
+                        style: TextStyle(fontSize: 20.0,fontFamily: "Brand Bold"),
                       ),
                     ),
 

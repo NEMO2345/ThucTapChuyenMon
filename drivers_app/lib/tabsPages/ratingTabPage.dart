@@ -17,7 +17,6 @@ class RatingTabPage extends StatefulWidget {
 
 class _RatingScreenState extends State<RatingTabPage> {
   double startCounter = 0;
-  String title = "";
 
   @override
   void initState() {

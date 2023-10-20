@@ -40,42 +40,42 @@ class MainScreen extends StatefulWidget {
   @override
   _MainScreenState createState() => _MainScreenState();
 }
-    Loc.Location location = new Loc.Location();
-    bool _serviceEnabled = false;
-    Loc.PermissionStatus _permissionGranted = Loc.PermissionStatus.denied;
-    Loc.LocationData _locationData = null as Loc.LocationData;
-    const double MAXDISTANCE = 15000;
+Loc.Location location = new Loc.Location();
+bool _serviceEnabled = false;
+Loc.PermissionStatus _permissionGranted = Loc.PermissionStatus.denied;
+Loc.LocationData _locationData = null as Loc.LocationData;
+const double MAXDISTANCE = 15000;
 
 class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
   // Raw coordinates got from  OpenRouteService
-    List listOfPoints = [];
-    String PickUpPoint = "";
-    String Destination = "";
-    double tripDirectionDetails = 0;
-    double totalcalculateCost = 0;
-    String formattedCost = '';
+  List listOfPoints = [];
+  String PickUpPoint = "";
+  String Destination = "";
+  double tripDirectionDetails = 0;
+  double totalcalculateCost = 0;
+  String formattedCost = '';
   // Conversion of listOfPoints into LatLng(Latitude, Longitude) list of points
-    List<LatLng> points = [];
-    double sourLatitude = 0;
-    double sourLongitude = 0;
-    double desLatitude = 0;
-    double desLongitude = 0;
-    double zoomSize = 15;
-    double Latitude = 6.131015;
-    double Longitude = 1.223898;
-    String display_name_Location = "You address";
-    double rideDetailContainerHeigth = 0;
-    double requestRideContainerHeigth = 0;
-    double searchContainerHeight = 420.0;
-    double driverDetailsContainerHeight = 0;
-    bool drawerOpen = true;
-    bool nearbyAvailableDriverKeysLoaded = false;
-    late DatabaseReference rideRequestRef;
-    late List<NearbyAvailableDrivers> availableDrivers;
-    String state = "normal";
-    late StreamSubscription<DatabaseEvent> rideStreamSubscription;
-    bool isRequestingPositionDetails = false;
-    String uName = "";
+  List<LatLng> points = [];
+  double sourLatitude = 0;
+  double sourLongitude = 0;
+  double desLatitude = 0;
+  double desLongitude = 0;
+  double zoomSize = 15;
+  double Latitude = 6.131015;
+  double Longitude = 1.223898;
+  String display_name_Location = "You address";
+  double rideDetailContainerHeigth = 0;
+  double requestRideContainerHeigth = 0;
+  double searchContainerHeight = 420.0;
+  double driverDetailsContainerHeight = 0;
+  bool drawerOpen = true;
+  bool nearbyAvailableDriverKeysLoaded = false;
+  late DatabaseReference rideRequestRef;
+  late List<NearbyAvailableDrivers> availableDrivers;
+  String state = "normal";
+  late StreamSubscription<DatabaseEvent> rideStreamSubscription;
+  bool isRequestingPositionDetails = false;
+  String uName = "";
 
   //function adjust requestRideContainerHeight
   void displayRequestRideContainer(){
@@ -100,7 +100,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
   resetApp(){
     setState(() {
       drawerOpen = true;
-      searchContainerHeight = 300.0;
+      searchContainerHeight = 420.0;
       rideDetailContainerHeigth = 0;
       requestRideContainerHeigth = 0;
       bottomPaddingOfMap = 230.0;
@@ -142,20 +142,20 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
     return _locationData;
   }
   //Xu li ham ticket
-void displayRideDetailContainer() async{
+  void displayRideDetailContainer() async{
     await getLocation();
     setState(() {
-        searchContainerHeight = 0;
-        rideDetailContainerHeigth = 380.0;
-        bottomPaddingOfMap = 380.0;
-        drawerOpen = false;
+      searchContainerHeight = 0;
+      rideDetailContainerHeigth = 380.0;
+      bottomPaddingOfMap = 380.0;
+      drawerOpen = false;
     });
-}
+  }
   // Method to consume the OpenRouteService API
   getCoordinates(double sour_lat, double sour_lon, double des_lat, double des_lon) async {
     var response = await http.get(getRouteUrl("$sour_lon,$sour_lat",
         '$des_lon,$des_lat'));
-      //print(response.statusCode);
+    //print(response.statusCode);
     setState(() {
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
@@ -224,7 +224,7 @@ void displayRideDetailContainer() async{
     super.initState();
     getUserInfor();
     print(widget.firebaseUser?.uid.toString());
-     getLocation();
+    getLocation();
 
     AssistantMethods.getCurrentOnlineUserInfo();
   }
@@ -232,90 +232,90 @@ void displayRideDetailContainer() async{
   final DatabaseReference usersRef = FirebaseDatabase.instance.ref();
   //Save ride request to firebase
   Future<void> saveRideRequest() async {
-      rideRequestRef = FirebaseDatabase.instance.ref().child("Ride Requests").push();
-      Map pickUpLocMap = {
-        "latitude": sourLatitude.toString(),
-        "longitude": sourLongitude.toString(),
-      };
-      Map dropOffLocMap = {
-        "latitude": desLatitude.toString(),
-        "longitude": desLongitude.toString(),
-      };
-      String? name;
-      String? phone;
+    rideRequestRef = FirebaseDatabase.instance.ref().child("Ride Requests").push();
+    Map pickUpLocMap = {
+      "latitude": sourLatitude.toString(),
+      "longitude": sourLongitude.toString(),
+    };
+    Map dropOffLocMap = {
+      "latitude": desLatitude.toString(),
+      "longitude": desLongitude.toString(),
+    };
+    String? name;
+    String? phone;
     print(widget.firebaseUser!.uid.toString());
-      final snapshot = await usersRef.child('users/'+widget.firebaseUser!.uid.toString()).get()
-          .then((value) => {
+    final snapshot = await usersRef.child('users/'+widget.firebaseUser!.uid.toString()).get()
+        .then((value) => {
 
-        name = value.child("name").value as String?,
-        phone = value.child("phone").value as String?,
-        print(name),
-        print(name)
-      });
-      Map rideInfoMap = {
-        "driver_id" : "waiting",
-        "payment_method" : "cash",
-        "pickup" : pickUpLocMap,
-        "dropoff" : dropOffLocMap,
-        "created_at": DateTime.now().toString(),
-        "rider_name": name,
-        "rider_phone": phone,
-        "pickup_address": PickUpPoint.toString(),
-        "dropoff_address": Destination.toString(),
-        "ride_type": carRideType,
-      };
-      print(pickUpLocMap);
-      print(dropOffLocMap);
-      print(name);
-      print(phone);
-      rideRequestRef.set(rideInfoMap);
-      rideStreamSubscription = rideRequestRef.onValue.listen((event) async {
+      name = value.child("name").value as String?,
+      phone = value.child("phone").value as String?,
+      print(name),
+      print(name)
+    });
+    Map rideInfoMap = {
+      "driver_id" : "waiting",
+      "payment_method" : "cash",
+      "pickup" : pickUpLocMap,
+      "dropoff" : dropOffLocMap,
+      "created_at": DateTime.now().toString(),
+      "rider_name": name,
+      "rider_phone": phone,
+      "pickup_address": PickUpPoint.toString(),
+      "dropoff_address": Destination.toString(),
+      "ride_type": carRideType,
+    };
+    print(pickUpLocMap);
+    print(dropOffLocMap);
+    print(name);
+    print(phone);
+    rideRequestRef.set(rideInfoMap);
+    rideStreamSubscription = rideRequestRef.onValue.listen((event) async {
 
       if (event.snapshot.value == null) {
-          return;
-        }
-        var snapshotValue = event.snapshot.value as Map<dynamic, dynamic>;
+        return;
+      }
+      var snapshotValue = event.snapshot.value as Map<dynamic, dynamic>;
 
-        if (snapshotValue["car_details"] != null) {
-          setState(() {
-            carDetailsDriver = snapshotValue["car_details"].toString();
-          });
-        }
-        if (snapshotValue["driver_name"] != null) {
-          setState(() {
-            driverName = snapshotValue["driver_name"].toString();
-          });
-        }
-        if (snapshotValue["driver_phone"] != null) {
-          setState(() {
-            driverPhone = snapshotValue["driver_phone"].toString();
-          });
-        }
-        if (snapshotValue["driver_location"] != null) {
-          double driverLat  = double.parse(snapshotValue["driver_location"]["latitude"].toString());
-          double driverLng  = double.parse(snapshotValue["driver_location"]["longitude"].toString());
-          LatLng driverCurrentLocation = LatLng(driverLat, driverLng);
-          if(statusRide == "accepted"){
-            print("ended1 "+ statusRide.toString());
-            updateRideTimeToPickUpLoc(driverCurrentLocation);
-          }else if(statusRide == "onride"){
-            print("ended2 "+ statusRide.toString());
-            updateRideTimeToDropOffLoc(driverCurrentLocation);
-          }else if(statusRide == "arrived"){
-            setState(() {
-              riderStatus = "Driver has Arrived.";
-            });
-          }
-        }
-       // print("ended3"+ statusRide.toString());
-        if (snapshotValue["status"] != null) {
-          statusRide = snapshotValue["status"].toString();
-        }
+      if (snapshotValue["car_details"] != null) {
+        setState(() {
+          carDetailsDriver = snapshotValue["car_details"].toString();
+        });
+      }
+      if (snapshotValue["driver_name"] != null) {
+        setState(() {
+          driverName = snapshotValue["driver_name"].toString();
+        });
+      }
+      if (snapshotValue["driver_phone"] != null) {
+        setState(() {
+          driverPhone = snapshotValue["driver_phone"].toString();
+        });
+      }
+      if (snapshotValue["driver_location"] != null) {
+        double driverLat  = double.parse(snapshotValue["driver_location"]["latitude"].toString());
+        double driverLng  = double.parse(snapshotValue["driver_location"]["longitude"].toString());
+        LatLng driverCurrentLocation = LatLng(driverLat, driverLng);
         if(statusRide == "accepted"){
-          displayDriverDetailsContainer();
-          Geofire.stopListener();
-          deleteGeofileMarkers();
+          print("ended1 "+ statusRide.toString());
+          updateRideTimeToPickUpLoc(driverCurrentLocation);
+        }else if(statusRide == "onride"){
+          print("ended2 "+ statusRide.toString());
+          updateRideTimeToDropOffLoc(driverCurrentLocation);
+        }else if(statusRide == "arrived"){
+          setState(() {
+            riderStatus = "Driver has Arrived.";
+          });
         }
+      }
+      // print("ended3"+ statusRide.toString());
+      if (snapshotValue["status"] != null) {
+        statusRide = snapshotValue["status"].toString();
+      }
+      if(statusRide == "accepted"){
+        displayDriverDetailsContainer();
+        Geofire.stopListener();
+        deleteGeofileMarkers();
+      }
       if(statusRide == "ended"){
         if(snapshotValue["fares"] != null){
           var res = await showDialog(
@@ -331,13 +331,13 @@ void displayRideDetailContainer() async{
             Navigator.of(context).push(MaterialPageRoute(builder: (context) => RatingScreen(driverId: driverId)));
 
             rideRequestRef.onDisconnect();
-           // rideRequestRef.remove();
+            // rideRequestRef.remove();
             rideStreamSubscription.cancel();
             resetApp();
           }
         }
       }
-      });
+    });
   }
   void deleteGeofileMarkers(){
     setState(() {
@@ -375,21 +375,21 @@ void displayRideDetailContainer() async{
     }
   }
   //cancel ride request
-   void cancelRideRequest(){
-  //  rideRequestRef.remove();
+  void cancelRideRequest(){
+    //  rideRequestRef.remove();
     setState(() {
       state = "normal";
     });
   }
-   Future<void> getUserInfor() async {
-     final DatabaseReference usersRef = FirebaseDatabase.instance.ref();
-     final snapshot = await usersRef.child('users/'+widget.firebaseUser!.uid.toString()).get()
-         .then((value) => {
-       uName = (value.child("name").value as String?)!,
+  Future<void> getUserInfor() async {
+    final DatabaseReference usersRef = FirebaseDatabase.instance.ref();
+    final snapshot = await usersRef.child('users/'+widget.firebaseUser!.uid.toString()).get()
+        .then((value) => {
+      uName = (value.child("name").value as String?)!,
 
-     });
+    });
 
-   }
+  }
   @override
   Widget build(BuildContext context) {
     // createIconMarker();
@@ -404,31 +404,31 @@ void displayRideDetailContainer() async{
               //Drawer header
               Container(
                 height: 165.0,
-                  child: DrawerHeader(
-                    decoration: BoxDecoration(color: Colors.white),
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileScreen()));
-                      },
-                      child: Row(
-                        children: [
-                          Image.asset("images/user_icon.png", height: 65.0, width: 65.0),
-                          SizedBox(width: 16.0),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                uName,
-                                style: TextStyle(fontSize: 16.0, fontFamily: "Brand Bold"),
-                              ),
-                              SizedBox(height: 6.0),
-                              Text("Visit Profile"),
-                            ],
-                          ),
-                        ],
-                      ),
+                child: DrawerHeader(
+                  decoration: BoxDecoration(color: Colors.white),
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileScreen()));
+                    },
+                    child: Row(
+                      children: [
+                        Image.asset("images/user_icon.png", height: 65.0, width: 65.0),
+                        SizedBox(width: 16.0),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              uName,
+                              style: TextStyle(fontSize: 16.0, fontFamily: "Brand Bold"),
+                            ),
+                            SizedBox(height: 6.0),
+                            Text("Visit Profile"),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
+                ),
               ),
 
               DividerWidget(),
@@ -581,7 +581,7 @@ void displayRideDetailContainer() async{
             right: 22.0,
             child: GestureDetector(
               onTap: () {
-               getLocation();
+                getLocation();
               },
               child: Container(
                 decoration: BoxDecoration(
@@ -679,233 +679,234 @@ void displayRideDetailContainer() async{
             right: 0.0,
             bottom: 0.0,
             //child: SingleChildScrollView(
-              child: AnimatedSize(
-                curve: Curves.bounceIn,
-                duration: new Duration(
-                  milliseconds: 160,
-                ),
-                child: Container(
-                  height: searchContainerHeight,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(15.0),
-                      topRight: Radius.circular((18.0)),
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black,
-                        blurRadius: 16.0,
-                        spreadRadius: 0.5,
-                        offset: Offset(0.7, 0.7),
-                      )
-                    ],
+            child: AnimatedSize(
+              curve: Curves.bounceIn,
+              duration: new Duration(
+                milliseconds: 160,
+              ),
+              child: Container(
+                height: searchContainerHeight,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(15.0),
+                    topRight: Radius.circular((18.0)),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 17.0,vertical: 17.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(height: 6.0),
-                        Text("Hi There, ",style: TextStyle(fontSize: 20.0,fontFamily: "Brand-Bold"),),
-                        Text("Where you go? ",style: TextStyle(fontSize: 15.0,fontFamily: "Brand-Bold"),),
-                        //Diem Dau
-                        SizedBox(height:10.0 ),
-                        GestureDetector(
-                          onTap:() async {
-                            showProgressDialog() {
-                              Future.delayed(Duration(seconds: 3), () {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) => ProgressDialog(message: "Please wait..."),
-                                );
-                              });
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black,
+                      blurRadius: 16.0,
+                      spreadRadius: 0.5,
+                      offset: Offset(0.7, 0.7),
+                    )
+                  ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 17.0,vertical: 17.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 6.0),
+                      Text("Hi There, ",style: TextStyle(fontSize: 20.0,fontFamily: "Brand-Bold"),),
+                      Text("Where you go? ",style: TextStyle(fontSize: 15.0,fontFamily: "Brand-Bold"),),
+                      //Diem Dau
+                      SizedBox(height:10.0 ),
+                      GestureDetector(
+                        onTap:() async {
+                          showProgressDialog() {
+                            Future.delayed(Duration(seconds: 3), () {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) => ProgressDialog(message: "Please wait..."),
+                              );
+                            });
+                          }
+                          final  Address address = await  Navigator.push(context, MaterialPageRoute(builder: (context) => SearchScreen(Latitude: Latitude,Longitude: Longitude,)));
+                          if(address != null){
+                            setState(() {
+                              sourLatitude = address.latitude;
+                              sourLongitude = address.longitude;
+                              PickUpPoint = address.placeName;
+                            });
+                            if (desLatitude != 0 && desLongitude != 0){
+                              getCoordinates(sourLatitude,sourLongitude,desLatitude,desLongitude);
                             }
-                            final  Address address = await  Navigator.push(context, MaterialPageRoute(builder: (context) => SearchScreen(Latitude: Latitude,Longitude: Longitude,)));
-                            if(address != null){
-                              setState(() {
-                                sourLatitude = address.latitude;
-                                sourLongitude = address.longitude;
-                                PickUpPoint = address.placeName;
-                              });
-                              if (desLatitude != 0 && desLongitude != 0){
-                                getCoordinates(sourLatitude,sourLongitude,desLatitude,desLongitude);
-                              }
-                              print('$sourLatitude, $sourLongitude');
-                              _mapController.move(LatLng(sourLatitude, sourLongitude), zoomSize);
-                            }
-                           // displayRideDetailContainer();
+                            print('$sourLatitude, $sourLongitude');
+                            _mapController.move(LatLng(sourLatitude, sourLongitude), zoomSize);
+                          }
+                          // displayRideDetailContainer();
 
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Color(0xFF00CCFF),
-                              borderRadius: BorderRadius.circular(
-                                  5.0
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black,
-                                  blurRadius: 6.0,
-                                  spreadRadius: 0.5,
-                                  offset: Offset(0.7, 0.7),
-                                )
-                              ],
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Color(0xFF00CCFF),
+                            borderRadius: BorderRadius.circular(
+                                5.0
                             ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: Row(
-                                children: [
-                                  Icon(Icons.search,color: Colors.black,),
-                                  SizedBox(width: 4.0,),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          PickUpPoint.length <= 40
-                                              ? PickUpPoint
-                                              : PickUpPoint.substring(0, 40),
-                                          style: TextStyle(fontSize: 12,fontFamily: "Brand Bold"),
-                                        ),
-                                        Text(
-                                          PickUpPoint.length > 40
-                                              ? PickUpPoint.substring(40)
-                                              : "",
-                                          style: TextStyle(fontSize: 12,fontFamily: "Brand Bold"),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black,
+                                blurRadius: 6.0,
+                                spreadRadius: 0.5,
+                                offset: Offset(0.7, 0.7),
+                              )
+                            ],
                           ),
-                        ),
-                        SizedBox(height: 15),
-                        //Diem cuoi
-                        GestureDetector(
-                          onTap:() async {
-                            showProgressDialog() {
-                              Future.delayed(Duration(seconds: 3), () {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) => ProgressDialog(message: "Please wait..."),
-                                );
-                              });
-                            }
-                            final  Address address = await  Navigator.push(context, MaterialPageRoute(builder: (context) => SearchScreen(Latitude: Latitude,Longitude: Longitude,)));
-                            if(address != null){
-                              setState(() {
-                                desLatitude =address.latitude;
-                                desLongitude = address.longitude;
-                                Destination = address.placeName;
-                                if (sourLatitude != 0 && sourLongitude != 0){
-                                  getCoordinates(sourLatitude,sourLongitude,desLatitude,desLongitude);
-                                  print("dropOff");
-                                  print(sourLatitude);
-                                  print(sourLongitude);
-                                  print("pickup");
-                                  print(desLatitude);
-                                  print(desLongitude);
-                                  List<LatLng> points = [
-                                    LatLng(sourLatitude, sourLongitude),
-                                    LatLng(desLatitude, desLongitude),
-                                  ];
-                                  tripDirectionDetails = calculateTotalDistance(points);
-                                  totalcalculateCost = calculateCost(tripDirectionDetails);
-                                  if (totalcalculateCost != null) {
-                                    formattedCost = NumberFormat.currency(locale: 'en_US', symbol: '\$').format(totalcalculateCost);
-                                  } else {
-                                    formattedCost = '0 \$';
-                                  }
-                                }
-                              });
-                              print('$desLatitude, $desLongitude');
-                              initGeoFireListener();
-                              displayRideDetailContainer();
-                            }
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Color(0xFF00CCFF),
-                              borderRadius: BorderRadius.circular(
-                                  5.0
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black,
-                                  blurRadius: 6.0,
-                                  spreadRadius: 0.5,
-                                  offset: Offset(0.7, 0.7),
-                                )
-                              ],
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: Row(
-                                children: [
-                                  Icon(Icons.search, color: Colors.black),
-                                  SizedBox(width: 2.0),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          Destination.length <= 40
-                                              ? Destination
-                                              : Destination.substring(0, 40),
-                                          style: TextStyle(fontSize: 12,fontFamily: "Brand Bold"),
-                                        ),
-                                        Text(
-                                          Destination.length > 40 ? Destination.substring(40) : " ",
-                                          style: TextStyle(fontSize: 12,fontFamily: "Brand Bold"),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 24.0,),
-                        Row(
-                          children: [
-                            Icon(Icons.home, color: Color(0xFF00CCFF),),
-                            SizedBox(width: 9.0,),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                          child: Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Row(
                               children: [
-                                Text(
-                                  display_name_Location.length <= 70
-                                      ? display_name_Location
-                                      : display_name_Location.substring(0, 70),
-                                  style: TextStyle(fontSize: 9,fontFamily: "Brand Bold"),
-                                ),
-                                Text(
-                                  display_name_Location.length > 70
-                                      ? display_name_Location.substring(70)
-                                      :"",
-                                  style: TextStyle(fontSize: 9,fontFamily: "Brand Bold"),
-                                ),
-                                SizedBox(height: 6.0,),
-                                Text(
-                                  "Your living home address",
-                                  style: TextStyle(color: Colors.blueAccent[200], fontSize: 12.0),
+                                Icon(Icons.search,color: Colors.black,),
+                                SizedBox(width: 4.0,),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        PickUpPoint.length <= 200
+                                            ? PickUpPoint
+                                            : PickUpPoint.substring(0, 200),
+                                        style: TextStyle(fontSize: 13),
+                                      ),
+                                      // Text(
+                                      //   PickUpPoint.length > 200
+                                      //       ? PickUpPoint.substring(200)
+                                      //       : "..",
+                                      //   style: TextStyle(fontSize: 13),
+                                      // ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
-                          ],
+                          ),
                         ),
-                        SizedBox(height: 19.0,),
-                        DividerWidget(),
-                      ],
-                    ),
+                      ),
+                      SizedBox(height: 15),
+                      //Diem cuoi
+                      GestureDetector(
+                        onTap:() async {
+                          showProgressDialog() {
+                            Future.delayed(Duration(seconds: 3), () {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) => ProgressDialog(message: "Please wait..."),
+                              );
+                            });
+                          }
+                          final  Address address = await  Navigator.push(context, MaterialPageRoute(builder: (context) => SearchScreen(Latitude: Latitude,Longitude: Longitude,)));
+                          if(address != null){
+                            setState(() {
+                              desLatitude =address.latitude;
+                              desLongitude = address.longitude;
+                              Destination = address.placeName;
+                              if (sourLatitude != 0 && sourLongitude != 0){
+                                getCoordinates(sourLatitude,sourLongitude,desLatitude,desLongitude);
+                                print("dropOff");
+                                print(sourLatitude);
+                                print(sourLongitude);
+                                print("pickup");
+                                print(desLatitude);
+                                print(desLongitude);
+                                List<LatLng> points = [
+                                  LatLng(sourLatitude, sourLongitude),
+                                  LatLng(desLatitude, desLongitude),
+                                ];
+                                tripDirectionDetails = calculateTotalDistance(points);
+                                totalcalculateCost = calculateCost(tripDirectionDetails);
+                                if (totalcalculateCost != null) {
+                                  formattedCost = NumberFormat.currency(locale: 'en_US', symbol: '\$').format(totalcalculateCost);
+                                } else {
+                                  formattedCost = '0 \$';
+                                }
+                              }
+                            });
+                            print('$desLatitude, $desLongitude');
+                            initGeoFireListener();
+                            displayRideDetailContainer();
+                          }
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Color(0xFF00CCFF),
+                            borderRadius: BorderRadius.circular(
+                                5.0
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black,
+                                blurRadius: 6.0,
+                                spreadRadius: 0.5,
+                                offset: Offset(0.7, 0.7),
+                              )
+                            ],
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Row(
+                              children: [
+                                Icon(Icons.search, color: Colors.black),
+                                SizedBox(width: 2.0),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        Destination.length <= 200
+                                            ? Destination
+                                            : Destination.substring(0, 200),
+                                        style: TextStyle(fontSize: 13),
+                                      ),
+                                      // Text(
+                                      //   Destination.length > 40 ? Destination.substring(40) : " ",
+                                      //   style: TextStyle(fontSize: 13),
+                                      // ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 24.0,),
+                      Row(
+                        children: [
+                          Icon(Icons.home, color: Color(0xFF00CCFF),),
+                          SizedBox(width: 9.0,),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                display_name_Location.length <= 90
+                                    ? display_name_Location
+                                    : display_name_Location.substring(0, 70),
+                                style: TextStyle(fontSize: 9),
+                              ),
+                              Text(
+                                display_name_Location.length > 90 && display_name_Location.length <= 180
+                                    ? display_name_Location.substring(71,141)
+                                    :"",
+                                style: TextStyle(fontSize: 9),
+                              ),
+
+                              SizedBox(height: 6.0,),
+                              Text(
+                                "Your living home address",
+                                style: TextStyle(color: Colors.blueAccent[200], fontSize: 12.0),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 19.0,),
+                      DividerWidget(),
+                    ],
                   ),
                 ),
               ),
             ),
+          ),
           //Cash pay
           Positioned(
             bottom: 0.0,
@@ -1141,9 +1142,9 @@ void displayRideDetailContainer() async{
                     SizedBox(height: 22.0),
                     GestureDetector(
                       onTap:() async {
-                         cancelRideRequest();
+                        cancelRideRequest();
                         resetApp();
-                     },
+                      },
                       child: Container(
                         height: 60.0,
                         width: 60.0,
@@ -1165,7 +1166,7 @@ void displayRideDetailContainer() async{
               ),
             ),
           ),
-         // Display Assisned Driver Info
+          // Display Assisned Driver Info
           Positioned(
             bottom: 0.0,
             left: 0.0,
@@ -1327,7 +1328,7 @@ void displayRideDetailContainer() async{
     );
   }
 //Tim kiem xe gan
- void searchNearestDriver()  {
+  void searchNearestDriver()  {
     if(availableDrivers.isEmpty){
       cancelRideRequest();
       resetApp();
@@ -1354,55 +1355,55 @@ void displayRideDetailContainer() async{
     });
   }
   //Send new request
- Future<void> notifyDriver(NearbyAvailableDrivers drivers)  async {
-   DatabaseReference driversRef = FirebaseDatabase.instance.ref(
-       "drivers/${drivers.key}");
-   driversRef.child("newRide").set(rideRequestRef.key.toString());
+  Future<void> notifyDriver(NearbyAvailableDrivers drivers)  async {
+    DatabaseReference driversRef = FirebaseDatabase.instance.ref(
+        "drivers/${drivers.key}");
+    driversRef.child("newRide").set(rideRequestRef.key.toString());
 
 
-   driversRef.child("token").once().then((DatabaseEvent event) {
-     DataSnapshot snapshot = event.snapshot;
-     if (snapshot.value != null) {
-       String token = snapshot.value.toString();
-       AssistantMethods.sendNotificationToDriver(
-           token, context, rideRequestRef.key);
-       return;
-     }
-     const oneSecondPassed = Duration(seconds: 1);
-     var timer = Timer.periodic(oneSecondPassed, (timer) {
-       if (state != "requesting") {
-         driversRef.child(drivers.key).child("newRide").set("cancelled");
-         driversRef.child(drivers.key).child("newRide").onDisconnect();
-         driverRequestTimeOut = 20;
-         timer.cancel();
-       }
+    driversRef.child("token").once().then((DatabaseEvent event) {
+      DataSnapshot snapshot = event.snapshot;
+      if (snapshot.value != null) {
+        String token = snapshot.value.toString();
+        AssistantMethods.sendNotificationToDriver(
+            token, context, rideRequestRef.key);
+        return;
+      }
+      const oneSecondPassed = Duration(seconds: 1);
+      var timer = Timer.periodic(oneSecondPassed, (timer) {
+        if (state != "requesting") {
+          driversRef.child(drivers.key).child("newRide").set("cancelled");
+          driversRef.child(drivers.key).child("newRide").onDisconnect();
+          driverRequestTimeOut = 20;
+          timer.cancel();
+        }
 
-       driverRequestTimeOut = driverRequestTimeOut - 1;
+        driverRequestTimeOut = driverRequestTimeOut - 1;
 
-       driversRef
-           .child(drivers.key)
-           .child("newRide")
-           .onValue
-           .listen((event) {
-         print("event" + event.snapshot.value.toString());
-         if (event.snapshot.value.toString() == "accepted") {
-           driversRef.child(drivers.key).child("newRide").onDisconnect();
-           driverRequestTimeOut = 20;
-           timer.cancel();
-         }
-       });
-       if (driverRequestTimeOut == 0) {
-         driversRef.child(drivers.key).child("newRide").set("timeout");
-         driversRef.child(drivers.key).child("newRide").onDisconnect();
-         driverRequestTimeOut = 20;
-         timer.cancel();
+        driversRef
+            .child(drivers.key)
+            .child("newRide")
+            .onValue
+            .listen((event) {
+          print("event" + event.snapshot.value.toString());
+          if (event.snapshot.value.toString() == "accepted") {
+            driversRef.child(drivers.key).child("newRide").onDisconnect();
+            driverRequestTimeOut = 20;
+            timer.cancel();
+          }
+        });
+        if (driverRequestTimeOut == 0) {
+          driversRef.child(drivers.key).child("newRide").set("timeout");
+          driversRef.child(drivers.key).child("newRide").onDisconnect();
+          driverRequestTimeOut = 20;
+          timer.cancel();
 
-         searchNearestDriver();
-       }
-     });
-   });
- }
+          searchNearestDriver();
+        }
+      });
+    });
   }
+}
 // void getRideType(){
 //   rideRequestRef.child(userCurrentInfo!.id).child("car_details").child("type").once().then((DatabaseEvent event){
 //     DataSnapshot snapshot = event.snapshot;
@@ -1413,5 +1414,3 @@ void displayRideDetailContainer() async{
 //     }
 //   });
 // }
-
-

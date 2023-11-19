@@ -1346,8 +1346,13 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
         nearbyAvailableDrivers.longitude = doubleArray[1];
         GeoFireAssistant.nearByAvailableDriversList.add(nearbyAvailableDrivers);
       });
-      notifyDriver(GeoFireAssistant.nearByAvailableDriversList[0]);
-      availableDrivers.removeAt(0);
+      GeoFireAssistant.nearByAvailableDriversList.forEach((element) {
+        if(element.type == carRideType){
+          notifyDriver(element);
+        }
+      });
+
+      GeoFireAssistant.nearByAvailableDriversList.clear();
     });
     updateAvailableDriversOnMap();
   }

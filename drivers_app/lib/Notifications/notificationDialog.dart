@@ -156,7 +156,14 @@ class NotificationDialog extends StatelessWidget {
     );
   }
   void checkAvailabilityOfRide(context) {
-    rideRequestRef.once().then((DatabaseEvent event) {
+    print("The Id");
+    print(currentfirebaseUser!.uid);
+    DatabaseReference rideReq = FirebaseDatabase.instance
+        .ref()
+        .child("drivers")
+        .child(currentfirebaseUser!.uid)
+        .child("newRide");
+    rideReq.once().then((DatabaseEvent event) {
       DataSnapshot dataSnapshot = event.snapshot;
       Navigator.pop(context);
       String theRideId = "";

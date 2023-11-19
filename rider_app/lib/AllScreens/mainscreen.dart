@@ -76,16 +76,15 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
   late StreamSubscription<DatabaseEvent> rideStreamSubscription;
   bool isRequestingPositionDetails = false;
   String uName = "";
-
   //function adjust requestRideContainerHeight
-  void displayRequestRideContainer(){
+  Future<void> displayRequestRideContainer() async {
     setState(() {
       requestRideContainerHeigth = 250.0;
       rideDetailContainerHeigth = 0;
       bottomPaddingOfMap = 230.0;
       drawerOpen = true;
     });
-    saveRideRequest();
+   await  saveRideRequest();
   }
   //Tuy chinh ride request detail
   void displayDriverDetailsContainer(){
@@ -225,7 +224,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
     getUserInfor();
     print(widget.firebaseUser?.uid.toString());
     getLocation();
-
+    // initGeoFireListener();
     AssistantMethods.getCurrentOnlineUserInfo();
   }
 
@@ -938,15 +937,15 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
                     children: [
                       //bike ride
                       GestureDetector(
-                        onTap: (){
+                        onTap: () async {
                           displayToastMessage("Searching Bike...", context);
                           setState(() {
                             state = "requesting";
                             carRideType = "bike";
                           });
-                          displayRequestRideContainer();
-                          availableDrivers = GeoFireAssistant.nearByAvailableDriversList;
-                          searchNearestDriver();
+                         await displayRequestRideContainer();
+                        //  availableDrivers = GeoFireAssistant.nearByAvailableDriversList;
+                          await searchNearestDriver();
                         },
                         child: Container(
                           width: double.infinity,
@@ -981,15 +980,15 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
                       SizedBox(height: 10.0,),
                       //uber-go ride
                       GestureDetector(
-                        onTap: (){
+                        onTap: () async {
                           displayToastMessage("Searching Uber-Go...", context);
                           setState(() {
                             state = "requesting";
                             carRideType="uber-go";
                           });
-                          displayRequestRideContainer();
-                          availableDrivers = GeoFireAssistant.nearByAvailableDriversList;
-                          searchNearestDriver();
+                          await displayRequestRideContainer();
+                        //  availableDrivers = GeoFireAssistant.nearByAvailableDriversList;
+                          await searchNearestDriver();
                         },
                         child: Container(
                           width: double.infinity,
@@ -1024,15 +1023,15 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
                       SizedBox(height: 10.0,),
                       //uber-x ride
                       GestureDetector(
-                        onTap: (){
+                        onTap: () async {
                           displayToastMessage("Searching Uber-X...", context);
                           setState(() {
                             state = "requesting";
                             carRideType="uber-x";
                           });
-                          displayRequestRideContainer();
-                          availableDrivers = GeoFireAssistant.nearByAvailableDriversList;
-                          searchNearestDriver();
+                          await displayRequestRideContainer();
+                        //  availableDrivers = GeoFireAssistant.nearByAvailableDriversList;
+                          await searchNearestDriver();
                         },
                         child: Container(
                           width: double.infinity,
@@ -1065,7 +1064,6 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
                       SizedBox(height: 10.0,),
                       Divider(height: 2.0,thickness: 2.0,),
                       SizedBox(height: 10.0,),
-
                       Container(
                         color: Color(0xFF00CCFF),
                         height: 60.0,
@@ -1251,17 +1249,44 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
       ),
     );
   }
+
+
+
 //Hien thi driver
-  void initGeoFireListener() {
-    Geofire.initialize("availableDrivers");
+  Future<void> initGeoFireListener() async {
+    //Geofire.initialize("availableDrivers");
     // Lắng nghe và cập nhật tọa độ từ Firebase
     List<double> doubleArray = [];
     DatabaseReference _locationRef = FirebaseDatabase.instance.ref().child('availableDrivers');
-    _locationRef.onValue.listen((event) {
-      event.snapshot.children.forEach((element) {
+    await  _locationRef.onValue.listen((event) {
+      event.snapshot.children.forEach((element) async {
         NearbyAvailableDrivers nearbyAvailableDrivers = NearbyAvailableDrivers();
         nearbyAvailableDrivers.key = element.key as String;
         print(element.key);
+        //Lay thong tin loai xe
+        await  driversRef.child( element.key as String).child("car_details").child("type").onValue.listen((event) {
+          // print("xe"+ event.snapshot.value.toString());
+          if ( event.snapshot.value != null) {
+            String carType = event.snapshot.value.toString();
+            print("Loai xe trong ham khoi tao");
+            nearbyAvailableDrivers.type = carType;
+            print(carType);
+          }
+        });
+
+        //Lay thong tin rating cua tai xe
+        await  driversRef.child( element.key as String).child("ratings").onValue.listen((event) {
+          print("Rating truce ");
+          if ( event.snapshot.value != null) {
+            print("Rating sau ");
+            double ratings = double.parse(event.snapshot.value.toString());
+            print("Rating trong ham khoi tao");
+            print(ratings);
+            nearbyAvailableDrivers.ratings = ratings;
+
+          }
+        });
+
         doubleArray.clear();
         element.children.forEach((valu2) {
           doubleArray.add(valu2.value as double);
@@ -1272,6 +1297,57 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
         nearbyAvailableDrivers.longitude = doubleArray[1];
         GeoFireAssistant.nearByAvailableDriversList.add(nearbyAvailableDrivers);
       });
+      // notifyDriver(GeoFireAssistant.nearByAvailableDriversList[0]);
+      // availableDrivers.removeAt(0);
+    });
+    updateAvailableDriversOnMap();
+  }
+  Future<void> initGeoFireListener2() async {
+    //Geofire.initialize("availableDrivers");
+    // Lắng nghe và cập nhật tọa độ từ Firebase
+    List<double> doubleArray = [];
+    DatabaseReference _locationRef = FirebaseDatabase.instance.ref().child('availableDrivers');
+    await  _locationRef.onValue.listen((event) {
+      event.snapshot.children.forEach((element) async {
+        NearbyAvailableDrivers nearbyAvailableDrivers = NearbyAvailableDrivers();
+        nearbyAvailableDrivers.key = element.key as String;
+        print(element.key);
+        //Lay thong tin loai xe
+        await  driversRef.child( element.key as String).child("car_details").child("type").onValue.listen((event) {
+          // print("xe"+ event.snapshot.value.toString());
+          if ( event.snapshot.value != null) {
+            String carType = event.snapshot.value.toString();
+            print("Loai xe trong ham khoi tao");
+            nearbyAvailableDrivers.type = carType;
+            print(carType);
+          }
+        });
+
+        //Lay thong tin rating cua tai xe
+        await  driversRef.child( element.key as String).child("ratings").onValue.listen((event) {
+          print("Rating truce ");
+          if ( event.snapshot.value != null) {
+            print("Rating sau ");
+            double ratings = double.parse(event.snapshot.value.toString());
+            print("Rating trong ham khoi tao");
+            print(ratings);
+            nearbyAvailableDrivers.ratings = ratings;
+
+          }
+        });
+
+        doubleArray.clear();
+        element.children.forEach((valu2) {
+          doubleArray.add(valu2.value as double);
+          print(valu2.key);
+          print(valu2.value);
+        });
+        nearbyAvailableDrivers.latitude = doubleArray[0];
+        nearbyAvailableDrivers.longitude = doubleArray[1];
+        GeoFireAssistant.nearByAvailableDriversList.add(nearbyAvailableDrivers);
+      });
+      notifyDriver(GeoFireAssistant.nearByAvailableDriversList[0]);
+      availableDrivers.removeAt(0);
     });
     updateAvailableDriversOnMap();
   }
@@ -1327,44 +1403,110 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
         builder: (BuildContext context) => NoDriverAvailableDialog()
     );
   }
+  void SapXepTheoKhoangCachTangDan(List<NearbyAvailableDrivers> listAvailableDrivers){
+    int n = listAvailableDrivers.length;
+    bool swapped;
+
+    do {
+      swapped = false;
+
+      for (int i = 0; i < n - 1; i++) {
+        if (listAvailableDrivers[i].ratings < listAvailableDrivers[i + 1].ratings) {
+          // Swap arr[i] and arr[i+1]
+          NearbyAvailableDrivers temp = listAvailableDrivers[i];
+          listAvailableDrivers[i] = listAvailableDrivers[i + 1];
+          listAvailableDrivers[i + 1] = temp;
+          swapped = true;
+        }
+      }
+    } while (swapped);
+  }
+
+  NearbyAvailableDrivers findFilter(List<NearbyAvailableDrivers> listAvailableDrivers){
+    List<NearbyAvailableDrivers> filteredDrivers = [];
+
+    for( NearbyAvailableDrivers driver in listAvailableDrivers){
+            if (driver.type == carRideType){
+              filteredDrivers.add(driver);
+            }
+          }
+
+    //SapXepTheoKhoangCachTangDan(filteredDrivers);
+
+
+    // Tạo một danh sách xác suất dựa trên số sao của tài xế
+    // final List<double> probabilities = filteredDrivers.map((driver) {
+    //   return driver.ratings / 5.0; // Số sao chia cho 5 để có xác suất từ 0 đến 1
+    // }).toList();
+
+
+    //random tai xe dua tren so sao (xac xuat tich luy)
+    // final random = Random();
+    // final randNum = random.nextDouble();
+    //
+    // double cumulativeProb = 0;
+    //
+    // for (int i = 0; i < filteredDrivers.length; i++) {
+    //   cumulativeProb += probabilities[i];
+    //   if (randNum < cumulativeProb) {
+    //     return filteredDrivers[i];
+    //   }
+    // }
+
+    return filteredDrivers[0];
+
+  }
 //Tim kiem xe gan
-  void searchNearestDriver()  {
+  Future<void> searchNearestDriver()  async {
+      await  initGeoFireListener2();
+
+    // availableDrivers = GeoFireAssistant.nearByAvailableDriversList;
+
     if(availableDrivers.isEmpty){
       cancelRideRequest();
       resetApp();
       noDriverFound();
       return;
     }
-    var driver = availableDrivers[0];
+    // String tokenTest = 'f5gfcX1QSnSC4dDGyp_-A9:APA91bF1dbXZrAEJAeNbP5SveSYYV8PddR2tpOtAaGjbn-CGG8iKUzca3NrdVQkaFwd4CsdHv4FGJY0cgGM9T2p5KA0PZiqv4Q-MRLOvhmf0zjJYDz-u9sOUZYaNgQrDha9GooLUgYyf';
+    // AssistantMethods.sendNotificationToDriver(
+    //     tokenTest, context, '-NjaKq1q3H8A8Sf57JgE');
+    // return;
 
-    driversRef.child(driver.key).child("car_details").child("type").onValue.listen((event) {
-      print("xe"+ event.snapshot.toString());
-      if ( event.snapshot.value != null) {
-        String carType = event.snapshot.value.toString();
-        if (carType == carRideType) {
-          notifyDriver(driver);
-          availableDrivers.removeAt(0);
-        }
-        else {
-          displayToastMessage(
-              carRideType + " drivers not available. Try again", context);
-        }
-      } else {
-        displayToastMessage("No car found. Try again", context);
-      }
-    });
+    // notifyDriver(findFilter(availableDrivers));
+    // availableDrivers.removeAt(0);
+    // var driver = findFilter(availableDrivers);
+    //
+    // driversRef.child(driver.key).child("car_details").child("type").onValue.listen((event) {
+    //   print("xe"+ event.snapshot.value.toString());
+    //   if ( event.snapshot.value != null) {
+    //     String carType = event.snapshot.value.toString();
+    //     if (carType == carRideType) {
+    //       notifyDriver(driver);
+    //       availableDrivers.removeAt(0);
+    //     }
+    //     else {
+    //       displayToastMessage(
+    //           carRideType + " drivers not available. Try again", context);
+    //     }
+    //   } else {
+    //     displayToastMessage("No car found. Try again", context);
+    //   }
+    // });
   }
   //Send new request
   Future<void> notifyDriver(NearbyAvailableDrivers drivers)  async {
     DatabaseReference driversRef = FirebaseDatabase.instance.ref(
         "drivers/${drivers.key}");
     driversRef.child("newRide").set(rideRequestRef.key.toString());
-
+    print("Id tai xe");
 
     driversRef.child("token").once().then((DatabaseEvent event) {
       DataSnapshot snapshot = event.snapshot;
       if (snapshot.value != null) {
         String token = snapshot.value.toString();
+        print("Token tai xe");
+        print(token);
         AssistantMethods.sendNotificationToDriver(
             token, context, rideRequestRef.key);
         return;

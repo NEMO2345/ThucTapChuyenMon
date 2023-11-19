@@ -1346,6 +1346,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
         nearbyAvailableDrivers.longitude = doubleArray[1];
         GeoFireAssistant.nearByAvailableDriversList.add(nearbyAvailableDrivers);
       });
+      SapXepTheoSoSaoTangDan(GeoFireAssistant.nearByAvailableDriversList);
       GeoFireAssistant.nearByAvailableDriversList.forEach((element) {
         if(element.type == carRideType){
           notifyDriver(element);
@@ -1359,7 +1360,24 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
     });
     updateAvailableDriversOnMap();
   }
-//Cap nhat tai xe
+  void SapXepTheoSoSaoTangDan(List<NearbyAvailableDrivers> listAvailableDrivers){
+    int n = listAvailableDrivers.length;
+    bool swapped;
+
+    do {
+      swapped = false;
+
+      for (int i = 0; i < n - 1; i++) {
+        if (listAvailableDrivers[i].ratings < listAvailableDrivers[i + 1].ratings) {
+          // Swap arr[i] and arr[i+1]
+          NearbyAvailableDrivers temp = listAvailableDrivers[i];
+          listAvailableDrivers[i] = listAvailableDrivers[i + 1];
+          listAvailableDrivers[i + 1] = temp;
+          swapped = true;
+        }
+      }
+    } while (swapped);
+  }//Cap nhat tai xe
   List<Marker> markers = [];
   void updateAvailableDriversOnMap() {
     setState(() {

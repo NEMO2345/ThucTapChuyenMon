@@ -11,15 +11,11 @@ import 'package:flutter/material.dart';
 
 class NotificationDialog extends StatelessWidget {
   const  NotificationDialog({Key? key, required this.rideDetails}) : super(key: key);
-
   final RideDetails rideDetails;
-
   @override
   Widget build(BuildContext context) {
-
     Color diverStatusColorWhile = Colors.white;
     Color diverStatusColorGreen = Colors.green;
-
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
       backgroundColor: Colors.transparent,
@@ -43,7 +39,6 @@ class NotificationDialog extends StatelessWidget {
                 padding: EdgeInsets.all(18.0),
               child: Column(
                 children: [
-
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -57,7 +52,6 @@ class NotificationDialog extends StatelessWidget {
                     ],
                   ),
                   SizedBox(height: 15.0,),
-
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -71,15 +65,12 @@ class NotificationDialog extends StatelessWidget {
                     ],
                   ),
                   SizedBox(height: 15.0,),
-
                 ],
               ),
             ),
-
             SizedBox(height: 20.0,),
             Divider(height: 2.0,color: Colors.black, thickness: 2.0,),
             SizedBox(height: 8.0,),
-
             Padding(
               padding: EdgeInsets.all(20.0),
               child: Row(
@@ -87,13 +78,12 @@ class NotificationDialog extends StatelessWidget {
                 children: [
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: diverStatusColorWhile, // Đặt màu xanh lá cho nút
+                      backgroundColor: diverStatusColorWhile,
                       padding: EdgeInsets.all(17.0),
                     ),
                     onPressed: () {
                         assetsAudioPlayer.stop();
                         Navigator.pop(context);
-
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -115,7 +105,6 @@ class NotificationDialog extends StatelessWidget {
                     ),
                   ),
                   SizedBox(width: 25.0,),
-
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: diverStatusColorGreen, // Đặt màu xanh lá cho nút
@@ -156,13 +145,7 @@ class NotificationDialog extends StatelessWidget {
     );
   }
   void checkAvailabilityOfRide(context) {
-    print("The Id");
-    print(currentfirebaseUser!.uid);
-    DatabaseReference rideReq = FirebaseDatabase.instance
-        .ref()
-        .child("drivers")
-        .child(currentfirebaseUser!.uid)
-        .child("newRide");
+    DatabaseReference rideReq = FirebaseDatabase.instance.ref().child("drivers").child(currentfirebaseUser!.uid).child("newRide");
     rideReq.once().then((DatabaseEvent event) {
       DataSnapshot dataSnapshot = event.snapshot;
       Navigator.pop(context);

@@ -70,7 +70,7 @@ class ProfileTabPage extends StatelessWidget {
               onTap: (){
                 Geofire.removeLocation(currentfirebaseUser!.uid);
                 rideRequestRef.onDisconnect();
-                //rideRequestRef.remove();
+                rideRequestRef.remove();
                // rideRequestRef = null;
                 FirebaseAuth.instance.signOut();
                 Navigator.pushNamedAndRemoveUntil(context, LoginScreen.idScreen, (route) => false);

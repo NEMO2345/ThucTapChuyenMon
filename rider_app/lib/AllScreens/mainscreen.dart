@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, unnecessary_import, library_private_types_in_public_api, prefer_final_fields, unnecessary_new, sized_box_for_whitespace, prefer_const_literals_to_create_immutables, sort_child_properties_last, prefer_interpolation_to_compose_strings, use_build_context_synchronously, avoid_print, non_constant_identifier_names, library_prefixes, unused_label, cast_from_null_always_fails, unnecessary_null_comparison, unused_element, unnecessary_cast, unused_local_variable, no_leading_underscores_for_local_identifiers, constant_pattern_never_matches_value_type, prefer_collection_literals, deprecated_member_use, avoid_unnecessary_containers, prefer_conditional_assignment, constant_identifier_names, avoid_function_literals_in_foreach_calls, unnecessary_brace_in_string_interps, await_only_futures
 import 'dart:async';
+import 'dart:ffi';
 import 'dart:math';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -52,8 +53,12 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
   String PickUpPoint = "";
   String Destination = "";
   double tripDirectionDetails = 0;
-  double totalcalculateCost = 0;
-  String formattedCost = '';
+  double totalcalculateCostBike = 0;
+  double totalcalculateCostX = 0;
+  double totalcalculateCostGo = 0;
+  String formattedCostBike = '';
+  String formattedCostGo = '';
+  String formattedCostX = '';
   // Conversion of listOfPoints into LatLng(Latitude, Longitude) list of points
   List<LatLng> points = [];
   double sourLatitude = 0;
@@ -76,6 +81,10 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
   late StreamSubscription<DatabaseEvent> rideStreamSubscription;
   bool isRequestingPositionDetails = false;
   String uName = "";
+  double typeRideBike = 50;
+  double typeRideUberGo = 75;
+  double typeRideUberX = 100;
+
   //function adjust requestRideContainerHeight
   Future<void> displayRequestRideContainer() async {
     setState(() {
@@ -95,7 +104,6 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
       driverDetailsContainerHeight = 310.0;
     });
   }
-
   resetApp(){
     setState(() {
       drawerOpen = true;
@@ -113,7 +121,6 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
     });
     getLocation();
   }
-
   MapController _mapController = MapController();
   //vi tri hien tai
   Future<dynamic> getLocation() async{
@@ -154,7 +161,6 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
   getCoordinates(double sour_lat, double sour_lon, double des_lat, double des_lon) async {
     var response = await http.get(getRouteUrl("$sour_lon,$sour_lat",
         '$des_lon,$des_lat'));
-    //print(response.statusCode);
     setState(() {
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
@@ -176,7 +182,6 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
             pow(sin(dLon / 2), 2);
     double c = 2 * atan2(sqrt(a), sqrt(1 - a));
     double distance = earthRadius * c;
-
     return distance;
   }
   double _degreesToRadians(double degrees) {
@@ -191,16 +196,15 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
           point1.latitude, point1.longitude, point2.latitude, point2.longitude);
       totalDistance += distance;
     }
-
     return totalDistance;
   }
   //Tinh thanh tien
-  double calculateCost(double distance) {
-    double cost = distance * 100.0;
+  double calculateCost(double distance,double type) {
+
+    double cost = distance * type;
     return cost;
   }
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-
   double bottomPaddingOfMap = 0;
   //Zoom lon
   void updateZoomSizePlus() {
@@ -227,7 +231,6 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
     // initGeoFireListener();
     AssistantMethods.getCurrentOnlineUserInfo();
   }
-
   final DatabaseReference usersRef = FirebaseDatabase.instance.ref();
   //Save ride request to firebase
   Future<void> saveRideRequest() async {
@@ -242,14 +245,14 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
     };
     String? name;
     String? phone;
-    print(widget.firebaseUser!.uid.toString());
+   // print(widget.firebaseUser!.uid.toString());
     final snapshot = await usersRef.child('users/'+widget.firebaseUser!.uid.toString()).get()
         .then((value) => {
 
       name = value.child("name").value as String?,
       phone = value.child("phone").value as String?,
-      print(name),
-      print(name)
+     // print(name),
+      //print(name)
     });
     Map rideInfoMap = {
       "driver_id" : "waiting",
@@ -429,18 +432,8 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
                   ),
                 ),
               ),
-
               DividerWidget(),
               SizedBox(height: 12.0,),
-              //Drawer controller
-              // ListTile(
-              //   leading: Icon(Icons.history),
-              //   title: Text("History", style: TextStyle(fontSize: 16.0),),
-              // ),
-              // ListTile(
-              //   leading: Icon(Icons.person),
-              //   title: Text("Visit Profile", style: TextStyle(fontSize: 16.0),),
-              // ),
               GestureDetector(
                 onTap: (){
                   displayToastMessage("Industrial vehicle", context);
@@ -630,7 +623,6 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
                     ),
                   ],
                 ),
-
                 child: CircleAvatar(
                   backgroundColor: Colors.transparent,
                   child: Icon(Icons.indeterminate_check_box_rounded,color: Color(0xFF00CCFF),size: 50,),
@@ -663,7 +655,6 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
                     ),
                   ],
                 ),
-
                 child: CircleAvatar(
                   backgroundColor: Colors.transparent,
                   child: Icon(Icons.add_box,color: Color(0xFF00CCFF),size: 50,),
@@ -812,11 +803,20 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
                                   LatLng(desLatitude, desLongitude),
                                 ];
                                 tripDirectionDetails = calculateTotalDistance(points);
-                                totalcalculateCost = calculateCost(tripDirectionDetails);
-                                if (totalcalculateCost != null) {
-                                  formattedCost = NumberFormat.currency(locale: 'en_US', symbol: '\$').format(totalcalculateCost);
+                                totalcalculateCostBike = calculateCost(tripDirectionDetails,typeRideBike);
+                                totalcalculateCostX = calculateCost(tripDirectionDetails,typeRideUberX);
+                                totalcalculateCostGo = calculateCost(tripDirectionDetails,typeRideUberGo);
+
+
+                                 if (totalcalculateCostBike != null && totalcalculateCostX != null &&  totalcalculateCostGo != null ) {
+                                   formattedCostBike = NumberFormat.currency(locale: 'en_US', symbol: '\$').format(totalcalculateCostBike);
+                                   formattedCostGo = NumberFormat.currency(locale: 'en_US', symbol: '\$').format(totalcalculateCostGo);
+                                   formattedCostX = NumberFormat.currency(locale: 'en_US', symbol: '\$').format(totalcalculateCostX);
+
                                 } else {
-                                  formattedCost = '0 \$';
+                                   formattedCostBike = '0 \$';
+                                   formattedCostGo = '0 \$';
+                                   formattedCostX = '0 \$';
                                 }
                               }
                             });
@@ -877,15 +877,17 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                display_name_Location.length <= 90
+                                display_name_Location.length <= 70
                                     ? display_name_Location
                                     : display_name_Location.substring(0, 70),
                                 style: TextStyle(fontSize: 9),
                               ),
                               Text(
-                                display_name_Location.length > 90 && display_name_Location.length <= 180
-                                    ? display_name_Location.substring(71,141)
-                                    :"",
+                                display_name_Location.length > 70 && display_name_Location.length <= 180
+                                    ? display_name_Location.substring(71, display_name_Location.length)
+                                    : display_name_Location.length > 180
+                                    ? display_name_Location.substring(0, 70) + '...'
+                                    : display_name_Location,
                                 style: TextStyle(fontSize: 9),
                               ),
 
@@ -898,7 +900,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
                           ),
                         ],
                       ),
-                      SizedBox(height: 19.0,),
+                      SizedBox(height: 30.0,),
                       DividerWidget(),
                     ],
                   ),
@@ -918,7 +920,6 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
               ),
               child: Container(
                 height: rideDetailContainerHeigth,
-
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(topLeft: Radius.circular(16.0), topRight:Radius.circular(16.0),),
@@ -944,7 +945,6 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
                             carRideType = "bike";
                           });
                          await displayRequestRideContainer();
-                        //  availableDrivers = GeoFireAssistant.nearByAvailableDriversList;
                           await searchNearestDriver();
                         },
                         child: Container(
@@ -968,7 +968,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
                                 ),
                                 Expanded(child: Container()),
                                 Text(
-                                  formattedCost, style: TextStyle(fontFamily: "Brand-Bold",),
+                                  formattedCostBike, style: TextStyle(fontFamily: "Brand-Bold",),
                                 ),
                               ],
                             ),
@@ -987,7 +987,6 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
                             carRideType="uber-go";
                           });
                           await displayRequestRideContainer();
-                        //  availableDrivers = GeoFireAssistant.nearByAvailableDriversList;
                           await searchNearestDriver();
                         },
                         child: Container(
@@ -1011,7 +1010,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
                                 ),
                                 Expanded(child: Container()),
                                 Text(
-                                  formattedCost, style: TextStyle(fontFamily: "Brand-Bold",),
+                                  formattedCostGo, style: TextStyle(fontFamily: "Brand-Bold",),
                                 ),
                               ],
                             ),
@@ -1030,7 +1029,6 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
                             carRideType="uber-x";
                           });
                           await displayRequestRideContainer();
-                        //  availableDrivers = GeoFireAssistant.nearByAvailableDriversList;
                           await searchNearestDriver();
                         },
                         child: Container(
@@ -1054,7 +1052,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
                                 ),
                                 Expanded(child: Container()),
                                 Text(
-                                  formattedCost, style: TextStyle(fontFamily: "Brand-Bold",),
+                                  formattedCostX, style: TextStyle(fontFamily: "Brand-Bold",),
                                 ),
                               ],
                             ),
@@ -1250,8 +1248,6 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
     );
   }
 
-
-
 //Hien thi driver
   Future<void> initGeoFireListener() async {
     //Geofire.initialize("availableDrivers");
@@ -1263,25 +1259,15 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
         NearbyAvailableDrivers nearbyAvailableDrivers = NearbyAvailableDrivers();
         nearbyAvailableDrivers.key = element.key as String;
         print(element.key);
-        //Lay thong tin loai xe
         await  driversRef.child( element.key as String).child("car_details").child("type").onValue.listen((event) {
-          // print("xe"+ event.snapshot.value.toString());
           if ( event.snapshot.value != null) {
             String carType = event.snapshot.value.toString();
-            print("Loai xe trong ham khoi tao");
             nearbyAvailableDrivers.type = carType;
-            print(carType);
           }
         });
-
-        //Lay thong tin rating cua tai xe
         await  driversRef.child( element.key as String).child("ratings").onValue.listen((event) {
-          print("Rating truce ");
           if ( event.snapshot.value != null) {
-            print("Rating sau ");
             double ratings = double.parse(event.snapshot.value.toString());
-            print("Rating trong ham khoi tao");
-            print(ratings);
             nearbyAvailableDrivers.ratings = ratings;
 
           }
@@ -1290,8 +1276,6 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
         doubleArray.clear();
         element.children.forEach((valu2) {
           doubleArray.add(valu2.value as double);
-          print(valu2.key);
-          print(valu2.value);
         });
         nearbyAvailableDrivers.latitude = doubleArray[0];
         nearbyAvailableDrivers.longitude = doubleArray[1];
@@ -1312,12 +1296,9 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
         NearbyAvailableDrivers nearbyAvailableDrivers = NearbyAvailableDrivers();
         nearbyAvailableDrivers.key = element.key as String;
         print(element.key);
-        //Lay thong tin loai xe
         await  driversRef.child( element.key as String).child("car_details").child("type").onValue.listen((event) {
-          // print("xe"+ event.snapshot.value.toString());
           if ( event.snapshot.value != null) {
             String carType = event.snapshot.value.toString();
-            print("Loai xe trong ham khoi tao");
             nearbyAvailableDrivers.type = carType;
             print(carType);
           }
@@ -1325,22 +1306,15 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
 
         //Lay thong tin rating cua tai xe
         await  driversRef.child( element.key as String).child("ratings").onValue.listen((event) {
-          print("Rating truce ");
           if ( event.snapshot.value != null) {
-            print("Rating sau ");
             double ratings = double.parse(event.snapshot.value.toString());
-            print("Rating trong ham khoi tao");
-            print(ratings);
             nearbyAvailableDrivers.ratings = ratings;
-
           }
         });
 
         doubleArray.clear();
         element.children.forEach((valu2) {
           doubleArray.add(valu2.value as double);
-          print(valu2.key);
-          print(valu2.value);
         });
         nearbyAvailableDrivers.latitude = doubleArray[0];
         nearbyAvailableDrivers.longitude = doubleArray[1];
@@ -1355,21 +1329,16 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
           return;
         }
       });
-
-
     });
     updateAvailableDriversOnMap();
   }
   void SapXepTheoSoSaoTangDan(List<NearbyAvailableDrivers> listAvailableDrivers){
     int n = listAvailableDrivers.length;
     bool swapped;
-
     do {
       swapped = false;
-
       for (int i = 0; i < n - 1; i++) {
         if (listAvailableDrivers[i].ratings < listAvailableDrivers[i + 1].ratings) {
-          // Swap arr[i] and arr[i+1]
           NearbyAvailableDrivers temp = listAvailableDrivers[i];
           listAvailableDrivers[i] = listAvailableDrivers[i + 1];
           listAvailableDrivers[i + 1] = temp;
@@ -1432,13 +1401,10 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
   void SapXepTheoKhoangCachTangDan(List<NearbyAvailableDrivers> listAvailableDrivers){
     int n = listAvailableDrivers.length;
     bool swapped;
-
     do {
       swapped = false;
-
       for (int i = 0; i < n - 1; i++) {
         if (listAvailableDrivers[i].ratings < listAvailableDrivers[i + 1].ratings) {
-          // Swap arr[i] and arr[i+1]
           NearbyAvailableDrivers temp = listAvailableDrivers[i];
           listAvailableDrivers[i] = listAvailableDrivers[i + 1];
           listAvailableDrivers[i + 1] = temp;
@@ -1447,10 +1413,9 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
       }
     } while (swapped);
   }
-
+//Ham loc thong tin
   NearbyAvailableDrivers findFilter(List<NearbyAvailableDrivers> listAvailableDrivers){
     List<NearbyAvailableDrivers> filteredDrivers = [];
-
     for( NearbyAvailableDrivers driver in listAvailableDrivers){
             if (driver.type == carRideType){
               filteredDrivers.add(driver);
@@ -1458,7 +1423,6 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
           }
 
     //SapXepTheoKhoangCachTangDan(filteredDrivers);
-
 
     // Tạo một danh sách xác suất dựa trên số sao của tài xế
     // final List<double> probabilities = filteredDrivers.map((driver) {
@@ -1485,56 +1449,24 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
 //Tim kiem xe gan
   Future<void> searchNearestDriver()  async {
       await  initGeoFireListener2();
-
-    // availableDrivers = GeoFireAssistant.nearByAvailableDriversList;
-
     if(availableDrivers.isEmpty){
       cancelRideRequest();
       resetApp();
       noDriverFound();
       return;
     }
-    // String tokenTest = 'f5gfcX1QSnSC4dDGyp_-A9:APA91bF1dbXZrAEJAeNbP5SveSYYV8PddR2tpOtAaGjbn-CGG8iKUzca3NrdVQkaFwd4CsdHv4FGJY0cgGM9T2p5KA0PZiqv4Q-MRLOvhmf0zjJYDz-u9sOUZYaNgQrDha9GooLUgYyf';
-    // AssistantMethods.sendNotificationToDriver(
-    //     tokenTest, context, '-NjaKq1q3H8A8Sf57JgE');
-    // return;
-
-    // notifyDriver(findFilter(availableDrivers));
-    // availableDrivers.removeAt(0);
-    // var driver = findFilter(availableDrivers);
-    //
-    // driversRef.child(driver.key).child("car_details").child("type").onValue.listen((event) {
-    //   print("xe"+ event.snapshot.value.toString());
-    //   if ( event.snapshot.value != null) {
-    //     String carType = event.snapshot.value.toString();
-    //     if (carType == carRideType) {
-    //       notifyDriver(driver);
-    //       availableDrivers.removeAt(0);
-    //     }
-    //     else {
-    //       displayToastMessage(
-    //           carRideType + " drivers not available. Try again", context);
-    //     }
-    //   } else {
-    //     displayToastMessage("No car found. Try again", context);
-    //   }
-    // });
   }
   //Send new request
   Future<void> notifyDriver(NearbyAvailableDrivers drivers)  async {
     DatabaseReference driversRef = FirebaseDatabase.instance.ref(
         "drivers/${drivers.key}");
     driversRef.child("newRide").set(rideRequestRef.key.toString());
-    print("Id tai xe");
 
     driversRef.child("token").once().then((DatabaseEvent event) {
       DataSnapshot snapshot = event.snapshot;
       if (snapshot.value != null) {
         String token = snapshot.value.toString();
-        print("Token tai xe");
-        print(token);
-        AssistantMethods.sendNotificationToDriver(
-            token, context, rideRequestRef.key);
+        AssistantMethods.sendNotificationToDriver(token, context, rideRequestRef.key);
         return;
       }
       const oneSecondPassed = Duration(seconds: 1);
@@ -1542,30 +1474,24 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
         if (state != "requesting") {
           driversRef.child(drivers.key).child("newRide").set("cancelled");
           driversRef.child(drivers.key).child("newRide").onDisconnect();
-          driverRequestTimeOut = 20;
+          driverRequestTimeOut = 10;
           timer.cancel();
         }
 
         driverRequestTimeOut = driverRequestTimeOut - 1;
 
-        driversRef
-            .child(drivers.key)
-            .child("newRide")
-            .onValue
-            .listen((event) {
-          print("event" + event.snapshot.value.toString());
+        driversRef.child(drivers.key).child("newRide").onValue.listen((event) {
           if (event.snapshot.value.toString() == "accepted") {
             driversRef.child(drivers.key).child("newRide").onDisconnect();
-            driverRequestTimeOut = 20;
+            driverRequestTimeOut = 10;
             timer.cancel();
           }
         });
         if (driverRequestTimeOut == 0) {
           driversRef.child(drivers.key).child("newRide").set("timeout");
           driversRef.child(drivers.key).child("newRide").onDisconnect();
-          driverRequestTimeOut = 20;
+          driverRequestTimeOut = 10;
           timer.cancel();
-
           searchNearestDriver();
         }
       });

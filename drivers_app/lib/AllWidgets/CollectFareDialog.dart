@@ -65,13 +65,10 @@ class CollectFareDialog extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
             ),
-
             const SizedBox(height: 30.0),
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
-                Navigator.pop(context);
-
                 AssistantMethods.enablehomeTabLiveLocationUpdates();
               },
               style: buttonStyle,

@@ -260,7 +260,6 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
               ),
             ],
           ),
-
         ),
         Positioned(
           top: 200.0,
@@ -318,7 +317,6 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
                   ),
                 ],
               ),
-
               child: CircleAvatar(
                 backgroundColor: Colors.transparent,
                 child: Icon(
@@ -366,7 +364,6 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
           width: double.infinity,
           color: Colors.black54,
         ),
-
         Positioned(
           top: 60.0,
           left: 0.0,
@@ -455,8 +452,8 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
       "latitude": latitude,
       "longitude": longitude,
     };
-
-    await rideRequestRef.update({"newRide": "searching"});
+     rideRequestRef.child("newRide").set("searching");
+     //rideRequestRef.update({"newRide": "searching"});
 
     DatabaseReference driversRef =
     FirebaseDatabase.instance.reference().child("availableDrivers");

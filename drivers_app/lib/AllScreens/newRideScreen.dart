@@ -54,11 +54,7 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
   double requestRideContainerHeigth = 0;
   double searchContainerHeight = 310.0;
   bool drawerOpen = true;
-
-
-
   MapController _mapController = MapController();
-
   var geolocator = Geolocator();
   String status = "accepted";
   String durationRide = "10 mins";
@@ -67,11 +63,11 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
   Color btnColor = Color(0xFF00CCFF);
   late Timer timer;
   int durationCounter = 0;
-
-
+  double typeRideBike = 50;
+  double typeRideUberGo = 75;
+  double typeRideUberX = 100;
   //vi tri hien tai
   Future<dynamic> getLocation() async {
-
     LatLng oldPos = LatLng(0, 0);
     var root = MapKitAssistant.getMarkerRotation(oldPos.latitude, oldPos.longitude, Latitude, Longitude);
     _serviceEnabled = await location.serviceEnabled();
@@ -178,13 +174,11 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
   }
   //end
   //Tinh tien
-  double calculateCost(double distance) {
-    double cost = distance * 100.0;
+  double calculateCost(double distance,double type) {
+    double cost = distance * type;
     return cost;
   }
-
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-
   double bottomPaddingOfMap = 0;
   @override
   void initState() {
@@ -192,13 +186,10 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
     getLocation();
     initWay();
   }
-
   @override
   Widget build(BuildContext context) {
     LatLng oldPos = LatLng(0, 0);
     var root = MapKitAssistant.getMarkerRotation(oldPos.latitude, oldPos.longitude, Latitude, Longitude);
-
-
     return Scaffold(
       body: Stack(
         children: [
@@ -287,7 +278,6 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
 
 
           ),
-
           Positioned(
             top: 45.0,
             right: 22.0,
@@ -321,7 +311,6 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
               ),
             ),
           ), //Get position
-
           Positioned(
             left: 0.0,
             right: 0.0,
@@ -344,12 +333,10 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
                 padding: EdgeInsets.symmetric(horizontal: 24.0,vertical: 18.0),
                 child: Column(
                   children: [
-
                     Text(
                       durationRide,
                       style: TextStyle(fontSize: 14.0, fontFamily: "Brand Bold",color:Color(0xFF00CCFF)),
                     ),
-
                     SizedBox(height: 6.0,),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -358,11 +345,9 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
                         Padding(
                           padding: EdgeInsets.only(right: 10.0),
                           child: Icon(Icons.phone_android),
-
                         ),
                       ],
                     ),
-
                     SizedBox(height: 26.0,),
                     Row(
                       children: [
@@ -379,7 +364,6 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
                         ),
                       ],
                     ),
-
                     SizedBox(height: 16.0,),
                     Row(
                       children: [
@@ -396,7 +380,6 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
                         ),
                       ],
                     ),
-
                     SizedBox(height: 26.0,),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -406,7 +389,6 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
                             status = "arrived";
                             String rideRequestId = widget.rideDetails.ride_request_id;
                             newRequestsRef.child(rideRequestId).child("status").set(status);
-
                             setState(() {
                               btnTitle = "Start Trip";
                               btnColor = Color(0xFF00CCFF);
@@ -421,7 +403,6 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
                             status = "onride";
                             String rideRequestId = widget.rideDetails.ride_request_id;
                             newRequestsRef.child(rideRequestId).child("status").set(status);
-
                             setState(() {
                               btnTitle = "End Trip";
                               btnColor = Color(0xFF00CCFF);
@@ -436,7 +417,6 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
                           primary: btnColor,
                           padding: EdgeInsets.all(17.0),
                         ),
-
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -466,12 +446,10 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
             ),
 
           ),
-
         ],
       ),
     );
   }
-
   void acceptRideRequest() {
     String rideRequestId = widget.rideDetails.ride_request_id;
     DatabaseReference rideRequestRef = newRequestsRef.child(rideRequestId);
@@ -487,14 +465,14 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
       "longitude": Longitude.toString(),
     };
    rideRequestRef.child("driver_location").set(locMap);
-
-   print(locMap);
-   
-   driversRef.child(currentfirebaseUser!.uid).child("history").child(rideRequestId).set(true);
-   
+   driversRef.child(currentfirebaseUser!.uid).child("history").child(rideRequestId).set(locMap);
+   driversRef.child(currentfirebaseUser!.uid).child("history").child(rideRequestId).child("status").set("accepted");
+   driversRef.child(currentfirebaseUser!.uid).child("history").child(rideRequestId).child("driver_name").set(driversInformation?.name);
+   driversRef.child(currentfirebaseUser!.uid).child("history").child(rideRequestId).child("driver_phone").set(driversInformation?.phone);
+   driversRef.child(currentfirebaseUser!.uid).child("history").child(rideRequestId).child("driver_id").set(driversInformation?.id);
+   driversRef.child(currentfirebaseUser!.uid).child("history").child(rideRequestId).child("car_details").set('${driversInformation?.car_color} - ${driversInformation?.car_model} - ${driversInformation?.car_number}');
   }
   void updateRideDetails() async{
-
     if(isRequestingDirection == false){
       isRequestingDirection = true;
       if(Latitude == null && Longitude == null){
@@ -519,7 +497,6 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
       isRequestingDirection = false;
     }
   }
-
   void initTimer(){
     const interval = Duration(seconds: 1);
     timer = Timer.periodic(interval, (timer) {
@@ -527,16 +504,13 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
     });
   }
   endTheTrip() async {
-
     timer.cancel();
-
     showDialog(
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context)=> ProgressDialog(message: "Please wait..."),
     );
     var currentLatLng = LatLng(Latitude, Longitude);
-
     Navigator.pop(context);
     var directionDetails = await getLocation();
     setState(() {
@@ -549,7 +523,15 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
           LatLng(desLatitude, desLongitude),
         ];
         tripDirectionDetails = calculateTotalDistance(points);
-        totalcalculateCost = calculateCost(tripDirectionDetails);
+        if(rideType == 'bike'){
+          totalcalculateCost = calculateCost(tripDirectionDetails,typeRideBike);
+        }else if(rideType == 'uber-x'){
+          totalcalculateCost = calculateCost(tripDirectionDetails,typeRideUberX);
+        }else if(rideType == "uber-go"){
+          totalcalculateCost = calculateCost(tripDirectionDetails,typeRideUberGo);
+        }else{
+          totalcalculateCost = 0;
+        }
         if (totalcalculateCost != null) {
           formattedCost = NumberFormat.currency(locale: 'en_US', symbol: '\$').format(totalcalculateCost);
         } else {
@@ -567,6 +549,7 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
       barrierDismissible: false,
       builder: (BuildContext context)=> CollectFareDialog(paymentMethod: widget.rideDetails.payment_method, fareAmount: totalcalculateCost.toDouble(),),
     );
+    
     saveEarnings(totalcalculateCost.toInt());
   }
 

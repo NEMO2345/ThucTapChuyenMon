@@ -73,7 +73,7 @@ class ProfileTabPage extends StatelessWidget {
                 rideRequestRef.remove();
                // rideRequestRef = null;
                 FirebaseAuth.instance.signOut();
-                Navigator.pushNamedAndRemoveUntil(context, LoginScreen.idScreen, (route) => false);
+                Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
               },
               child: Card(
                 color: Colors.red,

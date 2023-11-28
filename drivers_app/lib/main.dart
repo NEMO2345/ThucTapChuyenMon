@@ -110,14 +110,12 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _startTimer();
   }
-
   @override
   void dispose() {
     _stopTimer();
     _pageController.dispose();
     super.dispose();
   }
-
   void _startTimer() {
     _timer = Timer.periodic(Duration(seconds: 3), (Timer timer) {
       if (_currentPage < _imageCount - 1) {
@@ -135,7 +133,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void _stopTimer() {
     _timer?.cancel();
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -182,7 +179,11 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).pushNamed(LoginScreen.idScreen);
+                  if (FirebaseAuth.instance.currentUser == null) {
+                    Navigator.of(context).pushNamed(LoginScreen.idScreen);
+                  } else {
+                    Navigator.of(context).pushNamed(MainScreen.idScreen);
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   primary: Colors.transparent,
@@ -212,7 +213,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-
 class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
@@ -221,7 +221,6 @@ class MyHttpOverrides extends HttpOverrides {
 }
 class NotifierClass extends ChangeNotifier {
   static const String idScreen = "/";
-
   @override
   Widget build(BuildContext context) {
     throw UnimplementedError();

@@ -76,7 +76,7 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
         ],
 
         unselectedItemColor: Colors.blueGrey,
-        selectedItemColor: Color(0xFF00CCFF),
+        selectedItemColor: Colors.orange,
         type: BottomNavigationBarType.fixed,
         selectedLabelStyle: TextStyle(fontSize: 12.0),
         showUnselectedLabels: true,

@@ -135,7 +135,6 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
     print(zoomSize);
   }
 
-
   void getCurrentDriverInfo() async {
     currentfirebaseUser = await FirebaseAuth.instance.currentUser;
 
@@ -173,7 +172,6 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
         });
       }
     });
-
   }
   @override
   void initState() {
@@ -181,7 +179,6 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
     getLocation();
     getCurrentDriverInfo();
   }
-
   @override
   Widget build(BuildContext context) {
 
@@ -288,7 +285,7 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
               child: CircleAvatar(
                 backgroundColor: Colors.transparent,
                 child: Icon(
-                  Icons.control_point, color: Color(0xFF00CCFF), size: 50,),
+                  Icons.control_point,  color: Colors.orange, size: 50,),
                 radius: 20.0,
               ),
             ),
@@ -320,7 +317,7 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
               child: CircleAvatar(
                 backgroundColor: Colors.transparent,
                 child: Icon(
-                  Icons.indeterminate_check_box_rounded, color: Color(0xFF00CCFF),
+                  Icons.indeterminate_check_box_rounded,  color: Colors.orange,
                   size: 50,),
                 radius: 20.0,
               ),
@@ -353,7 +350,7 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
 
               child: CircleAvatar(
                 backgroundColor: Colors.transparent,
-                child: Icon(Icons.add_box, color: Color(0xFF00CCFF), size: 50,),
+                child: Icon(Icons.add_box, color: Colors.orange, size: 50,),
                 radius: 20.0,
               ),
             ),
@@ -379,7 +376,7 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
                       makerDriverOnlineNow();
                       getLocationLiveUpdates();
                       setState(() {
-                        diverStatusColor = Color(0xFF00CCFF);
+                        diverStatusColor = Colors.orange;
                         diverStatusText = "Online Now";
                         isDriverAvailable = true;
                     });
@@ -408,16 +405,14 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
                         color: Colors.white,
                       ),
                     ),
-                    Icon(
-                      Icons.phone_android,
-                      color: Colors.black,
-                      size: 26.0,
-                      ),
-                    ],
+                    SizedBox(height: 30.0),
+                    Image(
+                        image: AssetImage('images/play-button.png'),
+                         ),
+                      ],
+                    ),
                   ),
-                ),
-              ),
-
+               ),
             ],
           ),
         ),
@@ -425,7 +420,6 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
     );
   }
   //Xu li su kien on-offline
-
   void makerDriverOnlineNow() async {
     DatabaseReference rideRequestRef = FirebaseDatabase.instance
         .reference()
@@ -442,7 +436,6 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
         return;
       }
     }
-
     Position position = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high,
     );
@@ -483,7 +476,6 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
   void makeDriverOfflineNow() {
     DatabaseReference databaseRef = FirebaseDatabase.instance.reference();
     DatabaseReference driverRef = databaseRef.child('availableDrivers/'+ currentfirebaseUser!.uid);
-
     driverRef.remove().then((_) {
       print('Dữ liệu đã được xóa thành công.');
     }).catchError((error) {

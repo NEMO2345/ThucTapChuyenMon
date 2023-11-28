@@ -34,7 +34,7 @@ class HistoryItem extends StatelessWidget {
               Row(
                 mainAxisSize: MainAxisSize.max,
                 children: <Widget>[
-                  Image.asset('images/desticon.png',height: 16,width: 16,),
+                  Image.asset('images/desticon.png',height: 16,width: 7.7,),
                   SizedBox(width: 18,),
                   Text(history.dropOff.substring(0,45),overflow: TextOverflow.ellipsis,style: TextStyle(fontSize: 18),),
 

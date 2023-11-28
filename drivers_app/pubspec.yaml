@@ -52,6 +52,7 @@ dependencies:
   assets_audio_player: ^3.1.1
   smooth_star_rating_null_safety: ^1.0.4+2
   maps_toolkit: ^3.0.0
+  video_player: ^2.8.1
   #geoflutterfire: ^2.2.0
 
 
@@ -83,6 +84,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+     - videos/Driver.mp4
      - images/car_android.png
      - images/car_ios.png
      - images/desticon.png
@@ -101,8 +103,13 @@ flutter:
      - images/house4.png
      - images/BOOKme.png
      - images/chooseCar.png
+     - images/chooseCar1.png
+     - images/chooseCar2.png
+     - images/play-button.png
+     - images/earning.png
      - images/uberx.png
      - sounds/alert.mp3
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

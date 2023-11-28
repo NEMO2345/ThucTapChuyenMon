@@ -212,8 +212,15 @@ class _LoginScreenState extends State<RegisterationScreen> {
   }
 }
 
-displayToastMessage(String message, BuildContext context){
-  Fluttertoast.showToast(msg: message);
+void displayToastMessage(String message, BuildContext context) {
+  Fluttertoast.showToast(
+    msg: message,
+    toastLength: Toast.LENGTH_SHORT,
+    gravity: ToastGravity.BOTTOM,
+    backgroundColor: Colors.black87,
+    textColor: Colors.white,
+    fontSize: 16.0,
+  );
 }
 
 

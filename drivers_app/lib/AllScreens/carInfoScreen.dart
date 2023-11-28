@@ -7,7 +7,6 @@ import 'package:drivers_app/main.dart';
 import 'package:flutter/material.dart';
 
 class CarInfoScreen extends StatelessWidget {
-
   final TextEditingController carModelTextEditingController;
   final TextEditingController carNumberTextEditingController;
   final TextEditingController carColorTextEditingController;
@@ -18,8 +17,7 @@ class CarInfoScreen extends StatelessWidget {
         carNumberTextEditingController = TextEditingController(),
         carColorTextEditingController = TextEditingController(),
         carTypeTextEditingController = TextEditingController(),
-
-      super(key: key);
+        super(key: key);
 
   static const String idScreen = "carinfo";
 
@@ -31,77 +29,77 @@ class CarInfoScreen extends StatelessWidget {
           child: Column(
             children: [
               SizedBox(height: 22.0,),
-              Image.asset("images/logo.png",width: 390.0,height: 250.0,),
+              Image.asset("images/chooseCar.png", width: 390.0, height: 250.0,),
               Padding(
-                padding: EdgeInsets.fromLTRB(22.0,22.0, 22.0, 32.0),
+                padding: EdgeInsets.fromLTRB(22.0, 22.0, 22.0, 32.0),
                 child: Column(
                   children: [
                     SizedBox(height: 12.0,),
-                    Text("Enter Car Details",style: TextStyle(fontFamily: "Brand-Bold",fontSize: 24.0),),
-
+                    Text(
+                      "Enter Car Details",
+                      style: TextStyle(fontFamily: "Brand-Bold", fontSize: 24.0),
+                    ),
                     SizedBox(height: 26.0,),
                     TextField(
                       controller: carModelTextEditingController,
                       decoration: InputDecoration(
-                        labelText: "Car Model",
-                        hintStyle: TextStyle(color: Colors.grey, fontSize: 10.0),
+                        labelText: 'Car Model',
                       ),
-                      style: TextStyle(fontSize: 15.0),
                     ),
-
                     SizedBox(height: 10.0,),
                     TextField(
                       controller: carNumberTextEditingController,
                       decoration: InputDecoration(
                         labelText: "Car Number",
-                        hintStyle: TextStyle(color: Colors.grey, fontSize: 10.0),
                       ),
-                      style: TextStyle(fontSize: 15.0),
                     ),
-
                     SizedBox(height: 10.0,),
                     TextField(
                       controller: carColorTextEditingController,
                       decoration: InputDecoration(
-                        labelText: "Car Color",
-                        hintStyle: TextStyle(color: Colors.grey, fontSize: 10.0),
+                        labelText: 'Car Color',
                       ),
-                      style: TextStyle(fontSize: 15.0),
                     ),
                     SizedBox(height: 10.0,),
-                    TextField(
-                      controller: carTypeTextEditingController,
+                    DropdownButtonFormField<String>(
+                      value: carTypeTextEditingController.text.isNotEmpty ? carTypeTextEditingController.text : null,
+                      onChanged: (String? newValue) {
+                        carTypeTextEditingController.text = newValue!;
+                      },
                       decoration: InputDecoration(
-                        labelText: "Car Type",
-                        hintStyle: TextStyle(color: Colors.grey, fontSize: 10.0),
+                        labelText: 'Car Type',
                       ),
-                      style: TextStyle(fontSize: 15.0),
+                      items: <String>[
+                        'bike',
+                        'uber-go',
+                        'uber-x',
+                      ].map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
                     ),
                     SizedBox(height: 42.0,),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16.0),
                       child: ElevatedButton(
                         onPressed: () {
-                          // Xử lý sự kiện khi nút được nhấn
                           if(carModelTextEditingController.text.isEmpty){
-                            displayToastMessage("please write Car Model", context);
-                          }
-                          else if(carNumberTextEditingController.text.isEmpty){
-                            displayToastMessage("please write Car Number", context);
-                          }
-                          else if(carColorTextEditingController.text.isEmpty){
-                            displayToastMessage("please write Car Color", context);
-                          }
-                          else if(carTypeTextEditingController.text.isEmpty){
-                            displayToastMessage("please write Car Type", context);
-                          }
-                          else{
-                                saveDriverCarInfo(context);
+                            displayToastMessage("Please write Car Model", context);
+                          } else if(carNumberTextEditingController.text.isEmpty){
+                            displayToastMessage("Please write Car Number", context);
+                          } else if(carColorTextEditingController.text.isEmpty){
+                            displayToastMessage("Please write Car Color", context);
+                          } else if(carTypeTextEditingController.text.isEmpty){
+                            displayToastMessage("Please select Car Type", context);
+                          } else {
+                            saveDriverCarInfo(context);
                           }
                         },
                         style: ElevatedButton.styleFrom(
-                          primary: Theme.of(context).colorScheme.secondary,
-                          padding: EdgeInsets.all(17.0),
+                          primary: Colors.orange,
+                          side: BorderSide(color: Colors.lime),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -109,14 +107,14 @@ class CarInfoScreen extends StatelessWidget {
                             Text(
                               "NEXT",
                               style: TextStyle(
-                                fontSize: 28.0,
+                                fontSize: 38.0,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                                color: Colors.black,
                               ),
                             ),
                             Icon(
                               Icons.arrow_forward,
-                              color: Colors.white,
+                              color: Colors.black,
                               size: 26.0,
                             ),
                           ],

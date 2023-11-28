@@ -95,6 +95,12 @@ flutter:
      - images/taxi.png
      - images/user_icon.png
      - images/logoBookMe.png
+     - images/house1.png
+     - images/house3.png
+     - images/house2.png
+     - images/house4.png
+     - images/BOOKme.png
+     - images/chooseCar.png
      - images/uberx.png
      - sounds/alert.mp3
 

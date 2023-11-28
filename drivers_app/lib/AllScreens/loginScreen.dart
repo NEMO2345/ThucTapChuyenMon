@@ -17,7 +17,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-
+  bool rememberMe = false;
+  bool _obscurePassword = true;
   TextEditingController emailTextEdittingController = TextEditingController();
   TextEditingController passwordTextEdittingController = TextEditingController();
 
@@ -32,9 +33,9 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               SizedBox(height: 45.0),
               Image(
-                image: AssetImage("images/logoBookMe.png"),
-                width: 330.0,
-                height: 270.0,
+                image: AssetImage("images/BOOKme.png"),
+                // width: 330.0,
+                // height: 270.0,
                 alignment: Alignment.center,
               ),
               SizedBox(height: 35.0),
@@ -50,66 +51,75 @@ class _LoginScreenState extends State<LoginScreen> {
                     SizedBox(height: 1.0),
                     TextField(
                       controller: emailTextEdittingController,
-                      keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
-                        labelText: "Email",
-                        labelStyle: TextStyle(
-                          fontSize: 14.0,
-                        ),
-                        hintStyle: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 10.0,
-                        ),
-                      ),
-                      style: TextStyle(
-                        fontSize: 14.0,
+                        labelText: 'Email',
                       ),
                     ),
                     SizedBox(height: 1.0),
                     TextField(
                       controller: passwordTextEdittingController,
-                      obscureText: true,
+                      obscureText: _obscurePassword,
                       decoration: InputDecoration(
-                        labelText: "Password",
-                        labelStyle: TextStyle(
-                          fontSize: 14.0,
-                        ),
-                        hintStyle: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 10.0,
+                        labelText: 'Password',
+                        suffixIcon: IconButton(
+                          icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
+                          onPressed: () {
+                            setState(() {
+                              _obscurePassword = !_obscurePassword;
+                            });
+                          },
                         ),
                       ),
-                      style: TextStyle(fontSize: 14.0),
                     ),
                     SizedBox(height: 10.0,),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF00CCFF),
-                        onPrimary: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(24.0),
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: rememberMe,
+                          onChanged: (value) {
+                            setState(() {
+                              rememberMe = value!;
+                            });
+                          },
                         ),
-                        minimumSize: Size(200.0, 50.0),
+                        Text('Save Account'),
+                        Spacer(),
+                      ],
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                          if(!emailTextEdittingController.text.contains("@")){
+                            displayToastMessage("Email address is not Valid.", context);
+                          }else if(passwordTextEdittingController.text.isEmpty){
+                            displayToastMessage("Password is mandatory.", context);
+                          }else{
+                            loginAndAuthenticatedUser(context);
+                          }
+                        },
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.transparent,
+                        onPrimary: Colors.green,
+                        padding: EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(40),
+                          side: BorderSide(
+                            color: Colors.orange,
+                            width: 2,
+                          ),
+                        ),
+                        backgroundColor: Colors.white,
                       ),
-                      onPressed:(){
-                        if(!emailTextEdittingController.text.contains("@")){
-                          displayToastMessage("Email address is not Valid.", context);
-                        }else if(passwordTextEdittingController.text.isEmpty){
-                          displayToastMessage("Password is mandatory.", context);
-                        }else{
-                         loginAndAuthenticatedUser(context);
-                        }
-                      },
                       child: Text(
-                        "Login",
-                        style: TextStyle(fontSize: 18.0,fontFamily: "Brand Bold"),
+                        'Login',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 20,
+                        ),
                       ),
                     ),
-
                   ],
                 ),
               ),
-
               TextButton(
                 onPressed:()
                 {
@@ -117,6 +127,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 },
                 child: Text(
                   "Do not have an Account?  Register here.",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                  ),
                 ),
               ),
             ],
@@ -136,7 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
         barrierDismissible: false,
         builder: (BuildContext context)
         {
-          return ProgressDialog(message: "Authenticating, Please wait,...", );
+          return ProgressDialog(message: "Authenticating. Please wait,...", );
         }
     );
 

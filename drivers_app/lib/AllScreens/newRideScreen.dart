@@ -510,10 +510,10 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
     // Navigator.pop(context);
     var directionDetails = await getLocation();
     setState(() {
-      desLatitude =Latitude;
-     desLongitude = Longitude;
+      //desLatitude =Latitude;
+     //desLongitude = Longitude;
       if (sourLatitude != 0 && sourLongitude != 0){
-        getCoordinates(sourLatitude,sourLongitude,desLatitude,desLongitude);
+       // getCoordinates(sourLatitude,sourLongitude,desLatitude,desLongitude);
         List<LatLng> points = [
           LatLng(sourLatitude, sourLongitude),
           LatLng(desLatitude, desLongitude),

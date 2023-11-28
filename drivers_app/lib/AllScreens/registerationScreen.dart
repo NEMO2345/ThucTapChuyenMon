@@ -1,4 +1,4 @@
-// ignore_for_file: library_private_types_in_public_api, prefer_interpolation_to_compose_strings, use_build_context_synchronously, deprecated_member_use, file_names, prefer_const_constructors, body_might_complete_normally_catch_error
+// ignore_for_file: library_private_types_in_public_api, prefer_interpolation_to_compose_strings, use_build_context_synchronously, deprecated_member_use, file_names, prefer_const_constructors, body_might_complete_normally_catch_error, unused_field, prefer_final_fields
 
 import 'package:drivers_app/AllScreens/carInfoScreen.dart';
 import 'package:drivers_app/configMaps.dart';
@@ -19,11 +19,13 @@ class RegisterationScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<RegisterationScreen> {
-
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
   TextEditingController nameTextEdittingController = TextEditingController();
   TextEditingController emailTextEdittingController = TextEditingController();
   TextEditingController phoneTextEdittingController = TextEditingController();
   TextEditingController passwordTextEdittingController = TextEditingController();
+  TextEditingController confirmpasswordTextEdittingController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,7 +37,7 @@ class _LoginScreenState extends State<RegisterationScreen> {
             children: [
               const SizedBox(height: 20.0),
               const Image(
-                image: AssetImage("images/logoBookMe.png"),
+                image: AssetImage("images/BOOKme.png"),
                 width: 390.0,
                 height: 250.0,
                 alignment: Alignment.center,
@@ -50,92 +52,61 @@ class _LoginScreenState extends State<RegisterationScreen> {
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
                   children: [
-
                     const SizedBox(height: 1.0),
                     TextField(
                       controller: nameTextEdittingController,
-                      keyboardType: TextInputType.text,
-                      decoration: const InputDecoration(
-                        labelText: "Name",
-                        labelStyle: TextStyle(
-                          fontSize: 14.0,
-                        ),
-                        hintStyle: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 10.0,
-                        ),
-                      ),
-                      style: const TextStyle(
-                        fontSize: 14.0,
+                      decoration: InputDecoration(
+                        labelText: 'Name',
                       ),
                     ),
-
                     const SizedBox(height: 1.0),
                     TextField(
                       controller: emailTextEdittingController,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: const InputDecoration(
-                        labelText: "Email",
-                        labelStyle: TextStyle(
-                          fontSize: 14.0,
-                        ),
-                        hintStyle: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 10.0,
-                        ),
-                      ),
-                      style: const TextStyle(
-                        fontSize: 14.0,
+                      decoration: InputDecoration(
+                        labelText: 'Email',
                       ),
                     ),
-
                     const SizedBox(height: 1.0),
                     TextField(
                       controller: phoneTextEdittingController,
-                      keyboardType: TextInputType.phone,
-                      decoration: const InputDecoration(
-                        labelText: "Phone",
-                        labelStyle: TextStyle(
-                          fontSize: 14.0,
-                        ),
-                        hintStyle: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 10.0,
-                        ),
-                      ),
-                      style: const TextStyle(
-                        fontSize: 14.0,
+                      decoration: InputDecoration(
+                        labelText: 'Phone',
                       ),
                     ),
-
                     const SizedBox(height: 1.0),
                     TextField(
                       controller: passwordTextEdittingController,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        labelText: "Password",
-                        labelStyle: TextStyle(
-                          fontSize: 14.0,
-                        ),
-                        hintStyle: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 10.0,
+                      obscureText: _obscurePassword,
+                      decoration: InputDecoration(
+                        labelText: 'Password',
+                        suffixIcon: IconButton(
+                          icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
+                          onPressed: () {
+                            setState(() {
+                              _obscurePassword = !_obscurePassword;
+                            });
+                          },
                         ),
                       ),
-                      style: const TextStyle(fontSize: 14.0),
-
                     ),
-
+                    const SizedBox(height: 1.0),
+                    TextField(
+                      controller: confirmpasswordTextEdittingController,
+                      obscureText: _obscureConfirmPassword,
+                      decoration: InputDecoration(
+                        labelText: 'Confirm Password',
+                        suffixIcon: IconButton(
+                          icon: Icon(_obscureConfirmPassword ? Icons.visibility_off : Icons.visibility),
+                          onPressed: () {
+                            setState(() {
+                              _obscureConfirmPassword = !_obscureConfirmPassword;
+                            });
+                          },
+                        ),
+                      ),
+                    ),
                     const SizedBox(height: 10.0,),
                     ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        primary: Color(0xFF00CCFF),
-                        onPrimary: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(24.0),
-                        ),
-                        minimumSize: const Size(200.0, 50.0),
-                      ),
                       onPressed:(){
                         if(nameTextEdittingController.text.length < 4){
                             displayToastMessage("Name must be atleast 3 characters.", context);
@@ -145,21 +116,39 @@ class _LoginScreenState extends State<RegisterationScreen> {
                           displayToastMessage("Phone Number is madatory.", context);
                         } else if(passwordTextEdittingController.text.length < 6){
                           displayToastMessage("Password must be atleast 6 characters.", context);
-                        }else{
+                        }else if (passwordTextEdittingController.text !=
+                          confirmpasswordTextEdittingController.text) {
+                          displayToastMessage(
+                              "Password incorrect.", context);
+                        }
+                        else{
                           registerNewUser(context);
                         }
                       },
-                      child: const Text(
-                        "Create Account",
-                        style: TextStyle(fontSize: 18.0,fontFamily: "Brand Bold"),
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.transparent,
+                        onPrimary: Colors.green,
+                        padding: EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(40),
+                          side: BorderSide(
+                            color: Colors.orange,
+                            width: 2,
+                          ),
+                        ),
+                        backgroundColor: Colors.white,
                       ),
-
+                      child: Text(
+                        'Register',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 20,
+                        ),
+                      ),
                     ),
-
                   ],
                 ),
               ),
-
               TextButton(
                 onPressed:()
                 {
@@ -167,6 +156,10 @@ class _LoginScreenState extends State<RegisterationScreen> {
                 },
                 child: const Text(
                   "Already an Account?  Login here.",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                  ),
                 ),
               ),
 
@@ -181,7 +174,6 @@ class _LoginScreenState extends State<RegisterationScreen> {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   void registerNewUser(BuildContext context) async {
-
     showDialog(
         context: context,
         barrierDismissible: false,
@@ -190,7 +182,6 @@ class _LoginScreenState extends State<RegisterationScreen> {
           return ProgressDialog(message: "Registering, Please wait,...", );
         }
     );
-
       final User? firebaseUser = (await _firebaseAuth// "?" is mean that user can be null
           .createUserWithEmailAndPassword(//This function is used for create user
         email: emailTextEdittingController.text,
@@ -207,7 +198,6 @@ class _LoginScreenState extends State<RegisterationScreen> {
           "email": emailTextEdittingController.text.trim(),
           "phone": phoneTextEdittingController.text.trim(),
         };
-
         driversRef.child(firebaseUser.uid).set(userDateMap);
 
         currentfirebaseUser = firebaseUser;

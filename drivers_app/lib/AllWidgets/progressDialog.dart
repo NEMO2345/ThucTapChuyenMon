@@ -1,4 +1,4 @@
-// ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors
+// ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors, must_be_immutable, file_names
 
 import 'package:flutter/material.dart';
 
@@ -6,16 +6,16 @@ class ProgressDialog extends StatelessWidget
 {
   late String message;
   ProgressDialog({required this.message});
-  @override
+  @ override
   Widget build(BuildContext context) {
     return Dialog(
-      backgroundColor: Color(0xFF00CCFF),
+      backgroundColor: Colors.orange,
       child: Container(
-        margin: EdgeInsets.all(15.0),
+        margin: EdgeInsets.all(5.0),
         width: double.infinity,
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16.0),
+          borderRadius: BorderRadius.circular(5.0),
         ),
         child: Padding(
           padding: const EdgeInsets.all(8.0),

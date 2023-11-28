@@ -1,5 +1,6 @@
 // ignore_for_file: file_names, prefer_const_constructors
 
+import 'package:drivers_app/AllScreens/tripDetailScreen.dart';
 import 'package:drivers_app/AllWidgets/Historyitem.dart';
 import 'package:drivers_app/DataHandler/appData.dart';
 import 'package:flutter/material.dart';
@@ -28,15 +29,28 @@ class _HistoryScreenState extends State<HistoryScreen> {
       ),
       body: ListView.separated(
         padding: EdgeInsets.all(0),
-        itemBuilder: (context,index) {
-          return HistoryItem(
-            history:Provider.of<AppData>(context,listen: false).tripHistoryDataList[index],
+        itemBuilder: (context, index) {
+          return GestureDetector(
+            onTap: () {
+              // Điều hướng đến trang chi tiết thông tin chuyến đi
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TripDetailsScreen(
+                    trip: Provider.of<AppData>(context, listen: false).tripHistoryDataList[index],
+                  ),
+                ),
+              );
+            },
+            child: HistoryItem(
+              history: Provider.of<AppData>(context, listen: false).tripHistoryDataList[index],
+            ),
           );
         },
-        separatorBuilder: (BuildContext context, int index) => Divider(thickness: 3.0,height: 3.0,),
-        itemCount: Provider.of<AppData>(context,listen: false).tripHistoryDataList.length,
+        separatorBuilder: (BuildContext context, int index) => Divider(thickness: 3.0, height: 3.0),
+        itemCount: Provider.of<AppData>(context, listen: false).tripHistoryDataList.length,
         physics: ClampingScrollPhysics(),
-        shrinkWrap:true,
+        shrinkWrap: true,
       ),
     );
   }

@@ -393,12 +393,13 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
                               btnTitle = "Start Trip";
                               btnColor = Color(0xFF00CCFF);
                             });
-                            showDialog(
-                                context: context,
-                                barrierDismissible: false,
-                                builder: ( BuildContext context) => ProgressDialog(message: "Please wait...",),
-                            );
-                            await getinfoLocationUrl(widget.rideDetails.pickup.latitude.toString(), widget.rideDetails.pickup.longitude.toString());                            Navigator.pop(context);
+                            // showDialog(
+                            //     context: context,
+                            //     barrierDismissible: false,
+                            //     builder: ( BuildContext context) => ProgressDialog(message: "Please wait...",),
+                            // );
+                            await getinfoLocationUrl(widget.rideDetails.pickup.latitude.toString(), widget.rideDetails.pickup.longitude.toString());
+                            //Navigator.pop(context);
                           }else if(status == "arrived"){
                             status = "onride";
                             String rideRequestId = widget.rideDetails.ride_request_id;
@@ -437,14 +438,10 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
                         ),
                       ),
                     ),
-
                   ],
                 ),
-
               ),
-
             ),
-
           ),
         ],
       ),
@@ -466,7 +463,6 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
     };
    rideRequestRef.child("driver_location").set(locMap);
    driversRef.child(currentfirebaseUser!.uid).child("history").child(rideRequestId).set(locMap);
-   driversRef.child(currentfirebaseUser!.uid).child("history").child(rideRequestId).child("status").set("accepted");
    driversRef.child(currentfirebaseUser!.uid).child("history").child(rideRequestId).child("driver_name").set(driversInformation?.name);
    driversRef.child(currentfirebaseUser!.uid).child("history").child(rideRequestId).child("driver_phone").set(driversInformation?.phone);
    driversRef.child(currentfirebaseUser!.uid).child("history").child(rideRequestId).child("driver_id").set(driversInformation?.id);
@@ -505,19 +501,19 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
   }
   endTheTrip() async {
     timer.cancel();
-    showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context)=> ProgressDialog(message: "Please wait..."),
-    );
+    // showDialog(
+    //     context: context,
+    //     barrierDismissible: false,
+    //     builder: (BuildContext context)=> ProgressDialog(message: "Please wait..."),
+    // );
     var currentLatLng = LatLng(Latitude, Longitude);
-    Navigator.pop(context);
+    // Navigator.pop(context);
     var directionDetails = await getLocation();
     setState(() {
-      // desLatitude =Latitude;
-      // desLongitude = Longitude;
+      desLatitude =Latitude;
+     desLongitude = Longitude;
       if (sourLatitude != 0 && sourLongitude != 0){
-       // getCoordinates(sourLatitude,sourLongitude,desLatitude,desLongitude);
+        getCoordinates(sourLatitude,sourLongitude,desLatitude,desLongitude);
         List<LatLng> points = [
           LatLng(sourLatitude, sourLongitude),
           LatLng(desLatitude, desLongitude),
@@ -539,17 +535,16 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
         }
       }
     });
-    String rideRequestId = widget.rideDetails.ride_request_id;
-    newRequestsRef.child(rideRequestId).child("fares").set(formattedCost.toString());
-    newRequestsRef.child(rideRequestId).child("status").set("ended");
-    //rideStreamSubscription.cancel();
-
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context)=> CollectFareDialog(paymentMethod: widget.rideDetails.payment_method, fareAmount: totalcalculateCost.toDouble(),),
     );
-    
+    String rideRequestId = widget.rideDetails.ride_request_id;
+    newRequestsRef.child(rideRequestId).child("fares").set(formattedCost.toString());
+    newRequestsRef.child(rideRequestId).child("status").set("ended");
+    //rideStreamSubscription.cancel();
+
     saveEarnings(totalcalculateCost.toInt());
   }
 

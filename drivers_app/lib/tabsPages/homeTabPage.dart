@@ -452,8 +452,8 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
       "latitude": latitude,
       "longitude": longitude,
     };
-     rideRequestRef.child("newRide").set("searching");
-     //rideRequestRef.update({"newRide": "searching"});
+     //rideRequestRef.child("newRide").set("searching");
+     rideRequestRef.update({"newRide": "searching"});
 
     DatabaseReference driversRef =
     FirebaseDatabase.instance.reference().child("availableDrivers");
@@ -470,8 +470,7 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
           Geofire.setLocation(
               currentfirebaseUser!.uid,
               position.latitude,
-      // Xử lý lỗi nếu có
-           position.longitude,
+              position.longitude,
          );
        }
      }

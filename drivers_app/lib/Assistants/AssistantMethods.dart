@@ -67,12 +67,10 @@ class AssistantMethods {
         dataSnapshot.children.forEach((element) {
           tripCounter++;
           tripHistoryKeys.add(element.key.toString());
-         // print(element.key);
         });
 
         Provider.of<AppData>(context,listen: false).updateTripsCounter(tripCounter);
         //update trip keys to provider
-
         Provider.of<AppData>(context,listen: false).clearTripHistoryData();
         Provider.of<AppData>(context,listen: false).updateTripKeys(tripHistoryKeys);
         obtainTripRequestHistoryData(context);
@@ -94,6 +92,7 @@ class AssistantMethods {
                 fares:snapshot.child("fares").value.toString(),
                 dropOff:snapshot.child("dropoff_address").value.toString(),
                 pickup:snapshot.child("pickup_address").value.toString());
+
             Provider.of<AppData>(context,listen: false).updateTripHistoryData(history);
           }
         });

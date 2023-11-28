@@ -69,6 +69,7 @@ class CollectFareDialog extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
+                Navigator.pop(context);
                 AssistantMethods.enablehomeTabLiveLocationUpdates();
               },
               style: buttonStyle,

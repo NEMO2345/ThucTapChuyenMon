@@ -140,7 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
         }
     );
 
-    final User? firebaseUser = (await _firebaseAuth// "?" is mean that user can be null
+    final User? firebaseUser = (await _firebaseAuth
         .signInWithEmailAndPassword(
         email: emailTextEdittingController.text,
         password: passwordTextEdittingController.text,

@@ -157,10 +157,6 @@ class NotificationDialog extends StatelessWidget {
       }
       if (theRideId == rideDetails.ride_request_id) {
         rideRequestRef.set("accepted");
-        // print(rideDetails);
-        // print(rideDetails.ride_request_id);
-        // print(rideDetails.dropoff);
-        // print(rideDetails.pickup);
         AssistantMethods.disablehomeTabLiveLocationUpdates();
         Navigator.push(context, MaterialPageRoute(builder: (context) => NewRideScreen(rideDetails: rideDetails)));
       } else if (theRideId == "cancelled") {
@@ -171,7 +167,7 @@ class NotificationDialog extends StatelessWidget {
         displayToastMessage("Ride not exists", context);
       }
     }, onError: (Object error) {
-      // Xử lý lỗi nếu có
+      displayToastMessage('$error', context);
     });
   }
 }

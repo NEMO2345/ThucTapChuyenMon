@@ -7,6 +7,7 @@ class History{
   late String fares;
   late String dropOff;
   late String pickup;
+  late String rating;
 
   History({
     required this.paymentMethod,
@@ -17,13 +18,13 @@ class History{
     required this.pickup,
   });
 
-  // History.fromSnapshot(DataSnapshot snapshot){
-  //   var data = snapshot.value as Map<String, dynamic>?;
-  //   paymentMethod = (data?["payment_method"] as String?) ?? "";
-  //   createdAt = (data?["created_at"] as String?) ?? "";
-  //   status = (data?["status"] as String?) ?? "";
-  //   fares = (data?["fares"] as String?) ?? "";
-  //   dropOff = (data?["dropoff_address"] as String?) ?? "";
-  //   pickup = (data?["pickup_address"] as String?) ?? "";
-  // }
+  History.fromSnapshot(DataSnapshot snapshot){
+    var data = snapshot.value as Map<String, dynamic>?;
+    paymentMethod = (data?["payment_method"] as String?) ?? "";
+    createdAt = (data?["created_at"] as String?) ?? "";
+    status = (data?["status"] as String?) ?? "";
+    fares = (data?["fares"] as String?) ?? "";
+    dropOff = (data?["dropoff_address"] as String?) ?? "";
+    pickup = (data?["pickup_address"] as String?) ?? "";
+  }
 }

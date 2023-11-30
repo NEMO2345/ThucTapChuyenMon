@@ -1,0 +1,28 @@
+@startuml
+
+actor Người_dùng as user
+participant "Đăng ký và đăng nhập" as registration
+participant "Quản lý tài khoản" as accountManagement
+participant "Tìm kiếm và đặt xe" as searchAndBooking
+participant "Xem thông tin tài xế" as driverInfo
+participant "Thanh toán và đánh giá" as paymentAndRating
+actor Tài_xế as driver
+participant "Đăng ký và đăng nhập (Tài xế)" as driverRegistration
+participant "Quản lý tài khoản (Tài xế)" as driverAccountManagement
+participant "Nhận và quản lý đơn hàng" as orderManagement
+participant "Chuyến đi và thanh toán" as tripAndPayment
+participant "Đánh giá (Tài xế)" as driverRating
+
+user --> registration : Đăng ký và đăng nhập
+user --> accountManagement : Quản lý tài khoản
+user --> searchAndBooking : Tìm kiếm và đặt xe
+user --> driverInfo : Xem thông tin tài xế
+user --> paymentAndRating : Thanh toán và đánh giá
+
+driver --> driverRegistration : Đăng ký và đăng nhập
+driver --> driverAccountManagement : Quản lý tài khoản
+driver --> orderManagement : Nhận và quản lý đơn hàng
+driver --> tripAndPayment : Chuyến đi và thanh toán
+driver --> driverRating : Đánh giá
+
+@enduml

@@ -1,0 +1,51 @@
+@startuml
+
+!define LightYellow #FFF9D6
+!define LightGreen #D2F2C2
+!define LightBlue #D6E3FF
+
+skinparam packageStyle rect
+skinparam packageBackgroundColor LightYellow
+skinparam packageTitleBackgroundColor LightGreen
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+
+actor User as user
+actor "Tài xế" as driver
+
+rectangle "Ứng dụng Đặt xe" {
+    user --> (Đăng ký và đăng nhập)
+    user --> (Tìm kiếm và đặt xe)
+    user --> (Quản lý đặt xe)
+    user --> (Thanh toán và đánh giá)
+
+    driver --> (Nhận và quản lý đơn hàng)
+    driver --> (Chuyến đi và nhận thanh toán)
+    driver --> (Đánh giá)
+
+    (Tìm kiếm và đặt xe) --> (Hiển thị kết quả tìm kiếm)
+    (Tìm kiếm và đặt xe) --> (Chọn xe)
+
+    (Quản lý đặt xe) --> (Xem thông tin đặt xe)
+    (Quản lý đặt xe) --> (Chỉnh sửa đặt xe)
+    (Quản lý đặt xe) --> (Hủy đặt xe)
+
+    (Nhận và quản lý đơn hàng) --> (Hiển thị danh sách đơn hàng)
+    (Nhận và quản lý đơn hàng) --> (Xác nhận đơn hàng)
+    (Nhận và quản lý đơn hàng) --> (Hủy đơn hàng)
+
+    (Chuyến đi và nhận thanh toán) --> (Bắt đầu chuyến đi)
+    (Chuyến đi và nhận thanh toán) --> (Kết thúc chuyến đi)
+    (Chuyến đi và nhận thanh toán) --> (Thanh toán)
+
+    (Đăng ký và đăng nhập) --> (Đăng ký tài khoản)
+    (Đăng ký và đăng nhập) --> (Đăng nhập)
+
+    (Thanh toán và đánh giá) --> (Thanh toán)
+    (Thanh toán và đánh giá) --> (Đánh giá)
+
+}
+
+skinparam squareUseCase true
+
+@enduml

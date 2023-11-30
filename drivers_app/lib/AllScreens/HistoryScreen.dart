@@ -18,13 +18,15 @@ class _HistoryScreenState extends State<HistoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Trip History'),
-        backgroundColor: Colors.blueAccent,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: Icon(Icons.keyboard_arrow_left),
+        title: const Text(
+          'Trip history',
+          style: TextStyle(
+            color: Colors.black,
+          ),
+        ),
+        backgroundColor: Colors.orange,
+        iconTheme: IconThemeData(
+          color: Colors.black,
         ),
       ),
       body: ListView.separated(
@@ -32,7 +34,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () {
-              // Điều hướng đến trang chi tiết thông tin chuyến đi
               Navigator.push(
                 context,
                 MaterialPageRoute(

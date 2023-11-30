@@ -5,10 +5,8 @@ import 'package:drivers_app/Models/history.dart';
 import 'package:flutter/material.dart';
 
 class HistoryItem extends StatelessWidget {
-
   final History history;
   const HistoryItem({super.key, required this.history});
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -29,7 +27,6 @@ class HistoryItem extends StatelessWidget {
                   ],
                 ),
               ),
-
               SizedBox(height: 8,),
               Row(
                 mainAxisSize: MainAxisSize.max,
@@ -40,9 +37,15 @@ class HistoryItem extends StatelessWidget {
 
                 ],
               ),
-
               SizedBox(height: 15,),
-              Text(AssistantMethods.formatTripDate(history.createdAt),style: TextStyle(color: Colors.grey),),
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                children: <Widget>[
+                  Image.asset('images/clock.png',height: 16,width: 7.7,),
+                  SizedBox(width: 18,),
+                  Text(AssistantMethods.formatTripDate(history.createdAt),style: TextStyle(color: Colors.grey),),
+                ],
+              ),
             ],
           ),
         ],

@@ -1,4 +1,4 @@
-// ignore_for_file: library_private_types_in_public_api, prefer_const_constructors, deprecated_member_use, avoid_print, prefer_interpolation_to_compose_strings, use_build_context_synchronously, file_names, body_might_complete_normally_catch_error
+// ignore_for_file: library_private_types_in_public_api, prefer_const_constructors, deprecated_member_use, avoid_print, prefer_interpolation_to_compose_strings, use_build_context_synchronously, file_names, body_might_complete_normally_catch_error, unused_field, unused_field, unused_field
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +16,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-
+  bool rememberMe = false;
+  bool _obscurePassword = true;
   TextEditingController emailTextEdittingController = TextEditingController();
   TextEditingController passwordTextEdittingController = TextEditingController();
 
@@ -31,9 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               SizedBox(height: 45.0),
               Image(
-                image: AssetImage("images/logoBookMe.png"),
-                width: 390.0,
-                height: 250.0,
+                image: AssetImage("images/BOOKme.png"),
                 alignment: Alignment.center,
               ),
               SizedBox(height: 20.0),
@@ -67,28 +66,48 @@ class _LoginScreenState extends State<LoginScreen> {
                     SizedBox(height: 1.0),
                     TextField(
                       controller: passwordTextEdittingController,
-                      obscureText: true,
+                      obscureText: _obscurePassword,
                       decoration: InputDecoration(
-                        labelText: "Password",
-                        labelStyle: TextStyle(
-                          fontSize: 16.0,
-                        ),
-                        hintStyle: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 10.0,
+                        labelText: 'Password',
+                        suffixIcon: IconButton(
+                          icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
+                          onPressed: () {
+                            setState(() {
+                              _obscurePassword = !_obscurePassword;
+                            });
+                          },
                         ),
                       ),
-                      style: TextStyle(fontSize: 14.0),
+                    ),
+                    SizedBox(height: 10.0,),
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: rememberMe,
+                          onChanged: (value) {
+                            setState(() {
+                              rememberMe = value!;
+                            });
+                          },
+                        ),
+                        Text('Save Account'),
+                        Spacer(),
+                      ],
                     ),
                     SizedBox(height: 10.0,),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF00CCFF),
-                        onPrimary: Colors.white,
+                        primary: Colors.transparent,
+                        onPrimary: Colors.green,
+                        padding: EdgeInsets.symmetric(horizontal: 40, vertical: 16),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(24.0),
+                          borderRadius: BorderRadius.circular(40),
+                          side: BorderSide(
+                            color: Colors.orange,
+                            width: 2,
+                          ),
                         ),
-                        minimumSize: Size(200.0, 50.0),
+                        backgroundColor: Colors.white,
                       ),
                       onPressed:(){
                         if(!emailTextEdittingController.text.contains("@")){
@@ -101,14 +120,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                       child: Text(
                         "Login",
-                        style: TextStyle(fontSize: 20.0,fontFamily: "Brand Bold"),
+                        style: TextStyle(color: Colors.black,fontSize: 20.0,fontFamily: "Brand Bold"),
                       ),
                     ),
-
                   ],
                 ),
               ),
-
               TextButton(
                 onPressed:()
                 {
@@ -116,6 +133,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 },
                 child: Text(
                   "Do not have an Account?  Register here.",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                  ),
                 ),
               ),
             ],
@@ -129,7 +150,6 @@ class _LoginScreenState extends State<LoginScreen> {
 // Replace with the desired name
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   void loginAndAuthenticatedUser(BuildContext context) async {
-
     showDialog(
         context: context,
         barrierDismissible: false,
@@ -138,14 +158,12 @@ class _LoginScreenState extends State<LoginScreen> {
           return ProgressDialog(message: "Authenticating, Please wait,...", );
         }
     );
-
     final User? firebaseUser = (await _firebaseAuth// "?" is mean that user can be null
         .signInWithEmailAndPassword(
         email: emailTextEdittingController.text,
         password: passwordTextEdittingController.text,
     ).catchError((errMsg){
       Navigator.pop(context);
-      //print("Error: $errMsg");
       displayToastMessage(" Error: " + errMsg.toString(), context);
     })).user;
     if (firebaseUser != null)
@@ -161,7 +179,6 @@ class _LoginScreenState extends State<LoginScreen> {
         _firebaseAuth.signOut();
         displayToastMessage("No record exists for this user. Please create a new account", context);
       }
-
     }
     else {
       Navigator.pop(context);

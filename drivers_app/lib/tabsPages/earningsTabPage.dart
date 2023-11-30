@@ -94,7 +94,9 @@ class EarningTabPage extends StatelessWidget {
             itemBuilder: (context, index) {
               List<Widget> images = [
                 Image.asset('images/chooseCar.png'),
+                Divider(height: 2.0, thickness: 0.0),
                 Image.asset('images/chooseCar1.png'),
+                Divider(height: 2.0, thickness: 0.0),
                 Image.asset('images/chooseCar2.png'),
               ];
               return Container(
@@ -102,7 +104,9 @@ class EarningTabPage extends StatelessWidget {
                 child: AspectRatio(
                   aspectRatio: 500 / 300,
                   child: PageView(
-                    children: [images[index]],
+                    children: [
+                      images[index],
+                    ],
                   ),
                 ),
               );

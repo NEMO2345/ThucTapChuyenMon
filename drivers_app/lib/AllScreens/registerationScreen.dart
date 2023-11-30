@@ -69,8 +69,19 @@ class _LoginScreenState extends State<RegisterationScreen> {
                     const SizedBox(height: 1.0),
                     TextField(
                       controller: phoneTextEdittingController,
-                      decoration: InputDecoration(
-                        labelText: 'Phone',
+                      keyboardType: TextInputType.phone,
+                      decoration: const InputDecoration(
+                        labelText: "Phone",
+                        labelStyle: TextStyle(
+                          fontSize: 16.0,
+                        ),
+                        hintStyle: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 10.0,
+                        ),
+                      ),
+                      style: const TextStyle(
+                        fontSize: 14.0,
                       ),
                     ),
                     const SizedBox(height: 1.0),

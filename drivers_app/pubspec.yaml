@@ -107,6 +107,8 @@ flutter:
      - images/chooseCar2.png
      - images/play-button.png
      - images/earning.png
+     - images/clock.png
+     - images/location.png
      - images/uberx.png
      - sounds/alert.mp3
 

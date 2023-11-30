@@ -1,6 +1,4 @@
 // ignore_for_file: prefer_const_constructors, file_names, prefer_interpolation_to_compose_strings, must_be_immutable, avoid_print
-
-import 'package:drivers_app/AllScreens/loginScreen.dart';
 import 'package:drivers_app/configMaps.dart';
 import 'package:drivers_app/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';

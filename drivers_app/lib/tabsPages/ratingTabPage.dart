@@ -7,7 +7,6 @@ import '../configMaps.dart';
 import '../main.dart';
 
 class RatingTabPage extends StatefulWidget {
-
   const RatingTabPage({super.key});
 
   @override
@@ -19,11 +18,9 @@ class _RatingScreenState extends State<RatingTabPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     updateRatings();
   }
-
   @override
   Widget build(BuildContext context) {
     const btnColor = Colors.blueAccent;
@@ -34,7 +31,6 @@ class _RatingScreenState extends State<RatingTabPage> {
         borderRadius: BorderRadius.circular(8.0),
       ),
     );
-
     return Scaffold(
       backgroundColor: Colors.black,
       body: Dialog(
@@ -66,11 +62,10 @@ class _RatingScreenState extends State<RatingTabPage> {
               SizedBox(height: 16.0),
               SmoothStarRating(
                 rating: startCounter,
-                color: Colors.green,
+                color: Colors.orange,
                 allowHalfRating: false,
                 starCount: 5,
                 size: 45,
-               // isReadonly: true,
                 onRatingChanged: (value) {
                   setState(() {
                     startCounter = value;
@@ -78,9 +73,8 @@ class _RatingScreenState extends State<RatingTabPage> {
                 },
               ),
               SizedBox(height: 14.0),
-              Text(title, style: TextStyle(fontSize: 55.0, fontFamily: "Signatra",color: Colors.green),),
+              Text(title, style: TextStyle(fontSize: 55.0, fontFamily: "Signatra",color: Colors.orange),),
               SizedBox(height: 16.0),
-
             ],
           ),
         ),

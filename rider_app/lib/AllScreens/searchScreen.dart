@@ -15,16 +15,24 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
-    // Access the Latitude and Longitude properties from the widget
     final double latitude = widget.Latitude;
     final double longitude = widget.Longitude;
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Search"),
+      title: const Text(
+        'Search',
+        style: TextStyle(
+          color: Colors.black,
+        ),
       ),
+      backgroundColor: Colors.orange,
+      iconTheme: IconThemeData(
+        color: Colors.black,
+      ),
+    ),
       body: OpenStreetMapSearchAndPick(
           center: LatLong(latitude, longitude),
-          buttonColor: Colors.blue,
+          buttonColor: Colors.orange,
           buttonText: 'Set Location',
           onPicked: (pickedData) {
             Address address = Address();
@@ -32,9 +40,8 @@ class _SearchScreenState extends State<SearchScreen> {
             address.latitude = pickedData.latLong.latitude;
             address.longitude = pickedData.latLong.longitude;
             Navigator.pop(context, address);
-          }),
+          }
+      )
     );
   }
-
-
 }

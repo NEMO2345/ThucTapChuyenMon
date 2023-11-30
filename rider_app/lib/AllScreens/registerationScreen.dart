@@ -18,11 +18,13 @@ class RegisterationScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<RegisterationScreen> {
-
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
   TextEditingController nameTextEdittingController = TextEditingController();
   TextEditingController emailTextEdittingController = TextEditingController();
   TextEditingController phoneTextEdittingController = TextEditingController();
   TextEditingController passwordTextEdittingController = TextEditingController();
+  TextEditingController confirmpasswordTextEdittingController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,7 +36,7 @@ class _LoginScreenState extends State<RegisterationScreen> {
             children: [
               const SizedBox(height: 20.0),
               const Image(
-                image: AssetImage("images/logoBookMe.png"),
+                image: AssetImage("images/BOOKme.png"),
                 width: 390.0,
                 height: 250.0,
                 alignment: Alignment.center,
@@ -68,7 +70,6 @@ class _LoginScreenState extends State<RegisterationScreen> {
                         fontSize: 14.0,
                       ),
                     ),
-
                     const SizedBox(height: 1.0),
                     TextField(
                       controller: emailTextEdittingController,
@@ -110,30 +111,49 @@ class _LoginScreenState extends State<RegisterationScreen> {
                     const SizedBox(height: 1.0),
                     TextField(
                       controller: passwordTextEdittingController,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        labelText: "Password",
-                        labelStyle: TextStyle(
-                          fontSize: 16.0,
-                        ),
-                        hintStyle: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 10.0,
+                      obscureText: _obscurePassword,
+                      decoration: InputDecoration(
+                        labelText: 'Password',
+                        suffixIcon: IconButton(
+                          icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
+                          onPressed: () {
+                            setState(() {
+                              _obscurePassword = !_obscurePassword;
+                            });
+                          },
                         ),
                       ),
-                      style: const TextStyle(fontSize: 14.0),
-
                     ),
-
+                    const SizedBox(height: 1.0),
+                    TextField(
+                      controller: confirmpasswordTextEdittingController,
+                      obscureText: _obscureConfirmPassword,
+                      decoration: InputDecoration(
+                        labelText: 'Confirm Password',
+                        suffixIcon: IconButton(
+                          icon: Icon(_obscureConfirmPassword ? Icons.visibility_off : Icons.visibility),
+                          onPressed: () {
+                            setState(() {
+                              _obscureConfirmPassword = !_obscureConfirmPassword;
+                            });
+                          },
+                        ),
+                      ),
+                    ),
                     const SizedBox(height: 10.0,),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        primary: const Color(0xFF00CCFF),
-                        onPrimary: Colors.white,
+                        primary: Colors.transparent,
+                        onPrimary: Colors.green,
+                        padding: EdgeInsets.symmetric(horizontal: 40, vertical: 16),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(24.0),
+                          borderRadius: BorderRadius.circular(40),
+                          side: BorderSide(
+                            color: Colors.orange,
+                            width: 2,
+                          ),
                         ),
-                        minimumSize: const Size(200.0, 50.0),
+                        backgroundColor: Colors.white,
                       ),
                       onPressed:(){
                         if(nameTextEdittingController.text.length < 4){
@@ -144,13 +164,17 @@ class _LoginScreenState extends State<RegisterationScreen> {
                           displayToastMessage("Phone Number is madatory.", context);
                         } else if(passwordTextEdittingController.text.length < 6){
                           displayToastMessage("Password must be atleast 6 characters.", context);
+                        }else if (passwordTextEdittingController.text !=
+                            confirmpasswordTextEdittingController.text) {
+                          displayToastMessage(
+                              "Password incorrect.", context);
                         }else{
                           registerNewUser(context);
                         }
                       },
                       child: const Text(
                         "Create Account",
-                        style: TextStyle(fontSize: 20.0,fontFamily: "Brand Bold"),
+                        style: TextStyle(color: Colors.black,fontSize: 20.0,fontFamily: "Brand Bold"),
                       ),
 
                     ),
@@ -166,6 +190,10 @@ class _LoginScreenState extends State<RegisterationScreen> {
                 },
                 child: const Text(
                   "Already an Account?  Login here.",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                  ),
                 ),
               ),
 

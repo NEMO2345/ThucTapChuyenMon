@@ -116,6 +116,8 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
       driverName = "";
       driverPhone = "";
       carDetailsDriver = "";
+      PickUpPoint = "";
+      Destination = "";
       riderStatus = "Driver is coming";
       driverDetailsContainerHeight = 0.0;
     });
@@ -333,7 +335,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
             Navigator.of(context).push(MaterialPageRoute(builder: (context) => RatingScreen(driverId: driverId)));
 
             rideRequestRef.onDisconnect();
-            // rideRequestRef.remove();
+            rideRequestRef.remove();
             rideStreamSubscription.cancel();
             resetApp();
           }
@@ -446,7 +448,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
               GestureDetector(
                 onTap: (){
                   FirebaseAuth.instance.signOut();
-                  Navigator.pushNamedAndRemoveUntil(context, LoginScreen.idScreen, (route) => false);
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
                 },
                 child: ListTile(
                   leading: Icon(Icons.info),
@@ -545,7 +547,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
               },
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Colors.orange,
                   borderRadius: BorderRadius.circular(22.0),
                   boxShadow: [
                     BoxShadow(
@@ -560,7 +562,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
                   ],
                 ),
                 child: CircleAvatar(
-                  backgroundColor: Colors.white,
+                  backgroundColor: Colors.orange,
                   child: Icon((drawerOpen) ? Icons.menu : Icons.close,color: Colors.black,),
                   radius: 20.0,
                 ),
@@ -593,7 +595,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
                 ),
                 child: CircleAvatar(
                   backgroundColor: Colors.transparent,
-                  child: Icon(Icons.control_point,color: Color(0xFF00CCFF),size: 50,),
+                  child: Icon(Icons.control_point,color:Colors.orange,size: 50,),
                   radius: 20.0,
                 ),
               ),
@@ -625,7 +627,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
                 ),
                 child: CircleAvatar(
                   backgroundColor: Colors.transparent,
-                  child: Icon(Icons.indeterminate_check_box_rounded,color: Color(0xFF00CCFF),size: 50,),
+                  child: Icon(Icons.indeterminate_check_box_rounded,color: Colors.orange,size: 50,),
                   radius: 20.0,
                 ),
               ),
@@ -657,7 +659,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
                 ),
                 child: CircleAvatar(
                   backgroundColor: Colors.transparent,
-                  child: Icon(Icons.add_box,color: Color(0xFF00CCFF),size: 50,),
+                  child: Icon(Icons.add_box,color: Colors.orange,size: 50,),
                   radius: 20.0,
                 ),
               ),
@@ -729,7 +731,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
                         },
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Color(0xFF00CCFF),
+                            color:Colors.orange,
                             borderRadius: BorderRadius.circular(
                                 5.0
                             ),
@@ -756,7 +758,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
                                         PickUpPoint.length <= 200
                                             ? PickUpPoint
                                             : PickUpPoint.substring(0, 200),
-                                        style: TextStyle(fontSize: 13),
+                                        style: TextStyle(fontSize: 13,fontFamily: 'Brand Bold'),
                                       ),
                                       // Text(
                                       //   PickUpPoint.length > 200
@@ -827,7 +829,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
                         },
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Color(0xFF00CCFF),
+                            color: Colors.orange,
                             borderRadius: BorderRadius.circular(
                                 5.0
                             ),
@@ -854,12 +856,8 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
                                         Destination.length <= 200
                                             ? Destination
                                             : Destination.substring(0, 200),
-                                        style: TextStyle(fontSize: 13),
+                                        style: TextStyle(fontSize: 13,fontFamily: 'Brand Bold'),
                                       ),
-                                      // Text(
-                                      //   Destination.length > 40 ? Destination.substring(40) : " ",
-                                      //   style: TextStyle(fontSize: 13),
-                                      // ),
                                     ],
                                   ),
                                 ),
@@ -871,7 +869,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
                       SizedBox(height: 24.0,),
                       Row(
                         children: [
-                          Icon(Icons.home, color: Color(0xFF00CCFF),),
+                          Icon(Icons.home, color:Colors.orange,),
                           SizedBox(width: 9.0,),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -880,7 +878,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
                                 display_name_Location.length <= 70
                                     ? display_name_Location
                                     : display_name_Location.substring(0, 70),
-                                style: TextStyle(fontSize: 9),
+                                style: TextStyle(fontSize: 9,fontFamily: 'Brand Bold'),
                               ),
                               Text(
                                 display_name_Location.length > 70 && display_name_Location.length <= 180
@@ -888,13 +886,13 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
                                     : display_name_Location.length > 180
                                     ? display_name_Location.substring(0, 70) + '...'
                                     : display_name_Location,
-                                style: TextStyle(fontSize: 9),
+                                style: TextStyle(fontSize: 9,fontFamily: 'Brand Bold'),
                               ),
 
                               SizedBox(height: 6.0,),
                               Text(
                                 "Your living home address",
-                                style: TextStyle(color: Colors.blueAccent[200], fontSize: 12.0),
+                                style: TextStyle(color: Colors.orange, fontSize: 12.0,fontFamily: 'Brand Bold'),
                               ),
                             ],
                           ),
@@ -945,7 +943,8 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
                             carRideType = "bike";
                           });
                          await displayRequestRideContainer();
-                          await searchNearestDriver();
+                         await searchNearestDriver();
+
                         },
                         child: Container(
                           width: double.infinity,
@@ -988,6 +987,8 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
                           });
                           await displayRequestRideContainer();
                           await searchNearestDriver();
+                          Navigator.pop(context);
+
                         },
                         child: Container(
                           width: double.infinity,
@@ -1063,7 +1064,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
                       Divider(height: 2.0,thickness: 2.0,),
                       SizedBox(height: 10.0,),
                       Container(
-                        color: Color(0xFF00CCFF),
+                        color: Colors.orange,
                         height: 60.0,
                         child:  Padding(
                           padding: EdgeInsets.symmetric(horizontal: 20.0),
@@ -1211,7 +1212,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
                               launch(('tel://${driverPhone}'));
                             },
                             style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all<Color>(Color(0xFF00CCFF)),
+                              backgroundColor: MaterialStateProperty.all<Color>(Colors.orange),
                             ),
                             child: Padding(
                               padding: EdgeInsets.all(17.0),

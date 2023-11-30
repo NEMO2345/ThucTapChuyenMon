@@ -94,10 +94,22 @@ flutter:
     - images/redmarker.png
     - images/taxi.png
     - images/user_icon.png
-    - images/bike.png
     - images/logoBookMe.png
-    - images/ubergo.png
+    - images/house1.png
+    - images/house3.png
+    - images/house2.png
+    - images/house4.png
+    - images/BOOKme.png
+    - images/chooseCar.png
+    - images/chooseCar1.png
+    - images/chooseCar2.png
+    - images/play-button.png
+    - images/earning.png
+    - images/clock.png
+    - images/location.png
     - images/uberx.png
+    - images/ubergo.png
+    - images/bike.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

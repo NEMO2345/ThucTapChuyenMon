@@ -18,11 +18,11 @@ class TripDetailsScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Image(
-                image: AssetImage('images/logoBookMe.png'),
-                width: 170,
-                height: 170,
+                image: AssetImage('images/BOOKme.png'),
+                width: 300,
+                height: 300,
               ),
-              SizedBox(height: 20.0),
+              SizedBox(height: 10.0),
               ListTile(
                 leading: Icon(
                   Icons.location_on,
@@ -110,17 +110,26 @@ class TripDetailsScreen extends StatelessWidget {
               SizedBox(height: 20.0),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.pop(context);
+                    Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.lime,
-                  side: BorderSide(color: Colors.lime),
+                  primary: Colors.transparent,
+                  onPrimary: Colors.green,
+                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(40),
+                    side: BorderSide(
+                      color: Colors.orange,
+                      width: 2,
+                    ),
+                  ),
+                  backgroundColor: Colors.white,
                 ),
                 child: Text(
                   'Back',
                   style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 20,
                   ),
                 ),
               ),

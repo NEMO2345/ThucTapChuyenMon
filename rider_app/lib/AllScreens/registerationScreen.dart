@@ -238,7 +238,7 @@ class _LoginScreenState extends State<RegisterationScreen> {
         usersRef.child(firebaseUser.uid).set(userDateMap);
         displayToastMessage("Congratulations, your account has been created.", context);
 
-        Navigator.pushNamedAndRemoveUntil(context, MainScreen.idScreen, (route) => false);
+        Navigator.pushNamedAndRemoveUntil(context, LoginScreen.idScreen, (route) => false);
       } else {
         Navigator.pop(context);
         // Xử lý khi không thể tạo người dùng thành công

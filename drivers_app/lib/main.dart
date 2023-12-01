@@ -41,6 +41,7 @@ final navigatorKey = GlobalKey<NavigatorState>();
 DatabaseReference usersRef = FirebaseDatabase.instance.reference().child("users");
 DatabaseReference driversRef = FirebaseDatabase.instance.reference().child("drivers");
 DatabaseReference newRequestsRef = FirebaseDatabase.instance.reference().child("Ride Requests");
+DatabaseReference rideRequestRefCT = FirebaseDatabase.instance.reference().child("Ride Requests CT");
 DatabaseReference rideRequestRef = FirebaseDatabase.instance
     .reference()
     .child("drivers")

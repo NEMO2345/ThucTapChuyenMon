@@ -213,7 +213,7 @@ class _LoginScreenState extends State<RegisterationScreen> {
 
         currentfirebaseUser = firebaseUser;
 
-        displayToastMessage("Congratultions, your account has been created.", context);
+        displayToastMessage("Congratulations, your account has been created.", context);
 
         Navigator.pushNamed(context, CarInfoScreen.idScreen);
       } else {

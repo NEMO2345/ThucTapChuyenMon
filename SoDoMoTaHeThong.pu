@@ -1,0 +1,29 @@
+@startuml
+
+title Hệ thống Ứng dụng Đặt xe thông minh
+
+rectangle "Người dùng" {
+  (Đăng ký và đăng nhập)
+  (Quản lý tài khoản)
+  (Tìm kiếm và đặt xe)
+  (Xem thông tin tài xế)
+  (Thanh toán và đánh giá)
+}
+
+rectangle "Tài xế" {
+  (Đăng ký và đăng nhập)
+  (Quản lý tài khoản)
+  (Nhận và quản lý đơn hàng)
+  (Chuyến đi và thanh toán)
+  (Đánh giá)
+}
+
+(Đăng ký và đăng nhập) --> (Quản lý tài khoản)
+(Quản lý tài khoản) --> (Tìm kiếm và đặt xe)
+(Tìm kiếm và đặt xe) --> (Xem thông tin tài xế)
+(Xem thông tin tài xế) --> (Thanh toán và đánh giá)
+
+(Nhận và quản lý đơn hàng) --> (Chuyến đi và thanh toán)
+(Chuyến đi và thanh toán) --> (Đánh giá)
+
+@enduml

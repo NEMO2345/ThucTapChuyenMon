@@ -31,7 +31,6 @@ class AssistantMethods {
 
         if (dataSnapshotValue != null) {
           userCurrentInfo = Users.fromSnapshot(dataSnapshot);
-
         }
       }
     }

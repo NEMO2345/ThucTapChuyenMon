@@ -335,7 +335,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
             Navigator.of(context).push(MaterialPageRoute(builder: (context) => RatingScreen(driverId: driverId)));
 
             rideRequestRef.onDisconnect();
-            rideRequestRef.remove();
+           // rideRequestRef.remove();
             rideStreamSubscription.cancel();
             resetApp();
           }
@@ -390,7 +390,6 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
     final snapshot = await usersRef.child('users/'+widget.firebaseUser!.uid.toString()).get()
         .then((value) => {
       uName = (value.child("name").value as String?)!,
-
     });
 
   }
@@ -987,7 +986,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
                           });
                           await displayRequestRideContainer();
                           await searchNearestDriver();
-                          Navigator.pop(context);
+                         //Navigator.pop(context);
 
                         },
                         child: Container(
@@ -1283,7 +1282,6 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
         GeoFireAssistant.nearByAvailableDriversList.add(nearbyAvailableDrivers);
       });
       // notifyDriver(GeoFireAssistant.nearByAvailableDriversList[0]);
-      // availableDrivers.removeAt(0);
     });
     updateAvailableDriversOnMap();
   }

@@ -96,7 +96,7 @@ class TripDetailsScreen extends StatelessWidget {
               ListTile(
                 leading: Icon(
                   Icons.info,
-                  color: Colors.blue,
+                  color: Colors.orange,
                 ),
                 title: Text(
                   'Trip status:',

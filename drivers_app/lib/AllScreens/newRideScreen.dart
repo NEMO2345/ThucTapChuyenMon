@@ -60,7 +60,7 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
   String durationRide = "10 mins";
   bool isRequestingDirection = false;
   String btnTitle = "Arrived";
-  Color btnColor = Color(0xFF00CCFF);
+  Color btnColor = Colors.orange;
   late Timer timer;
   int durationCounter = 0;
   double typeRideBike = 50;
@@ -111,7 +111,6 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
    // initGeoFireListener();
     return _locationData;
   }
-
   void initWay() {
     setState(() {
       sourLatitude = widget.rideDetails.pickup.latitude;
@@ -122,8 +121,7 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
     });
   }
   // Method to consume the OpenRouteService API
-  getCoordinates(double sour_lat, double sour_lon, double des_lat,
-      double des_lon) async {
+  getCoordinates(double sour_lat, double sour_lon, double des_lat, double des_lon) async {
     var response = await http.get(getRouteUrl("$sour_lon,$sour_lat",
         '$des_lon,$des_lat'));
     print(response.statusCode);
@@ -137,25 +135,20 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
       }
     });
   }
-
   //Tinh khoang cach giua 2 diem
   double calculateDistance(double point1_latitude,double point1_longitude,double point2_latitude,double point2_longitude){
-    const double earthRadius = 6371; // Đường kính trái đất (đơn vị kilômét)
-
+    const double earthRadius = 6371; // Đường kính trái đất (đơn vị kilometer)
     double dLat = _degreesToRadians(point2_latitude - point1_latitude);
     double dLon = _degreesToRadians(point2_longitude - point1_longitude);
-
     double a = pow(sin(dLat / 2), 2) +
         cos(_degreesToRadians(point1_latitude)) *
             cos(_degreesToRadians(point2_latitude)) *
             pow(sin(dLon / 2), 2);
-
     double c = 2 * atan2(sqrt(a), sqrt(1 - a));
     double distance = earthRadius * c;
 
     return distance;
   }
-
   double _degreesToRadians(double degrees) {
     return degrees * (pi / 180);
   }
@@ -274,9 +267,6 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
                 ),
               ],
             ),
-
-
-
           ),
           Positioned(
             top: 45.0,
@@ -305,7 +295,7 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
                 child: CircleAvatar(
                   backgroundColor: Colors.transparent,
                   child: Icon(
-                    Icons.control_point, color: Color(0xFF00CCFF), size: 50,),
+                    Icons.control_point, color: Colors.orange, size: 50,),
                   radius: 20.0,
                 ),
               ),
@@ -335,7 +325,7 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
                   children: [
                     Text(
                       durationRide,
-                      style: TextStyle(fontSize: 14.0, fontFamily: "Brand Bold",color:Color(0xFF00CCFF)),
+                      style: TextStyle(fontSize: 14.0, fontFamily: "Brand Bold",color:Colors.orange),
                     ),
                     SizedBox(height: 6.0,),
                     Row(
@@ -391,7 +381,7 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
                             newRequestsRef.child(rideRequestId).child("status").set(status);
                             setState(() {
                               btnTitle = "Start Trip";
-                              btnColor = Color(0xFF00CCFF);
+                              btnColor = Colors.orange;
                             });
                             // showDialog(
                             //     context: context,
@@ -406,7 +396,7 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
                             newRequestsRef.child(rideRequestId).child("status").set(status);
                             setState(() {
                               btnTitle = "End Trip";
-                              btnColor = Color(0xFF00CCFF);
+                              btnColor = Colors.orange;
                             });
                             initTimer();
                           }
@@ -547,9 +537,7 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
 
     saveEarnings(totalcalculateCost.toInt());
   }
-
   Future<void> saveEarnings(int fareAmount) async {
-
     final snapshot = await driversRef.child(currentfirebaseUser!.uid).child("earnings").get();
     double averageRatings =0;
     if (snapshot.exists) {
@@ -562,7 +550,6 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
       double totalEarnings = fareAmount.toDouble();
       driversRef.child(currentfirebaseUser!.uid).child("earnings").set(totalEarnings.toStringAsFixed(2));
     }
-
   }
 }
 

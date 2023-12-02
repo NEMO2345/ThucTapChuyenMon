@@ -15,7 +15,7 @@ class NotificationDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Color diverStatusColorWhile = Colors.white;
-    Color diverStatusColorGreen = Colors.green;
+    Color diverStatusColorGreen = Colors.orange;
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
       backgroundColor: Colors.transparent,

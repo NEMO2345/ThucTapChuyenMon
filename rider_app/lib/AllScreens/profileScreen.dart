@@ -33,7 +33,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       uEmail = (value.child("email").value as String?)!,
       uPhone = (value.child("phone").value as String?)!,
     });
-  print("hehe" + uName);
   }
   @override
   Widget build(BuildContext context) {
@@ -78,7 +77,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Text(
-                "Name: $uName", // Sử dụng thông tin người dùng từ biến userCurrentInfo
+                "Name: $uName",
                 style: TextStyle(
                   fontSize: 20.0,
                   color: Colors.white,

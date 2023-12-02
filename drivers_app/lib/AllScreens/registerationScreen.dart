@@ -120,7 +120,7 @@ class _LoginScreenState extends State<RegisterationScreen> {
                     ElevatedButton(
                       onPressed:(){
                         if(nameTextEdittingController.text.length < 4){
-                            displayToastMessage("Name must be atleast 3 characters.", context);
+                            displayToastMessage("Name must be at-least 3 characters.", context);
                         }else if(!emailTextEdittingController.text.contains("@")){
                            displayToastMessage("Email address is not Valid.", context);
                         }else if(phoneTextEdittingController.text.isEmpty){

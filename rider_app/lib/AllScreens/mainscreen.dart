@@ -116,8 +116,8 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
       driverName = "";
       driverPhone = "";
       carDetailsDriver = "";
-      PickUpPoint = "";
-      Destination = "";
+      // PickUpPoint = "";
+      // Destination = "";
       riderStatus = "Driver is coming";
       driverDetailsContainerHeight = 0.0;
     });
@@ -1290,7 +1290,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
     // Lắng nghe và cập nhật tọa độ từ Firebase
     List<double> doubleArray = [];
     DatabaseReference _locationRef = FirebaseDatabase.instance.ref().child('availableDrivers');
-    await  _locationRef.onValue.listen((event) {
+    await  _locationRef.once().then((event) {
       event.snapshot.children.forEach((element) async {
         NearbyAvailableDrivers nearbyAvailableDrivers = NearbyAvailableDrivers();
         nearbyAvailableDrivers.key = element.key as String;
@@ -1457,6 +1457,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
   }
   //Send new request
   Future<void> notifyDriver(NearbyAvailableDrivers drivers)  async {
+    print("Lan 1");
     DatabaseReference driversRef = FirebaseDatabase.instance.ref(
         "drivers/${drivers.key}");
     driversRef.child("newRide").set(rideRequestRef.key.toString());
@@ -1464,6 +1465,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
     driversRef.child("token").once().then((DatabaseEvent event) {
       DataSnapshot snapshot = event.snapshot;
       if (snapshot.value != null) {
+        print("Lan 2");
         String token = snapshot.value.toString();
         AssistantMethods.sendNotificationToDriver(token, context, rideRequestRef.key);
         return;

@@ -3,6 +3,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:rider_app/AllScreens/changeInfoScreen.dart';
 import 'package:rider_app/AllScreens/changePasswordScreen.dart';
 import 'package:rider_app/Models/allUsers.dart';
 import 'package:rider_app/configMaps.dart';
@@ -36,7 +37,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         userCurrentInfo = Users.fromSnapshot(dataSnapshot);
       }
     } catch (error) {
-
+      print("Error: $error");
     }
   }
 
@@ -169,7 +170,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 30),
             ElevatedButton(
               onPressed: () {
-
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ChangeInfo()),
+                );
               },
               style: ElevatedButton.styleFrom(
                 primary: Colors.orange,

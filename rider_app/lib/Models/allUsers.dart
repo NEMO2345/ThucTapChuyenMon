@@ -18,4 +18,5 @@ class Users {
     phone = (data?["phone"] as String?) ?? "";
     print(email + " "+ name + " "+ phone);
   }
+
 }

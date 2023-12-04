@@ -8,7 +8,25 @@ import 'package:rider_app/Models/allUsers.dart';
 import 'package:rider_app/configMaps.dart';
 import 'package:http/http.dart' as http;
 
+import '../main.dart';
+
 class AssistantMethods {
+  static Future<void> getCurrentUserInfo() async {
+    firebaseUser = await FirebaseAuth.instance.currentUser;
+
+    try {
+      DatabaseReference reference = usersRef.child(firebaseUser?.uid ?? "");
+      DatabaseEvent event = await reference.once();
+      DataSnapshot dataSnapshot = event.snapshot;
+
+      if (dataSnapshot.value != null) {
+        userCurrentInfo = Users.fromSnapshot(dataSnapshot);
+      }
+    } catch (error) {
+
+    }
+  }
+
   static void getCurrentOnlineUserInfo() async {
     User? firebaseUser = await FirebaseAuth.instance.currentUser;
     String? userId = firebaseUser?.uid;

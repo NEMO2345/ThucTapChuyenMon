@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:rider_app/AllScreens/loginScreen.dart';
 import 'package:rider_app/AllScreens/mainscreen.dart';
 import 'package:rider_app/AllScreens/registerationScreen.dart';
+import 'package:rider_app/configMaps.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();//Khoi tao fl utter framework
@@ -21,6 +22,7 @@ void main() async{
 }
 final navigatorKey = GlobalKey<NavigatorState>();
 DatabaseReference usersRef = FirebaseDatabase.instance.reference().child("users");
+DatabaseReference usersRefUpdate = FirebaseDatabase.instance.reference().child("users").child(firebaseUser!.uid);
 DatabaseReference driversRef = FirebaseDatabase.instance.reference().child("drivers");
 DatabaseReference rideRequestRef = FirebaseDatabase.instance.reference().child("Ride Requests");
 DatabaseReference rideRequestRefCT = FirebaseDatabase.instance.reference().child("Ride Requests CT");

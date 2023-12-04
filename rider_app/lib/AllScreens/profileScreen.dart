@@ -3,6 +3,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:rider_app/AllScreens/changePasswordScreen.dart';
 import 'package:rider_app/Models/allUsers.dart';
 import 'package:rider_app/configMaps.dart';
 import 'package:rider_app/main.dart';
@@ -35,7 +36,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         userCurrentInfo = Users.fromSnapshot(dataSnapshot);
       }
     } catch (error) {
-      print("Error: $error");
+
     }
   }
 
@@ -82,13 +83,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 2),
-                    Text(
-                      'Khách hàng mới',
-                      style: const TextStyle(
-                        fontSize: 15,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
                   ],
                 ),
               ),
@@ -103,7 +97,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
-                        'Thông tin cá nhân',
+                        'Information',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -113,13 +107,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   TextButton(
                     onPressed: () {
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(builder: (context) => ChangePasswordPageUser()),
-                      // );
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ChangePassword()),
+                      );
                     },
                     child: Text(
-                      'Đổi mật khẩu',
+                      'Change Password',
                       style: TextStyle(
                         color: Colors.deepPurple,
                         fontSize: 16,

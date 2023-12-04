@@ -53,6 +53,7 @@ dependencies:
   smooth_star_rating_null_safety: ^1.0.4+2
   maps_toolkit: ^3.0.0
   video_player: ^2.8.1
+  grecaptcha: ^0.0.6
   #geoflutterfire: ^2.2.0
 
 

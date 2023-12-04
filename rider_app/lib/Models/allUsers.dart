@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, avoid_print
+// ignore_for_file: file_names, avoid_print, prefer_interpolation_to_compose_strings
 
 import 'package:firebase_database/firebase_database.dart';
 

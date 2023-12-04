@@ -9,10 +9,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:rider_app/AllScreens/aboutScreen.dart';
+import 'package:rider_app/AllScreens/loginScreen.dart';
 import 'package:rider_app/AllScreens/profileScreen.dart';
 import 'package:rider_app/AllScreens/ratingScreen.dart';
 import 'package:rider_app/AllScreens/registerationScreen.dart';
 import 'package:rider_app/AllScreens/searchScreen.dart';
+import 'package:rider_app/AllScreens/settingsScreen.dart';
 import 'package:rider_app/AllWidgets/CollectFareDialog.dart';
 import 'package:rider_app/AllWidgets/Divider.dart';
 import 'package:flutter_map/flutter_map.dart' show  FlutterMap, MapController, MapOptions, Marker, MarkerLayer, Polyline, PolylineLayer, TileLayer;
@@ -397,62 +400,79 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
     return Scaffold(
       key: scaffoldKey,
       drawer: Container(
-        color: Colors.white,
+        color: Colors.orange,
         width: 255.0,
         child: Drawer(
-          child: ListView(
-            children: [
-              //Drawer header
-              Container(
-                height: 165.0,
-                child: DrawerHeader(
-                  decoration: BoxDecoration(color: Colors.white),
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileScreen()));
-                    },
-                    child: Row(
-                      children: [
-                        Image.asset("images/user_icon.png", height: 65.0, width: 65.0),
-                        SizedBox(width: 16.0),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              uName,
-                              style: TextStyle(fontSize: 16.0, fontFamily: "Brand Bold"),
-                            ),
-                            SizedBox(height: 6.0),
-                            Text("Visit Profile"),
-                          ],
-                        ),
-                      ],
+          child: Container(
+            color: Colors.white70,
+            child: ListView(
+              children: [
+                Container(
+                  height: 140.0,
+                  child: DrawerHeader(
+                    decoration: BoxDecoration(color: Colors.white),
+                    child: InkWell(
+                      onTap: () {
+                        if (uName.isEmpty) {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
+                        } else {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileScreen()));
+                        }
+                      },
+                      child: Row(
+                        children: [
+                          Image.asset("images/user_icon.png", height: 65.0, width: 65.0),
+                          SizedBox(width:16.0),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                uName.isEmpty ? "Đăng nhập" : uName,
+                                style: TextStyle(fontSize: 16.0, fontFamily: "Brand Bold"),
+                              ),
+                              SizedBox(height: 6.0),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-              DividerWidget(),
-              SizedBox(height: 12.0,),
-              GestureDetector(
-                onTap: (){
-                  displayToastMessage("Industrial vehicle", context);
-                },
-                child: ListTile(
-                  leading: Icon(Icons.info),
-                  title: Text("About", style: TextStyle(fontSize: 16.0),),
+                DividerWidget(),
+                SizedBox(height: 10.0,),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => SettingsScreen()));
+                  },
+                  child: ListTile(
+                    leading: Icon(Icons.settings),
+                    title: Text("Settings", style: TextStyle(fontSize: 16.0),),
+                  ),
                 ),
-              ),
-              GestureDetector(
-                onTap: (){
-                  FirebaseAuth.instance.signOut();
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
-                },
-                child: ListTile(
-                  leading: Icon(Icons.info),
-                  title: Text("Sign Out", style: TextStyle(fontSize: 16.0),),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => AboutScreen()));
+                  },
+                  child: ListTile(
+                    leading: Icon(Icons.info),
+                    title: Text("About", style: TextStyle(fontSize: 16.0),),
+                  ),
                 ),
-              ),
-            ],
+                GestureDetector(
+                  onTap: () {
+                    if (uName.isEmpty) {
+                    } else {
+                      FirebaseAuth.instance.signOut();
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+                    }
+                  },
+                  child: ListTile(
+                    leading: uName.isEmpty ? null : Icon(Icons.output),
+                    title: Text(uName.isEmpty ? "" : "Sign Out", style: TextStyle(fontSize: 16.0)),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

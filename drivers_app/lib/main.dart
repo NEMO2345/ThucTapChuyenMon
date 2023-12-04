@@ -80,7 +80,7 @@ class MyApp extends StatelessWidget {
       navigatorKey: navigatorKey,
       title: 'Taxi Driver App',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.orange,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: HomeScreen(),
@@ -168,8 +168,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 8,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: _currentPage == index ? Colors.blue : Colors.grey,
-                  border: Border.all(color: Colors.blue),
+                  color: _currentPage == index ? Colors.orange : Colors.grey,
+                  border: Border.all(color: Colors.orange),
                 ),
               );
             }),

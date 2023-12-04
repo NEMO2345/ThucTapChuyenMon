@@ -1,6 +1,5 @@
 // ignore_for_file: prefer_const_constructors, unnecessary_import, library_private_types_in_public_api, prefer_final_fields, unnecessary_new, sized_box_for_whitespace, prefer_const_literals_to_create_immutables, sort_child_properties_last, prefer_interpolation_to_compose_strings, use_build_context_synchronously, avoid_print, non_constant_identifier_names, library_prefixes, unused_label, cast_from_null_always_fails, unnecessary_null_comparison, unused_element, unnecessary_cast, unused_local_variable, no_leading_underscores_for_local_identifiers, constant_pattern_never_matches_value_type, prefer_collection_literals, deprecated_member_use, avoid_unnecessary_containers, prefer_conditional_assignment, constant_identifier_names, avoid_function_literals_in_foreach_calls, unnecessary_brace_in_string_interps, await_only_futures
 import 'dart:async';
-import 'dart:ffi';
 import 'dart:math';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -10,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:rider_app/AllScreens/loginScreen.dart';
 import 'package:rider_app/AllScreens/profileScreen.dart';
 import 'package:rider_app/AllScreens/ratingScreen.dart';
 import 'package:rider_app/AllScreens/registerationScreen.dart';

@@ -1,9 +1,11 @@
-// ignore_for_file: prefer_const_constructors, library_private_types_in_public_api, file_names
+// ignore_for_file: prefer_const_constructors, library_private_types_in_public_api, file_names, await_only_futures
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:rider_app/Models/allUsers.dart';
 import 'package:rider_app/configMaps.dart';
+import 'package:rider_app/main.dart';
 
 class ProfileScreen extends StatefulWidget {
   static const String idScreen = "profile";
@@ -16,96 +18,179 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  late Users userCurrentInfo;
-  String uName = "";
-  String uPhone = "";
-  String uEmail = "";
   @override
   void initState() {
     super.initState();
-    getUserInfor();
+    getCurrentUserInfo();
   }
-  void getUserInfor() async {
-    final DatabaseReference usersRef = FirebaseDatabase.instance.ref();
-    final snapshot = await usersRef.child('users').child(firebaseUser!.uid).get()
-        .then((value) => {
-      uName = (value.child("name").value as String?)!,
-      uEmail = (value.child("email").value as String?)!,
-      uPhone = (value.child("phone").value as String?)!,
-    });
+  void getCurrentUserInfo() async{
+    firebaseUser = await FirebaseAuth.instance.currentUser;
+
+    try {
+      DatabaseReference reference = usersRef.child(firebaseUser?.uid ?? "");
+      DatabaseEvent event = await reference.once();
+      DataSnapshot dataSnapshot = event.snapshot;
+
+      if (dataSnapshot.value != null) {
+        userCurrentInfo = Users.fromSnapshot(dataSnapshot);
+      }
+    } catch (error) {
+      print("Error: $error");
+    }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blueGrey,
-      body: SafeArea(
+      appBar: AppBar(
+        title: const Text(
+          'Your Profile',
+          style: TextStyle(
+            color: Colors.black,
+          ),
+        ),
+        backgroundColor: Colors.orange,
+        iconTheme: IconThemeData(
+          color: Colors.black,
+        ),
+      ),
+      body: Center(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 20.0, left: 20.0),
-              child: IconButton(
-                icon: Icon(
-                  Icons.arrow_back,
-                  color: Colors.white,
-                  size: 30.0,
+            const SizedBox(height: 10),
+            InkWell(
+              onTap: () {},
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                child: Column(
+                  children: [
+                    Image.asset(
+                      'images/user_icon.png',
+                      width: 120,
+                      height: 120,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      userCurrentInfo!.name ?? "Ly",
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontFamily: "Brand Bold",
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Khách hàng mới',
+                      style: const TextStyle(
+                        fontSize: 15,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Text(
-                "Profile",
+            const SizedBox(height: 20),
+            Container(
+              color: Colors.grey,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        'Thông tin cá nhân',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(builder: (context) => ChangePasswordPageUser()),
+                      // );
+                    },
+                    child: Text(
+                      'Đổi mật khẩu',
+                      style: TextStyle(
+                        color: Colors.deepPurple,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 10),
+            ListTile(
+              leading: Icon(Icons.email),
+              title: Text(
+                'Email',
                 style: TextStyle(
-                  fontSize: 30.0,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Signatra',
+                  fontSize: 16,
                 ),
               ),
-            ),
-            SizedBox(
-              height: 20,
-              width: double.infinity,
-              child: Divider(
-                color: Colors.white,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Text(
-                "Name: $uName",
+              subtitle: Text(
+                userCurrentInfo?.email ?? '',
                 style: TextStyle(
-                  fontSize: 20.0,
-                  color: Colors.white,
-                  fontFamily: 'Brand-Regular',
+                  fontSize: 14,
+                  color: Colors.grey,
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Text(
-                "Phone: $uPhone", // Sử dụng thông tin người dùng từ biến userCurrentInfo
+            Container(
+              height: 1,
+              color: Colors.grey,
+              margin: EdgeInsets.symmetric(horizontal: 16),
+            ),
+            ListTile(
+              leading: Icon(Icons.phone),
+              title: Text(
+                'Số điện thoại',
                 style: TextStyle(
-                  fontSize: 20.0,
-                  color: Colors.white,
-                  fontFamily: 'Brand-Regular',
+                  fontSize: 16,
+                ),
+              ),
+              subtitle: Text(
+                userCurrentInfo?.phone ?? '',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey,
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Text(
-                "Email: $uEmail", // Sử dụng thông tin người dùng từ biến userCurrentInfo
-                style: TextStyle(
-                  fontSize: 20.0,
-                  color: Colors.white,
-                  fontFamily: 'Brand-Regular',
+            Container(
+              height: 1,
+              color: Colors.grey,
+              margin: EdgeInsets.symmetric(horizontal: 16),
+            ),
+            const SizedBox(height: 30),
+            ElevatedButton(
+              onPressed: () {
+
+              },
+              style: ElevatedButton.styleFrom(
+                primary: Colors.orange,
+                onPrimary: Colors.black,
+                textStyle: TextStyle(
+                  fontSize: 15,
+                  color: Colors.black,
+                  fontFamily: 'Brand Bold',
+                ),
+                padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(2),
                 ),
               ),
+              child: Text('Change Information'),
             ),
           ],
         ),

@@ -1,4 +1,4 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, avoid_print
 
 import 'package:firebase_database/firebase_database.dart';
 
@@ -12,10 +12,10 @@ class Users {
 
   Users.fromSnapshot(DataSnapshot dataSnapshot) {
     id = dataSnapshot.key!;
-    var data = dataSnapshot.value as Map<String, dynamic>?;
-
+    var data = dataSnapshot.value as Map<Object?, Object?>?;
     email = (data?["email"] as String?) ?? "";
     name = (data?["name"] as String?) ?? "";
     phone = (data?["phone"] as String?) ?? "";
+    print(email + " "+ name + " "+ phone);
   }
 }

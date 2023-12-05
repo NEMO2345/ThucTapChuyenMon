@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, library_private_types_in_public_api, use_key_in_widget_constructors, file_names
 
+import 'package:drivers_app/AllScreens/changeInfoScreen.dart';
 import 'package:flutter/material.dart';
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -59,7 +60,7 @@ class _SettingsPageState extends State<SettingsScreen> {
             'Update Account Information',
             Icon(Icons.arrow_forward_ios),
             onTap: () {
-              //Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileScreen()));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => ChangeInfo()));
             },
           ),
         ],

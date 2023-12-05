@@ -1,14 +1,6 @@
 // ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors, deprecated_member_use, must_be_immutable, file_names, library_private_types_in_public_api, unused_field, prefer_final_fields, unrelated_type_equality_checks, non_constant_identifier_names, avoid_print
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
+
 import 'package:flutter/material.dart';
-import 'package:rider_app/AllScreens/registerationScreen.dart';
-import 'package:rider_app/Models/allUsers.dart';
-import 'package:rider_app/configMaps.dart';
-import 'package:rider_app/main.dart';
-
-
-
 class ChangeInfo extends StatefulWidget {
 
   @override
@@ -25,22 +17,22 @@ class _ChangeInfoState extends State<ChangeInfo> {
   @override
   void initState() {
     super.initState();
-    getCurrentUserInfo();
+  //  getCurrentUserInfo();
   }
-  void getCurrentUserInfo() async{
-    firebaseUser =  FirebaseAuth.instance.currentUser;
-    try {
-      DatabaseReference reference = usersRef.child(firebaseUser?.uid ?? "");
-      DatabaseEvent event = await reference.once();
-      DataSnapshot dataSnapshot = event.snapshot;
-
-      if (dataSnapshot.value != null) {
-        userCurrentInfo = Users.fromSnapshot(dataSnapshot);
-      }
-    } catch (error) {
-      print("Error: $error");
-    }
-  }
+  // void getCurrentUserInfo() async{
+  //   firebaseUser =  FirebaseAuth.instance.currentUser;
+  //   try {
+  //     DatabaseReference reference = usersRef.child(firebaseUser?.uid ?? "");
+  //     DatabaseEvent event = await reference.once();
+  //     DataSnapshot dataSnapshot = event.snapshot;
+  //
+  //     if (dataSnapshot.value != null) {
+  //       userCurrentInfo = Users.fromSnapshot(dataSnapshot);
+  //     }
+  //   } catch (error) {
+  //     print("Error: $error");
+  //   }
+  // }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -75,7 +67,8 @@ class _ChangeInfoState extends State<ChangeInfo> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    userCurrentInfo?.name ?? "Ly",
+                    // userCurrentInfo?.name ??
+                    "Ly",
                     style: const TextStyle(
                       fontSize: 20,
                       fontFamily: "Brand Bold",
@@ -125,7 +118,7 @@ class _ChangeInfoState extends State<ChangeInfo> {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    changeInfo();
+                   // changeInfo();
                   },
                   style: ElevatedButton.styleFrom(
                     primary: Colors.white,
@@ -172,22 +165,22 @@ class _ChangeInfoState extends State<ChangeInfo> {
       ),
     );
   }
-  void changeInfo() {
-    String newName = nameTextEdittingController.text;
-    String newEmail = emailTextEdittingController.text;
-    String newPhone = phoneTextEdittingController.text;
-      usersRefUpdate.update({
-        "email": newEmail,
-        "name": newName,
-        "phone": newPhone,
-      }).then((value) {
-        displayToastMessage("Update Successfully.", context);
-        Navigator.pop(context);
-        Navigator.pop(context);
-        Navigator.pop(context);
-      }).catchError((error) {
-        displayToastMessage("Error + $error", context  );
-      });
-  }
+  // void changeInfo() {
+  //   String newName = nameTextEdittingController.text;
+  //   String newEmail = emailTextEdittingController.text;
+  //   String newPhone = phoneTextEdittingController.text;
+  //   usersRefUpdate.update({
+  //     "email": newEmail,
+  //     "name": newName,
+  //     "phone": newPhone,
+  //   }).then((value) {
+  //     displayToastMessage("Update Successfully.", context);
+  //     Navigator.pop(context);
+  //     Navigator.pop(context);
+  //     Navigator.pop(context);
+  //   }).catchError((error) {
+  //     displayToastMessage("Error + $error", context  );
+  //   });
+  // }
 }
 

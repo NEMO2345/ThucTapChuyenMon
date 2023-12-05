@@ -1,4 +1,5 @@
-// ignore_for_file: prefer_const_constructors, file_names, prefer_interpolation_to_compose_strings, must_be_immutable, avoid_print
+// ignore_for_file: prefer_const_constructors, file_names, prefer_interpolation_to_compose_strings, must_be_immutable, avoid_print, sort_child_properties_last
+import 'package:drivers_app/AllScreens/settingsScreen.dart';
 import 'package:drivers_app/configMaps.dart';
 import 'package:drivers_app/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -11,16 +12,38 @@ class ProfileTabPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black87,
+      backgroundColor: Colors.white70,
       body: SafeArea(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            Container(
+              alignment: Alignment.topRight,
+              padding: EdgeInsets.only(top: 5.0, right: 1.0),
+              child: RawMaterialButton(
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => SettingsScreen()));
+                },
+                elevation: 2.0,
+                fillColor: Colors.white,
+                child: Icon(
+                  Icons.settings,
+                  color: Colors.orange,
+                  size: 20.0,
+                ),
+                padding: EdgeInsets.all(10.0),
+                shape: CircleBorder(),
+              ),
+            ),
+            CircleAvatar(
+              radius: 100.0,
+              backgroundImage: Image.asset('images/astronaut.png').image,
+            ),
             Text(
               driversInformation!.name,
               style: TextStyle(
                 fontSize: 65.0,
-                color: Colors.white,
+                color: Colors.black,
                 fontWeight: FontWeight.bold,
                 fontFamily: 'Signatra',
               ),
@@ -29,7 +52,7 @@ class ProfileTabPage extends StatelessWidget {
               title + " driver",
               style: TextStyle(
                 fontSize: 20.0,
-                color: Colors.blueGrey[200],
+                color: Colors.black,
                 letterSpacing: 2.5,
                 fontWeight: FontWeight.bold,
                 fontFamily: 'Brand-Regular'
@@ -112,7 +135,7 @@ class InfoCard extends StatelessWidget {
     return GestureDetector(
       onTap: onPressed,
       child: Card(
-        color: Colors.white,
+        color: Colors.orange,
         margin: EdgeInsets.symmetric(vertical: 10.0,horizontal: 25.0),
         child: ListTile(
           leading: Icon(

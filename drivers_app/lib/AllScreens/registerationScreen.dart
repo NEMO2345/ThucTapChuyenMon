@@ -1,13 +1,17 @@
 // ignore_for_file: library_private_types_in_public_api, prefer_interpolation_to_compose_strings, use_build_context_synchronously, deprecated_member_use, file_names, prefer_const_constructors, body_might_complete_normally_catch_error, unused_field, prefer_final_fields
 
+import 'dart:io';
+
 import 'package:drivers_app/AllScreens/carInfoScreen.dart';
 import 'package:drivers_app/configMaps.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:drivers_app/AllScreens/loginScreen.dart';
 import 'package:drivers_app/AllWidgets/progressDialog.dart';
 import 'package:drivers_app/main.dart';
+import 'package:image_picker/image_picker.dart';
 
 class RegisterationScreen extends StatefulWidget {
   static const String idScreen = "register";
@@ -21,6 +25,7 @@ class RegisterationScreen extends StatefulWidget {
 class _LoginScreenState extends State<RegisterationScreen> {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
+  File? _image;
   TextEditingController nameTextEdittingController = TextEditingController();
   TextEditingController emailTextEdittingController = TextEditingController();
   TextEditingController phoneTextEdittingController = TextEditingController();
@@ -116,7 +121,31 @@ class _LoginScreenState extends State<RegisterationScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 10.0,),
+                    SizedBox(height: 16.0),
+                    ElevatedButton(
+                      onPressed: _uploadImage,
+                      child: _image != null
+                          ? Image.file(
+                        _image!,
+                        height: 200.0,
+                        width: 200.0,
+                        fit: BoxFit.cover,
+                      )
+                          : Text('Chọn hình ảnh',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),),
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(vertical: 16.0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        primary: Colors.grey[300],
+                      ),
+                    ),
+                    const SizedBox(height: 1.0),
                     ElevatedButton(
                       onPressed:(){
                         if(nameTextEdittingController.text.length < 4){
@@ -180,11 +209,30 @@ class _LoginScreenState extends State<RegisterationScreen> {
       ),
     );
   }
+  Future<void> _uploadImage() async {
+    final picker = ImagePicker();
+    final pickedImage = await picker.pickImage(source: ImageSource.gallery);
 
+    if (pickedImage != null) {
+      setState(() {
+        _image = File(pickedImage.path);
+      });
+    }
+  }
 
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   void registerNewUser(BuildContext context) async {
+    if (_image == null) {
+      displayToastMessage("Please choose at least one picture.", context);
+      return;
+    }
+    // Upload image to Firebase Storage
+    String imageName = DateTime.now().millisecondsSinceEpoch.toString();
+    Reference ref = storage.ref().child('images/$imageName');
+    await ref.putFile(_image!);
+    String imageUrl = await ref.getDownloadURL();
+
     showDialog(
         context: context,
         barrierDismissible: false,
@@ -208,6 +256,7 @@ class _LoginScreenState extends State<RegisterationScreen> {
           "name": nameTextEdittingController.text.trim(),
           "email": emailTextEdittingController.text.trim(),
           "phone": phoneTextEdittingController.text.trim(),
+          'image': imageUrl,
         };
         driversRef.child(firebaseUser.uid).set(userDateMap);
 
@@ -221,6 +270,7 @@ class _LoginScreenState extends State<RegisterationScreen> {
         displayToastMessage("New User has not been Created.", context);
       }
   }
+
 }
 
 void displayToastMessage(String message, BuildContext context) {

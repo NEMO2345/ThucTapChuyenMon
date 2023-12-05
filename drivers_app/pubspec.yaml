@@ -54,6 +54,9 @@ dependencies:
   maps_toolkit: ^3.0.0
   video_player: ^2.8.1
   grecaptcha: ^0.0.6
+  image_picker: ^1.0.4
+  firebase_storage: ^11.5.1
+
   #geoflutterfire: ^2.2.0
 
 

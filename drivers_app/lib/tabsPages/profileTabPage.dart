@@ -37,7 +37,7 @@ class ProfileTabPage extends StatelessWidget {
             ),
             CircleAvatar(
               radius: 100.0,
-              backgroundImage: Image.asset('images/astronaut.png').image,
+              backgroundImage: NetworkImage(driversInformation!.image),
             ),
             Text(
               driversInformation!.name,

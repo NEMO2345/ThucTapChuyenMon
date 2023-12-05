@@ -7,6 +7,7 @@ class Drivers {
   late String phone;
   late String email;
   late String id;
+  late String image;
   late String car_color;
   late String car_model;
   late String car_number;
@@ -16,6 +17,7 @@ class Drivers {
     required this.phone,
     required this.email,
     required this.id,
+    required this.image,
     required this.car_color,
     required this.car_model,
     required this.car_number,
@@ -28,6 +30,7 @@ class Drivers {
       phone = value["phone"] as String? ?? "";
       email = value["email"] as String? ?? "";
       name = value["name"] as String? ?? "";
+      image = value["image"] as String? ?? "";
 
       var carDetails = value["car_details"] as Map<Object?, Object?>?;
       if (carDetails != null) {

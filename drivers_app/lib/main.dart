@@ -41,8 +41,9 @@ Future<void> setupFlutterNotifications() async {
 final navigatorKey = GlobalKey<NavigatorState>();
 DatabaseReference usersRef = FirebaseDatabase.instance.reference().child("users");
 DatabaseReference driversRef = FirebaseDatabase.instance.reference().child("drivers");
+DatabaseReference driversRefUpdate = FirebaseDatabase.instance.reference().child("drivers").child(currentfirebaseUser!.uid);
+DatabaseReference driversRefUpdateCarDetail = FirebaseDatabase.instance.reference().child("drivers").child(currentfirebaseUser!.uid).child("car_details");
 DatabaseReference newRequestsRef = FirebaseDatabase.instance.reference().child("Ride Requests");
-DatabaseReference rideRequestRefCT = FirebaseDatabase.instance.reference().child("Ride Requests CT");
 DatabaseReference rideRequestRef = FirebaseDatabase.instance
     .reference()
     .child("drivers")

@@ -1,4 +1,4 @@
-// ignore_for_file: library_private_types_in_public_api, prefer_interpolation_to_compose_strings, use_build_context_synchronously, deprecated_member_use, file_names, prefer_const_constructors, body_might_complete_normally_catch_error, unused_field, prefer_final_fields
+// ignore_for_file: library_private_types_in_public_api, prefer_interpolation_to_compose_strings, use_build_context_synchronously, deprecated_member_use, file_names, prefer_const_constructors, body_might_complete_normally_catch_error, unused_field, prefer_final_fields, sort_child_properties_last
 
 import 'dart:io';
 
@@ -131,21 +131,29 @@ class _LoginScreenState extends State<RegisterationScreen> {
                         width: 200.0,
                         fit: BoxFit.cover,
                       )
-                          : Text('Chọn hình ảnh',
-                        style: TextStyle(
+                          : Text('ChoosePicture',
+                          style: TextStyle(
                           color: Colors.black,
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                        ),),
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 16.0),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
                         ),
-                        primary: Colors.grey[300],
+                      ),
+
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.transparent,
+                        onPrimary: Colors.green,
+                        padding: EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(40),
+                          side: BorderSide(
+                            color: Colors.orange,
+                            width: 2,
+                          ),
+                        ),
+                        backgroundColor: Colors.white,
                       ),
                     ),
-                    const SizedBox(height: 1.0),
+                    SizedBox(height: 16.0),
                     ElevatedButton(
                       onPressed:(){
                         if(nameTextEdittingController.text.length < 4){

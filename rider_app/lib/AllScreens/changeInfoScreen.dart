@@ -144,7 +144,7 @@ class _ChangeInfoState extends State<ChangeInfo> {
                       ),
                     ),
                   ),
-                  child: Text('Cập Nhật'),
+                  child: Text('Update'),
                 ),
                 SizedBox(width: 55),
                 ElevatedButton(
@@ -163,7 +163,7 @@ class _ChangeInfoState extends State<ChangeInfo> {
                       borderRadius: BorderRadius.circular(20),
                     ),
                   ),
-                  child: Text('Hủy'),
+                  child: Text('Cancel'),
                 ),
               ],
             ),

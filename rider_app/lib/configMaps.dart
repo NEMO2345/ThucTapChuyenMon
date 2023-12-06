@@ -13,6 +13,7 @@ String statusRide = "";
 String statusRideTemp  = "";
 String riderStatus ="Driver is coming";
 String carDetailsDriver = "";
+String carDetailsDriverImage = "";
 String carDetailsDriverTemp = "";
 String driverName = "";
 String driverNameTemp  = "";

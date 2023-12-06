@@ -446,7 +446,7 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
     rideRequestRef.child("driver_phone").set(driversInformation?.phone);
     rideRequestRef.child("driver_id").set(driversInformation?.id);
     rideRequestRef.child("car_details").set('${driversInformation?.car_color} - ${driversInformation?.car_model} - ${driversInformation?.car_number}');
-
+    rideRequestRef.child("driver_image").set(driversInformation?.image);
     Map<String, String> locMap = {
       "latitude": Latitude.toString(),
       "longitude": Longitude.toString(),

@@ -117,6 +117,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
       driverName = "";
       driverPhone = "";
       carDetailsDriver = "";
+      rideType = "";
       // PickUpPoint = "";
       // Destination = "";
       riderStatus = "Driver is coming";
@@ -203,7 +204,6 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
   }
   //Tinh thanh tien
   double calculateCost(double distance,double type) {
-
     double cost = distance * type;
     return cost;
   }
@@ -228,6 +228,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
   @override
   void initState() {
     super.initState();
+    availableDrivers = [];
     getUserInfor();
     print(widget.firebaseUser?.uid.toString());
     getLocation();
@@ -248,6 +249,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
     };
     String? name;
     String? phone;
+    String? image;
    // print(widget.firebaseUser!.uid.toString());
     final snapshot = await usersRef.child('users/'+widget.firebaseUser!.uid.toString()).get()
         .then((value) => {
@@ -284,6 +286,11 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
       if (snapshotValue["car_details"] != null) {
         setState(() {
           carDetailsDriver = snapshotValue["car_details"].toString();
+        });
+      }
+      if (snapshotValue["driver_image"] != null) {
+        setState(() {
+          carDetailsDriverImage = snapshotValue["driver_image"].toString();
         });
       }
       if (snapshotValue["driver_name"] != null) {
@@ -1180,45 +1187,74 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
               ),
             ),
           ),
-          // Display Assisned Driver Info
+          // Display Assigned Driver Info
           Positioned(
             bottom: 0.0,
             left: 0.0,
             right: 0.0,
             child: Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(topLeft: Radius.circular(16.0),topRight: Radius.circular(16.0),),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(16.0),
+                  topRight: Radius.circular(16.0),
+                ),
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
                     spreadRadius: 0.5,
                     blurRadius: 16.0,
                     color: Colors.black54,
-                    offset: Offset(0.7,0.7),
+                    offset: Offset(0.7, 0.7),
                   ),
                 ],
               ),
               height: driverDetailsContainerHeight,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0,vertical: 18.0),
+                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 18.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 6.0,),
+                    SizedBox(height: 6.0),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(riderStatus,textAlign: TextAlign.center,style: TextStyle(fontSize: 20.0,fontFamily: "Brand-Bold"),),
+                        Text(
+                          riderStatus,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 20.0, fontFamily: "Brand-Bold"),
+                        ),
                       ],
                     ),
-                    SizedBox(height: 22.0,),
-                    Divider(height: 2.0, thickness: 2.0,),
-                    SizedBox(height: 22.0,),
-                    Text(carDetailsDriver, style: TextStyle(color: Colors.grey),),
-                    Text(driverName,style: TextStyle(fontSize: 20.0),),
-                    SizedBox(height: 22.0,),
-                    Divider(height: 2.0, thickness: 2.0,),
-                    SizedBox(height: 22.0,),
+                    SizedBox(height: 22.0),
+                    Divider(height: 2.0, thickness: 2.0),
+                    SizedBox(height: 22.0),
+                    Text(carDetailsDriver, style: TextStyle(color: Colors.grey)),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            children: [
+                              Text(driverName, style: TextStyle(fontSize: 20.0)),
+                            ],
+                          ),
+                        ),
+                        SizedBox(width: 50.0),
+                        Expanded(
+                          child: Column(
+                            children: [
+                              CircleAvatar(
+                                radius: 30.0,
+                                backgroundImage: NetworkImage(carDetailsDriverImage,scale:1.0),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 22.0),
+                    Divider(height: 2.0, thickness: 2.0),
+                    SizedBox(height: 22.0),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -1229,7 +1265,8 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
                               launch(('tel://${driverPhone}'));
                             },
                             style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all<Color>(Colors.orange),
+                              backgroundColor:
+                              MaterialStateProperty.all<Color>(Colors.orange),
                             ),
                             child: Padding(
                               padding: EdgeInsets.all(17.0),
@@ -1466,6 +1503,9 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
 //Tim kiem xe gan
   Future<void> searchNearestDriver()  async {
       await  initGeoFireListener2();
+      print("Near.....");
+      print(availableDrivers);
+      print("Near.....");
     if(availableDrivers.isEmpty){
       cancelRideRequest();
       resetApp();

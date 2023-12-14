@@ -1,7 +1,11 @@
-// ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors, deprecated_member_use, must_be_immutable, file_names, library_private_types_in_public_api, unused_field, prefer_final_fields, unrelated_type_equality_checks, non_constant_identifier_names, avoid_print
+// ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors, deprecated_member_use, must_be_immutable, file_names, library_private_types_in_public_api, unused_field, prefer_final_fields, unrelated_type_equality_checks, non_constant_identifier_names, avoid_print, unnecessary_cast, unnecessary_null_comparison
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:rider_app/AllScreens/registerationScreen.dart';
 import 'package:rider_app/Models/allUsers.dart';
 import 'package:rider_app/configMaps.dart';
@@ -17,7 +21,8 @@ class ChangeInfo extends StatefulWidget {
 
 
 class _ChangeInfoState extends State<ChangeInfo> {
-
+  File? image;
+  String? temporaryImage;
   TextEditingController nameTextEdittingController = TextEditingController();
   TextEditingController emailTextEdittingController = TextEditingController();
   TextEditingController phoneTextEdittingController = TextEditingController();
@@ -60,7 +65,9 @@ class _ChangeInfoState extends State<ChangeInfo> {
         padding: const EdgeInsets.symmetric(vertical: 15),
         children: [
           InkWell(
-            onTap: () {},
+            onTap: () {
+              _uploadImage();
+            },
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
@@ -68,10 +75,15 @@ class _ChangeInfoState extends State<ChangeInfo> {
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
               child: Column(
                 children: [
-                    CircleAvatar(
-                      radius: 100.0,
-                      backgroundImage: NetworkImage(uImage),
-                    ),
+                  CircleAvatar(
+                    radius: 100.0,
+                    backgroundImage: temporaryImage != null ? FileImage(File(temporaryImage!)) as ImageProvider<Object>?
+                        : uImage != null
+                        ? NetworkImage(
+                        uImage as String) as ImageProvider<
+                        Object>?
+                        : null,
+                  ),
                   const SizedBox(height: 8),
                   Text(
                     userCurrentInfo?.name ?? "Ly",
@@ -171,14 +183,32 @@ class _ChangeInfoState extends State<ChangeInfo> {
       ),
     );
   }
-  void changeInfo() {
+  Future<void> _uploadImage() async {
+    final picker = ImagePicker();
+    final pickedImage = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedImage != null) {
+      setState(() {
+        image = File(pickedImage.path);
+        temporaryImage = pickedImage.path;
+      });
+    }
+  }
+  Future<void> changeInfo() async {
     String newName = nameTextEdittingController.text;
     String newEmail = emailTextEdittingController.text;
     String newPhone = phoneTextEdittingController.text;
+    // Upload image to Firebase Storage
+    String imageName = DateTime.now().millisecondsSinceEpoch.toString();
+    Reference ref = storage.ref().child('images/$imageName');
+    await ref.putFile(image!);
+    String imageUrl = await ref.getDownloadURL();
+
       usersRefUpdate.update({
         "email": newEmail,
         "name": newName,
         "phone": newPhone,
+        "image": imageUrl,
       }).then((value) {
         displayToastMessage("Update Successfully.", context);
         Navigator.pop(context);

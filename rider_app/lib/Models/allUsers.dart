@@ -7,6 +7,7 @@ class Users {
   late String email;
   late String name;
   late String phone;
+  late String image;
 
   Users({required this.id, required this.email, required this.name, required this.phone});
 
@@ -16,6 +17,7 @@ class Users {
     email = (data?["email"] as String?) ?? "";
     name = (data?["name"] as String?) ?? "";
     phone = (data?["phone"] as String?) ?? "";
+    image = (data?["image"] as String?) ?? "";
     print(email + " "+ name + " "+ phone);
   }
 

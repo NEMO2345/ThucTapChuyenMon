@@ -68,11 +68,10 @@ class _ChangeInfoState extends State<ChangeInfo> {
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
               child: Column(
                 children: [
-                  Image.asset(
-                    'images/user_icon.png',
-                    width: 120,
-                    height: 120,
-                  ),
+                    CircleAvatar(
+                      radius: 100.0,
+                      backgroundImage: NetworkImage(uImage),
+                    ),
                   const SizedBox(height: 8),
                   Text(
                     userCurrentInfo?.name ?? "Ly",

@@ -1,11 +1,16 @@
-// ignore_for_file: library_private_types_in_public_api, prefer_interpolation_to_compose_strings, use_build_context_synchronously, deprecated_member_use, body_might_complete_normally_catch_error, file_names
+// ignore_for_file: library_private_types_in_public_api, prefer_interpolation_to_compose_strings, use_build_context_synchronously, deprecated_member_use, body_might_complete_normally_catch_error, file_names, prefer_const_constructors, sort_child_properties_last
+
+import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:rider_app/AllScreens/loginScreen.dart';
 import 'package:rider_app/AllScreens/mainscreen.dart';
 import 'package:rider_app/AllWidgets/progressDialog.dart';
+import 'package:rider_app/configMaps.dart';
 import 'package:rider_app/main.dart';
 
 class RegisterationScreen extends StatefulWidget {
@@ -20,6 +25,7 @@ class RegisterationScreen extends StatefulWidget {
 class _LoginScreenState extends State<RegisterationScreen> {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
+  File? _image;
   TextEditingController nameTextEdittingController = TextEditingController();
   TextEditingController emailTextEdittingController = TextEditingController();
   TextEditingController phoneTextEdittingController = TextEditingController();
@@ -140,6 +146,38 @@ class _LoginScreenState extends State<RegisterationScreen> {
                         ),
                       ),
                     ),
+                    SizedBox(height: 16.0),
+                    ElevatedButton(
+                      onPressed: _uploadImage,
+                      child: _image != null
+                          ? Image.file(
+                        _image!,
+                        height: 200.0,
+                        width: 200.0,
+                        fit: BoxFit.cover,
+                      )
+                          : Text('Choose your avatar',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.transparent,
+                        onPrimary: Colors.green,
+                        padding: EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(40),
+                          side: BorderSide(
+                            color: Colors.orange,
+                            width: 2,
+                          ),
+                        ),
+                        backgroundColor: Colors.white,
+                      ),
+                    ),
                     const SizedBox(height: 10.0,),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
@@ -204,10 +242,26 @@ class _LoginScreenState extends State<RegisterationScreen> {
     );
   }
 
+  Future<void> _uploadImage() async {
+    final picker = ImagePicker();
+    final pickedImage = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedImage != null) {
+      setState(() {
+        _image = File(pickedImage.path);
+      });
+    }
+  }
 
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   void registerNewUser(BuildContext context) async {
+
+    // Upload image to Firebase Storage
+    String imageName = DateTime.now().millisecondsSinceEpoch.toString();
+    Reference ref = storage.ref().child('images/$imageName');
+    await ref.putFile(_image!);
+    String imageUrl = await ref.getDownloadURL();
 
     showDialog(
         context: context,
@@ -234,8 +288,12 @@ class _LoginScreenState extends State<RegisterationScreen> {
           "name": nameTextEdittingController.text.trim(),
           "email": emailTextEdittingController.text.trim(),
           "phone": phoneTextEdittingController.text.trim(),
+          "image": imageUrl,
         };
         usersRef.child(firebaseUser.uid).set(userDateMap);
+
+        currentfirebaseUser = firebaseUser;
+
         displayToastMessage("Congratulations, your account has been created.", context);
 
         Navigator.pushNamedAndRemoveUntil(context, LoginScreen.idScreen, (route) => false);
@@ -247,9 +305,15 @@ class _LoginScreenState extends State<RegisterationScreen> {
   }
 }
 
-displayToastMessage(String message, BuildContext context){
-  Fluttertoast.showToast(msg: message);
+void displayToastMessage(String message, BuildContext context) {
+  Fluttertoast.showToast(
+    msg: message,
+    toastLength: Toast.LENGTH_SHORT,
+    gravity: ToastGravity.BOTTOM,
+    backgroundColor: Colors.black87,
+    textColor: Colors.white,
+    fontSize: 16.0,
+  );
 }
-
 
 

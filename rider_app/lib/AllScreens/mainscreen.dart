@@ -81,7 +81,6 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
   String state = "normal";
   late StreamSubscription<DatabaseEvent> rideStreamSubscription;
   bool isRequestingPositionDetails = false;
-  String uName = "";
   double typeRideBike = 50;
   double typeRideUberGo = 75;
   double typeRideUberX = 100;
@@ -227,6 +226,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
   }
   @override
   void initState() {
+    getUserInfor();
     super.initState();
     availableDrivers = [];
     getUserInfor();
@@ -398,6 +398,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
     final snapshot = await usersRef.child('users/'+widget.firebaseUser!.uid.toString()).get()
         .then((value) => {
       uName = (value.child("name").value as String?)!,
+      uImage = (value.child("image").value as String?)!,
     });
 
   }
@@ -428,7 +429,12 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
                       },
                       child: Row(
                         children: [
-                          Image.asset("images/user_icon.png", height: 65.0, width: 65.0),
+                          CircleAvatar(
+                            radius: 35.0,
+                            backgroundImage: uImage.isNotEmpty
+                                ? NetworkImage(uImage) as ImageProvider<Object>?
+                                : Image.asset("images/user_icon.png", height: 65.0, width: 65.0).image,
+                          ),
                           SizedBox(width:16.0),
                           Column(
                             mainAxisAlignment: MainAxisAlignment.center,

@@ -1,6 +1,5 @@
-// ignore_for_file: await_only_futures, prefer_const_constructors, avoid_print, non_constant_identifier_names, unnecessary_brace_in_string_interps, unused_local_variable
+// ignore_for_file: await_only_futures, prefer_const_constructors, avoid_print, non_constant_identifier_names, unnecessary_brace_in_string_interns, unused_local_variable, empty_catches, file_names
 import 'dart:convert';
-import 'dart:ffi';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';

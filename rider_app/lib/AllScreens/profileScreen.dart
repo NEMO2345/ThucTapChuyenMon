@@ -69,14 +69,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                 child: Column(
                   children: [
-                    Image.asset(
-                      'images/user_icon.png',
-                      width: 120,
-                      height: 120,
-                    ),
+                      CircleAvatar(
+                        radius: 100.0,
+                        backgroundImage: NetworkImage(uImage),
+                      ),
                     const SizedBox(height: 8),
                     Text(
-                      userCurrentInfo!.name ?? "Ly",
+                      userCurrentInfo?.name ?? "Ly",
                       style: const TextStyle(
                         fontSize: 20,
                         fontFamily: "Brand Bold",
@@ -149,7 +148,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ListTile(
               leading: Icon(Icons.phone),
               title: Text(
-                'Số điện thoại',
+                'Phone Number',
                 style: TextStyle(
                   fontSize: 16,
                 ),

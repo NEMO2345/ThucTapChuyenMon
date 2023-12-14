@@ -131,7 +131,7 @@ class _LoginScreenState extends State<RegisterationScreen> {
                         width: 200.0,
                         fit: BoxFit.cover,
                       )
-                          : Text('ChoosePicture',
+                          : Text('Choose your avatar',
                           style: TextStyle(
                           color: Colors.black,
                           fontSize: 16,
@@ -168,6 +168,9 @@ class _LoginScreenState extends State<RegisterationScreen> {
                           confirmpasswordTextEdittingController.text) {
                           displayToastMessage(
                               "Password incorrect.", context);
+                        }else if(_image == null){
+                          displayToastMessage(
+                              "Must have a representative photo.", context);
                         }
                         else{
                           registerNewUser(context);

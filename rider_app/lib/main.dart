@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rider_app/AllScreens/loginScreen.dart';
@@ -26,6 +27,7 @@ DatabaseReference usersRefUpdate = FirebaseDatabase.instance.reference().child("
 DatabaseReference driversRef = FirebaseDatabase.instance.reference().child("drivers");
 DatabaseReference rideRequestRef = FirebaseDatabase.instance.reference().child("Ride Requests");
 DatabaseReference rideRequestRefCT = FirebaseDatabase.instance.reference().child("Ride Requests CT");
+final FirebaseStorage storage = FirebaseStorage.instance;
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

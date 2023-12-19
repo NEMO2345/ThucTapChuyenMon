@@ -253,7 +253,6 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
    // print(widget.firebaseUser!.uid.toString());
     final snapshot = await usersRef.child('users/'+widget.firebaseUser!.uid.toString()).get()
         .then((value) => {
-
       name = value.child("name").value as String?,
       phone = value.child("phone").value as String?,
      // print(name),

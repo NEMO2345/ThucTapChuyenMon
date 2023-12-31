@@ -1,9 +1,9 @@
-// ignore_for_file: use_build_context_synchronously, use_key_in_widget_constructors, library_private_types_in_public_api, prefer_final_fields, prefer_const_constructors, deprecated_member_use
+// ignore_for_file: use_build_context_synchronously, use_key_in_widget_constructors, library_private_types_in_public_api, prefer_final_fields, prefer_const_constructors, deprecated_member_use, file_names
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:rider_app/AllScreens/loginScreen.dart';
+import 'package:rider_app/configMaps.dart';
 
 class ChangePassword extends StatefulWidget {
   @override
@@ -24,40 +24,29 @@ class _ChangePasswordScreenState extends State<ChangePassword> {
     setState(() {
       _isLoading = true;
     });
-
-    var forgotEmail = _emailController.text.trim();
-
     try {
       await FirebaseAuth.instance
           .sendPasswordResetEmail(
-        email: forgotEmail,
-        actionCodeSettings: auth.ActionCodeSettings(
-          url: 'https://flutter-thu2.firebaseapp.com/__/auth/action?mode=action&oobCode=code',
-          handleCodeInApp: true,
-          androidPackageName: 'com.phamthily.riderapp',
-          androidMinimumVersion: '21',
-        ),
+        email: uEmail.toString(),
       )
           .then((value) {
         displayToastMessage("Email has been sent, please check", context);
+        FirebaseAuth.instance.signOut();
         Navigator.of(context).pushNamed(LoginScreen.idScreen);
       });
     } on FirebaseAuthException catch (e) {
       displayToastMessage("Error: $e", context);
     }
-
     setState(() {
       _isLoading = false;
     });
   }
-
   void displayToastMessage(String message, BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(message),
       duration: Duration(seconds: 3),
     ));
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,13 +67,12 @@ class _ChangePasswordScreenState extends State<ChangePassword> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            TextField(
-              controller: _emailController,
-              decoration: InputDecoration(
-                prefixIcon: Icon(Icons.email),
-                labelText: 'Please enter your email to change your password',
-              ),
+            Text(
+              uEmail.isEmpty ? "Email" : uEmail,
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 16.0, fontFamily: "Brand Bold"),
             ),
+            SizedBox(height: 6.0),
             SizedBox(height: 16.0),
             ElevatedButton(
               style: ElevatedButton.styleFrom(

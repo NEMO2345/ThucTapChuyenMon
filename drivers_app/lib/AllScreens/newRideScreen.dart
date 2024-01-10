@@ -36,26 +36,15 @@ const double MAXDISTANCE = 15000;
 class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateMixin {
   // Raw coordinates got from  OpenRouteService
   List listOfPoints = [];
-  String PickUpPoint = "";
-  String Destination = "";
-  double tripDirectionDetails = 0;
-  double totalcalculateCost = 0;
-  String formattedCost = '';
-  List<LatLng> points = [];
+  double zoomSize = 15;
+  double Latitude = 6.131015;
+  double Longitude = 1.223898;
   double sourLatitude = 0;
   double sourLongitude = 0;
   double desLatitude = 0;
   double desLongitude = 0;
-  double zoomSize = 15;
-  double Latitude = 0;
-  double Longitude =0;
+  List<LatLng> points = [];
   String display_name_Location = "You address";
-  double rideDetailContainerHeigth = 0;
-  double requestRideContainerHeigth = 0;
-  double searchContainerHeight = 310.0;
-  bool drawerOpen = true;
-  MapController _mapController = MapController();
-  var geolocator = Geolocator();
   String status = "accepted";
   String durationRide = "10 mins";
   bool isRequestingDirection = false;
@@ -63,9 +52,14 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
   Color btnColor = Colors.orange;
   late Timer timer;
   int durationCounter = 0;
+  double tripDirectionDetails = 0;
+  double totalcalculateCost = 0;
+  String formattedCost = '';
   double typeRideBike = 50;
   double typeRideUberGo = 75;
   double typeRideUberX = 100;
+  MapController _mapController = MapController();
+
   //vi tri hien tai
   Future<dynamic> getLocation() async {
     LatLng oldPos = LatLng(0, 0);
@@ -108,10 +102,15 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
       "longitude": Longitude.toString(),
     };
     rideRequestRef.child("driver_location").set(locMap);
-   // initGeoFireListener();
+    // initGeoFireListener();
     return _locationData;
   }
   void initWay() {
+    print('be Ly cute');
+    print(widget.rideDetails.pickup.latitude);
+    print(widget.rideDetails.pickup.longitude);
+    print(widget.rideDetails.dropoff.latitude);
+    print(widget.rideDetails.dropoff.longitude);
     setState(() {
       sourLatitude = widget.rideDetails.pickup.latitude;
       sourLongitude = widget.rideDetails.pickup.longitude;
@@ -176,8 +175,9 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
   @override
   void initState() {
     super.initState();
-    getLocation();
     initWay();
+    getLocation();
+
   }
   @override
   Widget build(BuildContext context) {
@@ -204,7 +204,7 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
                   markers: [
                     // First Marker
                     Marker(
-                      point: LatLng(sourLatitude == 0 ? Latitude : sourLatitude, sourLongitude == 0 ? Longitude : sourLongitude),
+                      point: LatLng(sourLatitude == 0 ? Latitude: sourLatitude, sourLongitude == 0 ? Longitude : sourLongitude),
                       width: 80,
                       height: 80,
                       builder: (context) => IconButton(
@@ -227,7 +227,7 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
                     ),
                     // Second Marker
                     Marker(
-                      point: LatLng(desLatitude == 0 ? Latitude : desLatitude, desLongitude == 0 ? Longitude : desLongitude),
+                      point: LatLng(desLatitude == 0 ? Latitude: desLatitude, desLongitude == 0 ? Longitude : desLongitude),
                       width: 80,
                       height: 80,
                       builder: (context) => IconButton(
@@ -237,22 +237,9 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
                         iconSize: 45,
                       ),
                     ),
-                    Marker(
-                      point: LatLng(Latitude, Longitude),
-                      builder: (ctx) => GestureDetector(
-                        onTap: () {
-                        },
-                        child: MarkerWidget(
-                          imagePath: 'images/car_android.png',
-                          width: 40,
-                          height: 40,
-                          rotation: MapKitAssistant.getMarkerRotation(oldPos.latitude, oldPos.longitude, Latitude, Longitude),
-                        ),
-                      ),
-                    ),
+
                   ],
                 ),
-
                 // Polylines layer
                 PolylineLayer(
                   polylineCulling: false,
@@ -451,12 +438,12 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
       "latitude": Latitude.toString(),
       "longitude": Longitude.toString(),
     };
-   rideRequestRef.child("driver_location").set(locMap);
-   driversRef.child(currentfirebaseUser!.uid).child("history").child(rideRequestId).set(locMap);
-   driversRef.child(currentfirebaseUser!.uid).child("history").child(rideRequestId).child("driver_name").set(driversInformation?.name);
-   driversRef.child(currentfirebaseUser!.uid).child("history").child(rideRequestId).child("driver_phone").set(driversInformation?.phone);
-   driversRef.child(currentfirebaseUser!.uid).child("history").child(rideRequestId).child("driver_id").set(driversInformation?.id);
-   driversRef.child(currentfirebaseUser!.uid).child("history").child(rideRequestId).child("car_details").set('${driversInformation?.car_color} - ${driversInformation?.car_model} - ${driversInformation?.car_number}');
+    rideRequestRef.child("driver_location").set(locMap);
+    driversRef.child(currentfirebaseUser!.uid).child("history").child(rideRequestId).set(locMap);
+    driversRef.child(currentfirebaseUser!.uid).child("history").child(rideRequestId).child("driver_name").set(driversInformation?.name);
+    driversRef.child(currentfirebaseUser!.uid).child("history").child(rideRequestId).child("driver_phone").set(driversInformation?.phone);
+    driversRef.child(currentfirebaseUser!.uid).child("history").child(rideRequestId).child("driver_id").set(driversInformation?.id);
+    driversRef.child(currentfirebaseUser!.uid).child("history").child(rideRequestId).child("car_details").set('${driversInformation?.car_color} - ${driversInformation?.car_model} - ${driversInformation?.car_number}');
   }
   void updateRideDetails() async{
     if(isRequestingDirection == false){
@@ -501,9 +488,9 @@ class _NewRideScreenState extends State<NewRideScreen> with TickerProviderStateM
     var directionDetails = await getLocation();
     setState(() {
       //desLatitude =Latitude;
-     //desLongitude = Longitude;
+      //desLongitude = Longitude;
       if (sourLatitude != 0 && sourLongitude != 0){
-       // getCoordinates(sourLatitude,sourLongitude,desLatitude,desLongitude);
+        // getCoordinates(sourLatitude,sourLongitude,desLatitude,desLongitude);
         List<LatLng> points = [
           LatLng(sourLatitude, sourLongitude),
           LatLng(desLatitude, desLongitude),

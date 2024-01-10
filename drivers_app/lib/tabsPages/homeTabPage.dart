@@ -33,7 +33,6 @@ Loc.PermissionStatus _permissionGranted = Loc.PermissionStatus.denied;
 Loc.LocationData _locationData = null as Loc.LocationData;
 class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
   late final DatabaseReference rideRequestRef;
-
   // Raw coordinates got from  OpenRouteService
   List listOfPoints = [];
   String PickUpPoint = "";
@@ -95,11 +94,8 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
 
     return _locationData;
   }
-
-
   // Method to consume the OpenRouteService API
-  getCoordinates(double sour_lat, double sour_lon, double des_lat,
-      double des_lon) async {
+  getCoordinates(double sour_lat, double sour_lon, double des_lat, double des_lon) async {
     var response = await http.get(getRouteUrl("$sour_lon,$sour_lat",
         '$des_lon,$des_lat'));
     print(response.statusCode);
@@ -181,7 +177,6 @@ class _HomeTabPage extends State<HomeTabPage> with TickerProviderStateMixin {
   }
   @override
   Widget build(BuildContext context) {
-
     return Stack(
       children: [
         Scaffold(
